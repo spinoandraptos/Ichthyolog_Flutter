@@ -1,9 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.ichthyolog">
    <application
-        android:label="ichthyolog"
+        android:label="Ichthyolog"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ichthyolog">
         <activity
             android:name=".MainActivity"
             android:exported="true"
