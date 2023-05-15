@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'login_background.dart';
-import 'signup.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
-
+class SignUpPage extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _SignUpPageState createState() => _SignUpPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignUpPageState extends State<SignUpPage> {
+  final usernameController = TextEditingController();
   final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final passwordController1 = TextEditingController();
+  final passwordController2 = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +38,22 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Colors.white),
+                margin: const EdgeInsets.only(right: 40, left: 40),
+                child: TextField(
+                  controller: usernameController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Enter a username',
+                    contentPadding: EdgeInsets.all(15),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
                 margin: const EdgeInsets.only(right: 40, left: 40),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
@@ -48,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
                     border: InputBorder.none,
-                    hintText: 'Enter your email or username',
+                    hintText: 'Enter your email',
                     contentPadding: EdgeInsets.all(10),
                   ),
                 ),
@@ -60,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                     color: Colors.white),
                 margin: const EdgeInsets.only(right: 40, left: 40),
                 child: TextField(
-                  controller: passwordController,
+                  controller: passwordController1,
                   obscureText: true,
                   decoration: const InputDecoration(
                     border: InputBorder.none,
@@ -69,15 +84,19 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
+              const SizedBox(height: 20),
               Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Colors.white),
                 margin: const EdgeInsets.only(right: 40, left: 40),
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: TextButton(
-                    onPressed: () {
-                      // TODO: implement reset password functionality
-                    },
-                    child: const Text('Forgot Password?'),
+                child: TextField(
+                  controller: passwordController2,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Confirm your password',
+                    contentPadding: EdgeInsets.all(15),
                   ),
                 ),
               ),
@@ -93,23 +112,9 @@ class _LoginPageState extends State<LoginPage> {
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15)))),
-                  child: const Text('Login'),
+                  child: const Text('Sign Up'),
                 ),
               ),
-              const SizedBox(height: 30),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                const Text('Don\'t have an account?'),
-                TextButton(
-                  onPressed: () {
-                    // TODO: implement sign up functionality
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SignUpPage()),
-                    );
-                  },
-                  child: const Text('Sign up'),
-                ),
-              ]),
             ],
           ),
         ),
