@@ -92,7 +92,9 @@ class _LoginPageState extends State<LoginPage> {
                   style: ButtonStyle(
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15)))),
+                              borderRadius: BorderRadius.circular(15))),
+                      backgroundColor: MaterialStateProperty.all(
+                          Color.fromARGB(255, 86, 117, 211))),
                   child: const Text('Login'),
                 ),
               ),

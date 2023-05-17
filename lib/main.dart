@@ -1,7 +1,6 @@
-
 import 'package:flutter/material.dart';
-import './login.dart';
-import './signup.dart';
+import './Routes/login.dart';
+import './Routes/signup.dart';
 
 void main() {
   runApp(MyApp());

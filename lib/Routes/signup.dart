@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login_background.dart';
+import '../API/Http.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -11,6 +12,19 @@ class _SignUpPageState extends State<SignUpPage> {
   final emailController = TextEditingController();
   final passwordController1 = TextEditingController();
   final passwordController2 = TextEditingController();
+
+  final httpHelpers = HttpHelpers();
+
+  //discards all the resources used by the TextEditingController’s
+  //object after the Widget is removed from the widget Tree
+  @override
+  void dispose() {
+    usernameController.dispose();
+    emailController.dispose();
+    passwordController1.dispose();
+    passwordController2.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,12 +120,42 @@ class _SignUpPageState extends State<SignUpPage> {
                 height: 36,
                 child: ElevatedButton(
                   onPressed: () {
-                    // TODO: implement login functionality
+                    String output = 'Signup Unsuccessful'; //by default
+                    httpHelpers
+                        .signupRequest(usernameController.text,
+                            passwordController2.text, emailController.text)
+                        .then((String response) {
+                      setState(() {
+                        output = response; //updated with response message
+                      });
+                    });
+
+                    Widget continueButton = TextButton(
+                      child: Text("OK"),
+                      onPressed: () => Navigator.pop(context, 'OK'),
+                    );
+
+                    AlertDialog alert = AlertDialog(
+                      title: Text("Notice"),
+                      content: Text(output),
+                      actions: [continueButton],
+                    );
+
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return alert;
+                      },
+                    );
+
+                    // TODO: implement signup functionality
                   },
                   style: ButtonStyle(
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15)))),
+                              borderRadius: BorderRadius.circular(15))),
+                      backgroundColor: MaterialStateProperty.all(
+                          Color.fromARGB(255, 86, 117, 211))),
                   child: const Text('Sign Up'),
                 ),
               ),
