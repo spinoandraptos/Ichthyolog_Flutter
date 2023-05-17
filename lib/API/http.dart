@@ -7,7 +7,7 @@ class HttpHelpers {
   //the string can be used for pop-up display etc.
   Future<String> signupRequest(
       String username, String password, String email) async {
-    String url = "http://localhost:3000/users";
+    String url = 'http://localhost:3000/users';
     var response = await http.post(
       Uri.parse(url),
       headers: <String, String>{
