@@ -1,5 +1,6 @@
 //import 'dart:html';
 import 'package:flutter/material.dart';
+import 'package:ichthyolog/Routes/login.dart';
 import 'login_background.dart';
 import 'package:flutter/gestures.dart';
 import '../API/Http.dart';
@@ -230,9 +231,36 @@ class _SignUpPageState extends State<SignUpPage> {
                     height: 36,
                     child: ElevatedButton(
                       onPressed: () {
+                        String output = 'Signup Unsuccessful';
                         validateForm();
-                        httpHelpers.signupRequest(
-                            _userName, _password, _userEmail);
+                        httpHelpers
+                            .signupRequest(_userName, _password, _userEmail)
+                            .then((String response) {
+                          setState(() {
+                            output = response; //updated with response message
+                          });
+                        });
+
+                        Widget continueButton = TextButton(
+                            child: Text("OK"),
+                            onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginPage()),
+                                ));
+
+                        AlertDialog alert = AlertDialog(
+                          title: Text("Notice"),
+                          content: Text(output),
+                          actions: [continueButton],
+                        );
+
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return alert;
+                          },
+                        );
                       },
                       style: ButtonStyle(
                           shape:

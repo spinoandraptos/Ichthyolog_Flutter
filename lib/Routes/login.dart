@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'login_background.dart';
 import 'signup.dart';
+import '../API/Http.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,6 +14,8 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  final httpHelpers = HttpHelpers();
 
   void validateForm() {
     final bool? isValid = _formKey.currentState?.validate();
@@ -125,7 +128,37 @@ class _LoginPageState extends State<LoginPage> {
                     height: 36,
                     child: ElevatedButton(
                       onPressed: () {
+                        String output = 'Login Unsuccessful';
                         validateForm();
+                        httpHelpers
+                            .loginRequest(
+                                emailController.text, passwordController.text)
+                            .then((String response) {
+                          setState(() {
+                            output = response; //updated with response message
+                          });
+                        });
+
+                        Widget continueButton = TextButton(
+                            child: Text("OK"),
+                            onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SignUpPage()),
+                                ));
+
+                        AlertDialog alert = AlertDialog(
+                          title: Text("Notice"),
+                          content: Text(output),
+                          actions: [continueButton],
+                        );
+
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return alert;
+                          },
+                        );
                       },
                       style: ButtonStyle(
                           shape:
@@ -143,7 +176,6 @@ class _LoginPageState extends State<LoginPage> {
                     const Text('Don\'t have an account?'),
                     TextButton(
                       onPressed: () {
-                        // TODO: implement sign up functionality
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => SignUpPage()),

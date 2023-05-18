@@ -1,4 +1,4 @@
-//This file stores classes that represent the major objects used
+//This folder stores classes that represent the major objects used
 //These classes will be used to store the data returned from backend
 
 //User class for user profile and authentication
@@ -17,4 +17,13 @@ class User {
     required this.email,
     required this.profilepic,
   });
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+        userid: json['userid'],
+        username: json['username'],
+        password: json['password'],
+        email: json['email'],
+        profilepic: json['profilepic']);
+  }
 }
