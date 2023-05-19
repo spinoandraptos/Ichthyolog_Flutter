@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:ichthyolog/Routes/login.dart';
 import 'login_background.dart';
-import 'package:flutter/gestures.dart';
 import '../API/Http.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -16,7 +15,7 @@ class _SignUpPageState extends State<SignUpPage> {
   String _password = '';
   String _confirmPassword = '';
   final _formKey = GlobalKey<FormState>();
-
+  String output = '';
   final httpHelpers = HttpHelpers();
 
   bool isValidUsername(String username) {
@@ -29,16 +28,41 @@ class _SignUpPageState extends State<SignUpPage> {
   void validateForm() {
     final bool? isValid = _formKey.currentState?.validate();
     if (isValid == true) {
-      debugPrint('Everything looks good!');
-      debugPrint(_userName);
-      debugPrint(_userEmail);
-      debugPrint(_password);
-      debugPrint(_confirmPassword);
+      httpHelpers
+          .signupRequest(_userName, _password, _userEmail)
+          .then((String response) {
+        setState(() {
+          output = response; //updated with response message
+        });
+      });
 
-      /* 
-      Continute proccessing the provided information with your own logic 
-      such us sending HTTP requests, savaing to SQLite database, etc.
-      */
+      Widget continueButton = TextButton(
+          child: Text("OK"),
+          onPressed: () {
+            if (output == 'Signup Successful') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage()),
+              );
+            } else {
+              Navigator.pop(context);
+            }
+          });
+
+      AlertDialog alert = AlertDialog(
+        title: Text("Notice"),
+        content: Text(output == 'Signup Successful'
+            ? 'Signup Successful! Please login.'
+            : 'Signup Failed. Please try again.'),
+        actions: [continueButton],
+      );
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        },
+      );
     }
   }
 
@@ -234,34 +258,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       onPressed: () {
                         String output = 'Signup Unsuccessful';
                         validateForm();
-                        httpHelpers
-                            .signupRequest(_userName, _password, _userEmail)
-                            .then((String response) {
-                          setState(() {
-                            output = response; //updated with response message
-                          });
-                        });
-
-                        Widget continueButton = TextButton(
-                            child: Text("OK"),
-                            onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => LoginPage()),
-                                ));
-
-                        AlertDialog alert = AlertDialog(
-                          title: Text("Notice"),
-                          content: Text(output),
-                          actions: [continueButton],
-                        );
-
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return alert;
-                          },
-                        );
                       },
                       style: ButtonStyle(
                           shape:
