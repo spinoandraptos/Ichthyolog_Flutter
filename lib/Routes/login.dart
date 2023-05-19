@@ -131,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                         String output = 'Login Unsuccessful';
                         validateForm();
                         httpHelpers
-                            .loginRequest(
+                            .loginRequest(emailController.text,
                                 emailController.text, passwordController.text)
                             .then((String response) {
                           setState(() {

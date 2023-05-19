@@ -83,13 +83,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     alignment: Alignment.topLeft,
                     margin: const EdgeInsets.only(top: 20),
                     child: IconButton(
-                      color: Color.fromARGB(255, 57, 81, 189),
-                      iconSize: 35,
-                      icon: const Icon(Icons.arrow_back),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
+                        color: Color.fromARGB(255, 57, 81, 189),
+                        iconSize: 35,
+                        icon: const Icon(Icons.arrow_back),
+                        onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginPage()),
+                            )),
                   ),
 
                   //Logo up top

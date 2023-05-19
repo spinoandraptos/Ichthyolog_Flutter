@@ -21,27 +21,30 @@ class HttpHelpers {
       }),
     );
     if (response.statusCode == 201) {
-      var responseData = convert.jsonDecode(response.body) as String;
-      return responseData;
+      return ('Signup Successful');
+    } else {
+      return 'Request failed with status: ${response.statusCode}.';
     }
-    return 'Request failed with status: ${response.statusCode}.';
   }
 
-  Future<String> loginRequest(String email, String password) async {
+  Future<String> loginRequest(
+      String email, String username, String password) async {
     String url = 'http://10.0.2.2:3000/users/login';
     var response = await http.post(
       Uri.parse(url),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: convert
-          .jsonEncode(<String, String>{'email': email, 'password': password}),
+      body: convert.jsonEncode(<String, String>{
+        'email': email,
+        'username': username,
+        'password': password
+      }),
     );
     if (response.statusCode == 200) {
-      var responseData = convert.jsonDecode(response.body) as String;
-      return responseData;
+      return ('Login Successful');
     } else {
-      throw Exception('Request failed with status: ${response.statusCode}');
+      return ('Request failed with status: ${response.statusCode}');
     }
   }
 
