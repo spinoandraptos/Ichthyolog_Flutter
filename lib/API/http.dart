@@ -1,4 +1,5 @@
 import 'dart:convert' as convert;
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ichthyolog/Models/user.dart';
 
@@ -41,15 +42,20 @@ class HttpHelpers {
         'password': password
       }),
     );
+
+    debugPrint(response.statusCode.toString());
+
     if (response.statusCode == 200) {
       return ('Login Successful');
+    } else if (response.statusCode == 404) {
+      return ('Password Incorrect');
     } else {
-      return ('Request failed with status: ${response.statusCode}');
+      return ('Username Not Found');
     }
   }
 
   Future<User> viewUserRequest() async {
-    String url = 'http://10.0.2.2:3000/users/login';
+    String url = 'http://10.0.2.2:3000/users';
     var response = await http.get(
       Uri.parse(url),
       headers: <String, String>{

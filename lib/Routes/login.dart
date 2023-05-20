@@ -2,29 +2,54 @@ import 'package:flutter/material.dart';
 import 'login_background.dart';
 import 'signup.dart';
 import '../API/Http.dart';
+import 'homepage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
-
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final emailController = TextEditingController();
+  final emailUsernameController = TextEditingController();
   final passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
   final httpHelpers = HttpHelpers();
 
   void validateForm() {
     final bool? isValid = _formKey.currentState?.validate();
     if (isValid == true) {
-      debugPrint('Everything looks good!');
-      /* 
-      Continute proccessing the provided information with your own logic 
-      such us sending HTTP requests, savaing to SQLite database, etc.
-      */
+      httpHelpers
+          .loginRequest(emailUsernameController.text,
+              emailUsernameController.text, passwordController.text)
+          .then((String response) {
+        debugPrint(response);
+        Widget continueButton = TextButton(
+            child: Text("OK"),
+            onPressed: () {
+              Navigator.pop(context);
+            });
+
+        AlertDialog alert = AlertDialog(
+            title: Text("Notice"),
+            content: Text(response == 'Password Incorrect'
+                ? 'Incorrect password, please try again.'
+                : 'Username not found, please try again.'),
+            actions: [continueButton]);
+
+        if (response == 'Login Successful') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+        } else {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return alert;
+              });
+        }
+      });
     }
   }
 
@@ -73,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                         }
                         return null;
                       },
-                      controller: emailController,
+                      controller: emailUsernameController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
@@ -128,37 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                     height: 36,
                     child: ElevatedButton(
                       onPressed: () {
-                        String output = 'Login Unsuccessful';
                         validateForm();
-                        httpHelpers
-                            .loginRequest(emailController.text,
-                                emailController.text, passwordController.text)
-                            .then((String response) {
-                          setState(() {
-                            output = response; //updated with response message
-                          });
-                        });
-
-                        Widget continueButton = TextButton(
-                            child: Text("OK"),
-                            onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => SignUpPage()),
-                                ));
-
-                        AlertDialog alert = AlertDialog(
-                          title: Text("Notice"),
-                          content: Text(output),
-                          actions: [continueButton],
-                        );
-
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return alert;
-                          },
-                        );
                       },
                       style: ButtonStyle(
                           shape:
