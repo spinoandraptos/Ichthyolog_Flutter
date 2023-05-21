@@ -52,8 +52,13 @@ class HttpHelpers {
     }
   }
 
-  Future<void> logoutRequest() async {
-    storage.delete(key: 'jwt');
+  Future<void> logoutRequest(String jwt) async {
+    String url = 'http://10.0.2.2:3000/users/login';
+    var response = await http.post(Uri.parse(url), headers: <String, String>{
+      'Content-type': 'application/json; charset=UTF-8',
+      'Authorisation': jwt
+    });
+    await storage.delete(key: 'jwt');
   }
 
   Future<User> viewUserRequest() async {
