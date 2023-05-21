@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:ichthyolog/main.dart';
 import 'login_background.dart';
 import 'signup.dart';
-import '../API/Http.dart';
+import '../Helpers/helper.dart';
+import '../Helpers/Http.dart';
 import 'homepage.dart';
 
 class LoginPage extends StatefulWidget {
@@ -15,6 +18,7 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final httpHelpers = HttpHelpers();
+  final helpers = Helpers();
 
   void validateForm() {
     final bool? isValid = _formKey.currentState?.validate();
@@ -22,8 +26,7 @@ class _LoginPageState extends State<LoginPage> {
       httpHelpers
           .loginRequest(emailUsernameController.text,
               emailUsernameController.text, passwordController.text)
-          .then((String response) {
-        debugPrint(response);
+          .then((String response) async {
         Widget continueButton = TextButton(
             child: Text("OK"),
             onPressed: () {
@@ -37,11 +40,15 @@ class _LoginPageState extends State<LoginPage> {
                 : 'Username not found, please try again.'),
             actions: [continueButton]);
 
-        if (response == 'Login Successful') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => HomePage()),
-          );
+        if (response != 'Password Incorrect' &&
+            response != 'Username Not Found') {
+          await storage.write(key: "jwt", value: response);
+          if (context.mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          }
         } else {
           showDialog(
               context: context,
@@ -53,6 +60,8 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  //TODO: add futurebuilder so that this page will not load as long as jwt is
+  //still valid (user need not login again)
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -177,6 +186,20 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       },
                       child: const Text('Sign up'),
+                    ),
+                  ]),
+
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                        );
+                      },
+                      child: const Text('Use this app without an account',
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 80, 154, 239))),
                     ),
                   ]),
                 ],

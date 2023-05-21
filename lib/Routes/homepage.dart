@@ -26,7 +26,17 @@ class HomePage extends StatelessWidget {
             } else {
               return Scaffold(
                 appBar: AppBar(
+                  leading: Icon(Icons.account_circle_rounded),
+                  leadingWidth: 58,
                   title: const Text('Home'),
+                  actions: [
+                    Icon(Icons.favorite),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Icon(Icons.search),
+                    ),
+                    Icon(Icons.more_vert),
+                  ],
                 ),
                 body: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
