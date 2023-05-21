@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:convert' as convert;
 import '../Helpers/helper.dart';
+import '../API/http.dart';
 
 class HomePage extends StatelessWidget {
   final helpers = Helpers();
+  final httpHelpers = HttpHelpers();
 
   @override
   Widget build(BuildContext context) {
@@ -26,16 +28,15 @@ class HomePage extends StatelessWidget {
             } else {
               return Scaffold(
                 appBar: AppBar(
-                  leading: Icon(Icons.account_circle_rounded),
-                  leadingWidth: 58,
+                  leading: Icon(Icons.menu),
                   title: const Text('Home'),
                   actions: [
-                    Icon(Icons.favorite),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Icon(Icons.search),
+                    IconButton(
+                      icon: const Icon(Icons.logout),
+                      onPressed: () {
+                        httpHelpers.logo
+                      },
                     ),
-                    Icon(Icons.more_vert),
                   ],
                 ),
                 body: Column(
@@ -100,12 +101,10 @@ class HomePage extends StatelessWidget {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.person),
-                        onPressed: () {
-                          // Navigate to user profile screen
-                        },
+                        onPressed: () {},
                       ),
                       IconButton(
-                        icon: const Icon(Icons.camera),
+                        icon: const Icon(Icons.add_a_photo_rounded),
                         onPressed: () {
                           // Navigate to camera screen
                         },
