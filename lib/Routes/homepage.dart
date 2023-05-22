@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert' as convert;
 import '../Helpers/helper.dart';
-import '../API/http.dart';
+import '../helpers/http.dart';
 
 class HomePage extends StatelessWidget {
   final helpers = Helpers();
@@ -34,7 +34,7 @@ class HomePage extends StatelessWidget {
                     IconButton(
                       icon: const Icon(Icons.logout),
                       onPressed: () {
-                        httpHelpers.logo
+                        httpHelpers.logoutRequest(snapshot.data).then(() => null)
                       },
                     ),
                   ],
