@@ -4,6 +4,7 @@ import 'dart:convert' as convert;
 import '../Helpers/helper.dart';
 import '../helpers/http.dart';
 import './login.dart';
+import 'camerapage.dart';
 
 class HomePage extends StatelessWidget {
   final helpers = Helpers();
@@ -17,11 +18,11 @@ class HomePage extends StatelessWidget {
           if (snapshot.hasData) {
             if (snapshot.data == '') {
               return AlertDialog(
-                title: Text("Notice"),
-                content: Text('No JWT token'),
+                title: const Text("Notice"),
+                content: const Text('No JWT token'),
                 actions: [
                   TextButton(
-                      child: Text("OK"),
+                      child: const Text("OK"),
                       onPressed: () {
                         Navigator.pop(context);
                       })
@@ -30,7 +31,7 @@ class HomePage extends StatelessWidget {
             } else {
               return Scaffold(
                 appBar: AppBar(
-                  leading: Icon(Icons.menu),
+                  leading: const Icon(Icons.menu),
                   title: const Text('Home'),
                   actions: [
                     IconButton(
@@ -39,7 +40,8 @@ class HomePage extends StatelessWidget {
                         await storage.delete(key: 'jwt');
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          MaterialPageRoute(
+                              builder: (context) => const LoginPage()),
                         );
                       },
                     ),
@@ -112,7 +114,11 @@ class HomePage extends StatelessWidget {
                       IconButton(
                         icon: const Icon(Icons.add_a_photo_rounded),
                         onPressed: () {
-                          // Navigate to camera screen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CameraPage()),
+                          );
                         },
                       ),
                       IconButton(
@@ -127,7 +133,7 @@ class HomePage extends StatelessWidget {
               );
             }
           }
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         }));
   }
 }
