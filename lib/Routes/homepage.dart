@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../main.dart';
 import 'dart:convert' as convert;
 import '../Helpers/helper.dart';
 import '../helpers/http.dart';
+import './login.dart';
 
 class HomePage extends StatelessWidget {
   final helpers = Helpers();
@@ -33,8 +35,12 @@ class HomePage extends StatelessWidget {
                   actions: [
                     IconButton(
                       icon: const Icon(Icons.logout),
-                      onPressed: () {
-                        httpHelpers.logoutRequest(snapshot.data).then(() => null)
+                      onPressed: () async {
+                        await storage.delete(key: 'jwt');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
                       },
                     ),
                   ],

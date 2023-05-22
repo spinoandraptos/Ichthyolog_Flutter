@@ -1,4 +1,5 @@
 import 'dart:convert' as convert;
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ichthyolog/Models/user.dart';
 import '../main.dart';
@@ -24,7 +25,7 @@ class HttpHelpers {
     if (response.statusCode == 201) {
       return ('Signup Successful');
     } else {
-      return 'Request failed with status: ${response.statusCode}.';
+      return 'Signup failed with status: ${response.statusCode}.';
     }
   }
 
@@ -52,13 +53,18 @@ class HttpHelpers {
     }
   }
 
-  Future<void> logoutRequest(String jwt) async {
-    String url = 'http://10.0.2.2:3000/users/login';
+  Future<String> logoutRequest(String jwt) async {
+    String url = 'http://10.0.2.2:3000/users/logout';
     var response = await http.post(Uri.parse(url), headers: <String, String>{
       'Content-type': 'application/json; charset=UTF-8',
       'Authorisation': jwt
     });
-    await storage.delete(key: 'jwt');
+    if (response.statusCode == 200) {
+      await storage.delete(key: 'jwt');
+      return ('Logged out');
+    } else {
+      return ('Logout failed}');
+    }
   }
 
   Future<User> viewUserRequest() async {
@@ -72,8 +78,7 @@ class HttpHelpers {
     if (response.statusCode == 200) {
       return User.fromJson(convert.jsonDecode(response.body));
     } else {
-      throw Exception(
-          'User not found! Request failed with status: ${response.statusCode}');
+      throw Exception('User not found! Error ${response.statusCode}');
     }
   }
 }

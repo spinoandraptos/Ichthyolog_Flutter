@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ichthyolog/Routes/login.dart';
 import 'login_background.dart';
-import '../API/Http.dart';
+import '../Helpers/Http.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
