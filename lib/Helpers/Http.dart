@@ -82,4 +82,29 @@ class HttpHelpers {
       throw Exception('User not found! Error ${response.statusCode}');
     }
   }
+
+  Future<String> updateUserRequest(
+      String email, String username, String password, String jwt) async {
+    String url = 'http://10.0.2.2:3000/user';
+    var response = await http.put(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+      body: json.encode(<String, String>{
+        'email': email,
+        'username': username,
+        'password': password
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return response.body;
+    } else if (response.statusCode == 404) {
+      return ('Password Incorrect');
+    } else {
+      return ('Username Not Found');
+    }
+  }
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:ichthyolog/main.dart';
 import 'login_background.dart';
 import 'signup.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/Http.dart';
 import 'homepage.dart';
+import './gallerypage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
           if (context.mounted) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => HomePage()),
+              MaterialPageRoute(builder: (context) => regularHomePage()),
             );
           }
         } else {
@@ -194,7 +194,8 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => HomePage()),
+                          MaterialPageRoute(
+                              builder: (context) => GalleryPage()),
                         );
                       },
                       child: const Text('Use this app without an account',
