@@ -24,6 +24,8 @@ class User {
         username: json['username'],
         password: json['password'],
         email: json['email'],
-        profilepic: json['profilepic']);
+        profilepic: json['profilepic'] == null
+            ? 'https://ichthyolog.s3.ap-southeast-1.amazonaws.com/avatar5.png'
+            : json['profilepic']);
   }
 }

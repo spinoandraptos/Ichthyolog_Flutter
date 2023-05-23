@@ -1,34 +1,99 @@
 import 'package:flutter/material.dart';
+import '../Models/user.dart';
 import '../main.dart';
 import 'dart:convert' as convert;
 import '../Helpers/helper.dart';
-import '../helpers/http.dart';
+import '../Helpers/http.dart';
 import './login.dart';
 import 'camerapage.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  bool _authorised = false;
+  String jwt = '';
+  User currUser = User(
+      userid: 0,
+      username: 'username',
+      password: 'password',
+      email: 'email',
+      profilepic:
+          'https://ichthyolog.s3.ap-southeast-1.amazonaws.com/avatar5.png');
   final helpers = Helpers();
   final httpHelpers = HttpHelpers();
 
+  void logout() async {
+    httpHelpers.logoutRequest(jwt).then((response) {
+      debugPrint('JWT RESPONSE' + response);
+      if (response == 'Logged out') {
+        storage.delete(key: 'jwt');
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      } else {
+        AlertDialog alert = AlertDialog(
+          title: const Text("Notice"),
+          content: const Text('Logout failed'),
+          actions: [
+            TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.pop(context);
+                })
+          ],
+        );
+        showDialog(
+            context: context,
+            builder: (context) {
+              return alert;
+            });
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    helpers.checkJwt().then((token) {
+      if (token == '') {
+        setState(() {
+          _authorised = false;
+          jwt = '';
+          debugPrint('TOKEN: ' + jwt);
+        });
+      } else {
+        setState(() {
+          _authorised = true;
+          jwt = token;
+          debugPrint('TOKEN: ' + jwt);
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<String>(
-        future: helpers.checkJwt(),
-        builder: ((context, snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data == '') {
-              return AlertDialog(
-                title: const Text("Notice"),
-                content: const Text('No JWT token'),
-                actions: [
-                  TextButton(
-                      child: const Text("OK"),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      })
-                ],
-              );
-            } else {
+    if (!_authorised) {
+      return AlertDialog(
+        title: const Text("Notice"),
+        content: const Text('No JWT token'),
+        actions: [
+          TextButton(
+              child: const Text("OK"),
+              onPressed: () {
+                Navigator.pop(context);
+              })
+        ],
+      );
+    } else {
+      return FutureBuilder<User>(
+          future: httpHelpers.viewUserRequest(jwt),
+          builder: ((context, snapshot) {
+            if (snapshot.hasData) {
               return Scaffold(
                 appBar: AppBar(
                   leading: const Icon(Icons.menu),
@@ -36,13 +101,8 @@ class HomePage extends StatelessWidget {
                   actions: [
                     IconButton(
                       icon: const Icon(Icons.logout),
-                      onPressed: () async {
-                        await storage.delete(key: 'jwt');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const LoginPage()),
-                        );
+                      onPressed: () {
+                        logout();
                       },
                     ),
                   ],
@@ -51,15 +111,14 @@ class HomePage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const SizedBox(height: 20),
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 80,
                       backgroundColor: Colors.white,
-                      backgroundImage: NetworkImage(
-                          'https://ichthyolog.s3.ap-southeast-1.amazonaws.com/avatar5.png'),
+                      backgroundImage: NetworkImage(snapshot.data!.profilepic),
                     ),
                     const SizedBox(height: 20),
-                    const Text(
-                      'User Name',
+                    Text(
+                      snapshot.data!.username,
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
@@ -132,8 +191,21 @@ class HomePage extends StatelessWidget {
                 ),
               );
             }
-          }
-          return const CircularProgressIndicator();
-        }));
+            return Container(
+              color: const Color.fromARGB(255, 236, 249, 255),
+              child: const Center(
+                child: SizedBox(
+                  height: 35.0,
+                  width: 35.0,
+                  child: CircularProgressIndicator(
+                      backgroundColor: Color.fromARGB(255, 91, 170, 255),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                          Color.fromARGB(255, 184, 218, 255)),
+                      strokeWidth: 8),
+                ),
+              ),
+            );
+          }));
+    }
   }
 }

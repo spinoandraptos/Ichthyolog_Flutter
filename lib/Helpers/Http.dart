@@ -1,4 +1,4 @@
-import 'dart:convert' as convert;
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ichthyolog/Models/user.dart';
@@ -10,13 +10,13 @@ class HttpHelpers {
   //the string can be used for pop-up display etc.
   Future<String> signupRequest(
       String username, String password, String email) async {
-    String url = 'http://10.0.2.2:3000/users';
+    String url = 'http://10.0.2.2:3000/user';
     var response = await http.post(
       Uri.parse(url),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: convert.jsonEncode(<String, String>{
+      body: json.encode(<String, String>{
         'username': username,
         'password': password,
         'email': email
@@ -31,13 +31,13 @@ class HttpHelpers {
 
   Future<String> loginRequest(
       String email, String username, String password) async {
-    String url = 'http://10.0.2.2:3000/users/login';
+    String url = 'http://10.0.2.2:3000/user/login';
     var response = await http.post(
       Uri.parse(url),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: convert.jsonEncode(<String, String>{
+      body: json.encode(<String, String>{
         'email': email,
         'username': username,
         'password': password
@@ -54,29 +54,30 @@ class HttpHelpers {
   }
 
   Future<String> logoutRequest(String jwt) async {
-    String url = 'http://10.0.2.2:3000/users/logout';
+    String url = 'http://10.0.2.2:3000/user/logout';
     var response = await http.post(Uri.parse(url), headers: <String, String>{
       'Content-type': 'application/json; charset=UTF-8',
       'Authorisation': jwt
     });
     if (response.statusCode == 200) {
-      await storage.delete(key: 'jwt');
+      debugPrint('HEY');
       return ('Logged out');
     } else {
       return ('Logout failed}');
     }
   }
 
-  Future<User> viewUserRequest() async {
-    String url = 'http://10.0.2.2:3000/users';
+  Future<User> viewUserRequest(String jwt) async {
+    String url = 'http://10.0.2.2:3000/user';
     var response = await http.get(
       Uri.parse(url),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
       },
     );
     if (response.statusCode == 200) {
-      return User.fromJson(convert.jsonDecode(response.body));
+      return User.fromJson(json.decode(response.body)[0]);
     } else {
       throw Exception('User not found! Error ${response.statusCode}');
     }
