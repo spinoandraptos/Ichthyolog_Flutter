@@ -39,6 +39,12 @@ dependencies:
   flutter_secure_storage: ^8.0.0
   image_picker: ^0.8.7+5
   gallery_saver: ^2.3.2
+  amplify_authenticator: ^1.0.1
+  amplify_storage_s3: ^1.0.1
+  amplify_flutter: ^1.0.1
+  amplify_auth_cognito: ^1.0.1
+  uuid: ^3.0.7
+  fluttertoast: ^8.2.2
 
 dev_dependencies:
   flutter_test:
