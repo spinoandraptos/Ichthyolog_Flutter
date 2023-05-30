@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:ichthyolog/Models/post.dart';
 import 'package:ichthyolog/Models/user.dart';
-import '../main.dart';
 
 //class which stores the functions responsible for backend communication
 class HttpHelpers {
@@ -105,6 +105,27 @@ class HttpHelpers {
       return ('Password Incorrect');
     } else {
       return ('Username Not Found');
+    }
+  }
+
+  Future<List<Post>> viewAllPostsRequest() async {
+    String url = 'http://10.0.2.2:3000/posts';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<Post> postlist = [];
+      var responseData = (json.decode(response.body));
+      for (var everypost in responseData) {
+        Post post = Post.fromJson(everypost);
+        postlist.add(post);
+      }
+      return postlist;
+    } else {
+      throw Exception('Posts not found! Error ${response.statusCode}');
     }
   }
 }

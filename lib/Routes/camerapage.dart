@@ -13,7 +13,7 @@ class CameraPage extends StatefulWidget {
 
 class _CameraPageState extends State<CameraPage> {
   File? _image;
-  Future<void> _takePhoto(ImageSource source) async {
+  Future<String> _takePhoto(ImageSource source) async {
     final imagePicker = ImagePicker();
     final pickedImage = await imagePicker.pickImage(source: source);
 
@@ -42,10 +42,12 @@ class _CameraPageState extends State<CameraPage> {
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
         );
-      } catch (e) {
-        print(e);
+        return key;
+      } catch (error) {
+        print(error);
       }
     }
+    return "Image not found";
   }
 
   Future<void> _selectFromGallery() async {

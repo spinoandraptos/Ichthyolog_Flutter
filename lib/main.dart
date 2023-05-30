@@ -7,7 +7,7 @@ import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'amplifyconfiguration.dart';
 
-final storage = FlutterSecureStorage();
+const storage = FlutterSecureStorage();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,8 +21,8 @@ Future<void> _configureAmplify() async {
     final storage = AmplifyStorageS3();
     await Amplify.addPlugins([auth, storage]);
     await Amplify.configure(amplifyconfig);
-  } catch (e) {
-    print(e);
+  } catch (error) {
+    print(error);
   }
 }
 
@@ -30,8 +30,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Authenticator(
-      child: MaterialApp(
-        home: const LoginPage(),
+      child: const MaterialApp(
+        home: LoginPage(),
       ),
     );
   }

@@ -1,29 +1,38 @@
 //This file stores classes that represent the major objects used
 //These classes will be used to store the data returned from backend
 
-//User class for user posts
+//Post class for user posts
 class Post {
   final int postid;
+  final int userid;
   final String title;
-  final String content;
+  final String description;
   final String pic;
-  final String comments;
+  final String uploadTime;
+  final String sightingTime;
+  final String sightingLocation;
 
 //use of required keyword as none of these fields can be null
   Post({
     required this.postid,
+    required this.userid,
     required this.title,
-    required this.content,
+    required this.description,
     required this.pic,
-    required this.comments,
+    required this.uploadTime,
+    required this.sightingTime,
+    required this.sightingLocation,
   });
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
         postid: json['postid'],
+        userid: json['userid'],
         title: json['title'],
-        content: json['content'],
-        pic: json['pic'],
-        comments: json['comments']);
+        description: json['description'],
+        pic: json['imageurl'],
+        uploadTime: json['time'],
+        sightingLocation: json['sightinglocation'],
+        sightingTime: json['sightingtime']);
   }
 }
