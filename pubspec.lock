@@ -153,6 +153,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.10.0"
+  auto_size_text:
+    dependency: transitive
+    description:
+      name: auto_size_text
+      sha256: "3f5261cd3fb5f2a9ab4e2fc3fba84fd9fcaac8821f20a1d4e71f557521b22599"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   aws_common:
     dependency: transitive
     description:
@@ -392,6 +400,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_uix:
+    dependency: "direct main"
+    description:
+      name: flutter_uix
+      sha256: e67727a5e2e40c34c1556be2239fdc65db9707a771f19669bbc3a9d30d4cbddf
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.2-nullsafety.2"
   flutter_web_plugins:
     dependency: transitive
     description: flutter

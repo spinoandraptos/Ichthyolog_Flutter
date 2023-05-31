@@ -123,9 +123,9 @@ class _HomePageState extends State<regularHomePage> {
                         'Species Count: ${snapshot.data!.speciescount}', // Replace with the actual number of species found
                         style: const TextStyle(fontSize: 16),
                       ),
-                      Text(
+                      const Text(
                         'Species with Most Posts: ', // Replace with the actual species
-                        style: const TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 16),
                       ),
                     ],
                   ),

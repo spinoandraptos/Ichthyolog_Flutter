@@ -109,7 +109,7 @@ class HttpHelpers {
   }
 
   Future<List<Post>> viewAllPostsRequest() async {
-    String url = 'http://10.0.2.2:3000/posts';
+    String url = 'http://10.0.2.2:3000/post';
     var response = await http.get(
       Uri.parse(url),
       headers: <String, String>{
@@ -126,6 +126,43 @@ class HttpHelpers {
       return postlist;
     } else {
       throw Exception('Posts not found! Error ${response.statusCode}');
+    }
+  }
+
+  Future<String> uploadPostRequest(
+    int userid,
+    String username,
+    String title,
+    String description,
+    String uploadTime,
+    String sightingLocation,
+    String sightingTime,
+    String imageURL,
+    String jwt,
+  ) async {
+    String url = 'http://10.0.2.2:3000/post';
+    var response = await http.post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+      body: json.encode(<String, dynamic>{
+        'userid': userid,
+        'username': username,
+        'title': title,
+        'description': description,
+        'uploadTime': uploadTime,
+        'sightingLocation': sightingLocation,
+        'sightingTime': sightingTime,
+        'imageURL': imageURL
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      return ('Post Uploaded');
+    } else {
+      return ('Post Upload Failed');
     }
   }
 }
