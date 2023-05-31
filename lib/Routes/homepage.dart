@@ -63,6 +63,7 @@ class _HomePageState extends State<regularHomePage> {
                   appBar: AppBar(
                     leading: const Icon(Icons.menu),
                     title: const Text('Regular Home'),
+                    backgroundColor: Color.fromARGB(255, 51, 64, 113),
                     actions: [
                       IconButton(
                         icon: const Icon(Icons.logout),

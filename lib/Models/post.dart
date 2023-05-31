@@ -5,6 +5,7 @@
 class Post {
   final int postid;
   final int userid;
+  final String authorname;
   final String title;
   final String description;
   final String pic;
@@ -16,6 +17,7 @@ class Post {
   Post({
     required this.postid,
     required this.userid,
+    required this.authorname,
     required this.title,
     required this.description,
     required this.pic,
@@ -28,6 +30,7 @@ class Post {
     return Post(
         postid: json['postid'],
         userid: json['userid'],
+        authorname: json['authorname'],
         title: json['title'],
         description: json['description'],
         pic: json['imageurl'],

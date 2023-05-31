@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:ichthyolog/Models/post.dart';
 import '../Helpers/Helper.dart';
 import '../Helpers/Http.dart';
@@ -45,21 +44,24 @@ class _GalleryPageState extends State<GalleryPage> {
   Widget galleryScreen(BuildContext context, List<Post> posts) {
     return GridView.builder(
         itemCount: postCount,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
           crossAxisSpacing: 5.0,
           mainAxisSpacing: 7.0,
-          childAspectRatio: 1.0,
+          childAspectRatio: 0.9,
         ),
         itemBuilder: (context, index) {
           return postCard(posts[index]);
         },
         shrinkWrap: true,
-        padding: EdgeInsets.all(12.0));
+        padding: const EdgeInsets.all(12.0));
   }
 
   Widget postCard(Post post) {
     return Card(
+        color: Color.fromARGB(255, 253, 254, 255),
+        elevation: 4.5,
+        shadowColor: Color.fromARGB(255, 113, 165, 255),
         clipBehavior: Clip.hardEdge,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(3),
@@ -67,25 +69,37 @@ class _GalleryPageState extends State<GalleryPage> {
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
+              Container(
+                  padding: EdgeInsets.only(left: 9, top: 8),
+                  child: Text(
+                    post.title,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 8.5,
+                        color: Color.fromARGB(255, 33, 53, 88)),
+                  )),
               Expanded(
-                child: InkWell(
-                    child: Ink.image(
-                        image: NetworkImage(post.pic),
-                        height: 1000,
-                        fit: BoxFit.cover),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => regularHomePage()),
-                      );
-                    }),
+                child: Padding(
+                  padding: EdgeInsets.all(6),
+                  child: InkWell(
+                      child: Ink.image(
+                          image: NetworkImage(post.pic), fit: BoxFit.cover),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => regularHomePage()),
+                        );
+                      }),
+                ),
               ),
-              Center(
-                  child: Container(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(post.title),
-              ))
+              Container(
+                  padding: EdgeInsets.only(left: 6, bottom: 5, right: 8),
+                  child: Text('Sighted at ${post.sightingLocation}',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(
+                          fontSize: 7,
+                          color: Color.fromARGB(255, 33, 53, 88)))),
             ]));
   }
 
@@ -95,12 +109,15 @@ class _GalleryPageState extends State<GalleryPage> {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Gallery Page'),
+          backgroundColor: Color.fromARGB(255, 51, 64, 113),
         ),
+        body: galleryScreen(context, postList),
       );
     } else {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Gallery Page'),
+          backgroundColor: Color.fromARGB(255, 51, 64, 113),
           actions: [
             IconButton(
               icon: const Icon(Icons.logout),

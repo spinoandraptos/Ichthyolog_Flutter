@@ -60,6 +60,7 @@ class _CameraPageState extends State<CameraPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Take Photo'),
+        backgroundColor: Color.fromARGB(255, 51, 64, 113),
       ),
       body: Center(
         child: Column(
@@ -72,6 +73,7 @@ class _CameraPageState extends State<CameraPage> {
             ElevatedButton(
               onPressed: () => _takePhoto(ImageSource.camera),
               child: const Text('Take Photo'),
+              style: ButtonStyle(),
             ),
             ElevatedButton(
               onPressed: _selectFromGallery,
