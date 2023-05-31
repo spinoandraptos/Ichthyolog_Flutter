@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ichthyolog/Models/post.dart';
+import 'package:ichthyolog/Routes/postpage.dart';
 import '../Helpers/Helper.dart';
 import '../Helpers/Http.dart';
 import '../Routes/homepage.dart';
@@ -117,7 +118,7 @@ class _GalleryPageState extends State<GalleryPage> {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Gallery Page'),
-          backgroundColor: Color.fromARGB(255, 51, 64, 113),
+          backgroundColor: Color.fromARGB(255, 70, 88, 152),
           actions: [
             IconButton(
               icon: const Icon(Icons.logout),

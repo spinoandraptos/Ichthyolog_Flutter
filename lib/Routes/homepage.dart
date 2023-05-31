@@ -63,7 +63,7 @@ class _HomePageState extends State<regularHomePage> {
                   appBar: AppBar(
                     leading: const Icon(Icons.menu),
                     title: const Text('Regular Home'),
-                    backgroundColor: Color.fromARGB(255, 51, 64, 113),
+                    backgroundColor: Color.fromARGB(255, 70, 88, 152),
                     actions: [
                       IconButton(
                         icon: const Icon(Icons.logout),
@@ -76,14 +76,14 @@ class _HomePageState extends State<regularHomePage> {
                   body: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 60),
                       CircleAvatar(
                         radius: 80,
                         backgroundColor: Colors.white,
                         backgroundImage:
                             NetworkImage(snapshot.data!.profilepic),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 35),
                       Text(
                         snapshot.data!.username,
                         style: const TextStyle(

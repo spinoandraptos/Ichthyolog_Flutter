@@ -57,6 +57,7 @@ class _HomePageState extends State<expertHomePage> {
                 appBar: AppBar(
                   leading: const Icon(Icons.menu),
                   title: const Text('Expert Home'),
+                  backgroundColor: Color.fromARGB(255, 70, 88, 152),
                   actions: [
                     IconButton(
                       icon: const Icon(Icons.logout),

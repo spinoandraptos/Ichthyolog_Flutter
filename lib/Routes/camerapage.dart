@@ -60,7 +60,7 @@ class _CameraPageState extends State<CameraPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Take Photo'),
-        backgroundColor: Color.fromARGB(255, 51, 64, 113),
+        backgroundColor: Color.fromARGB(255, 70, 88, 152),
       ),
       body: Center(
         child: Column(
