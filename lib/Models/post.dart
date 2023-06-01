@@ -12,19 +12,20 @@ class Post {
   final String uploadTime;
   final String sightingTime;
   final String sightingLocation;
+  final String authorpic;
 
 //use of required keyword as none of these fields can be null
-  Post({
-    required this.postid,
-    required this.userid,
-    required this.authorname,
-    required this.title,
-    required this.description,
-    required this.pic,
-    required this.uploadTime,
-    required this.sightingTime,
-    required this.sightingLocation,
-  });
+  Post(
+      {required this.postid,
+      required this.userid,
+      required this.authorname,
+      required this.title,
+      required this.description,
+      required this.pic,
+      required this.uploadTime,
+      required this.sightingTime,
+      required this.sightingLocation,
+      required this.authorpic});
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
@@ -36,6 +37,7 @@ class Post {
         pic: json['imageurl'],
         uploadTime: json['time'],
         sightingLocation: json['sightinglocation'],
-        sightingTime: json['sightingtime']);
+        sightingTime: json['sightingtime'],
+        authorpic: json['authorpicurl']);
   }
 }

@@ -12,8 +12,6 @@ class GalleryPage extends StatefulWidget {
 }
 
 class _GalleryPageState extends State<GalleryPage> {
-  List<Post> postList = [];
-  int postCount = 0;
   String jwt = '';
   final httpHelpers = HttpHelpers();
   final helpers = Helpers();
@@ -32,17 +30,14 @@ class _GalleryPageState extends State<GalleryPage> {
         });
       }
     });
-    httpHelpers.viewAllPostsRequest().then((posts) {
-      setState(() {
-        for (var everypost in posts) {
-          postList.add(everypost);
-          postCount += 1;
-        }
-      });
-    });
   }
 
   Widget galleryScreen(BuildContext context, List<Post> posts) {
+    int postCount = 0;
+
+    for (var post in posts) {
+      postCount++;
+    }
     return GridView.builder(
         itemCount: postCount,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -89,7 +84,8 @@ class _GalleryPageState extends State<GalleryPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => regularHomePage()),
+                              builder: (context) =>
+                                  PostPage(postid: post.postid)),
                         );
                       }),
                 ),
@@ -106,30 +102,51 @@ class _GalleryPageState extends State<GalleryPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (jwt == '') {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Gallery Page'),
-          backgroundColor: Color.fromARGB(255, 51, 64, 113),
-        ),
-        body: galleryScreen(context, postList),
-      );
-    } else {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Gallery Page'),
-          backgroundColor: Color.fromARGB(255, 70, 88, 152),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () {
-                helpers.logout(jwt, context);
-              },
-            ),
-          ],
-        ),
-        body: galleryScreen(context, postList),
-      );
-    }
+    return FutureBuilder(
+        future: httpHelpers.viewAllPostsRequest(),
+        builder: ((context, snapshot) {
+          if (snapshot.hasData) {
+            if (jwt == '') {
+              return Scaffold(
+                appBar: AppBar(
+                  title: const Text('Gallery Page'),
+                  backgroundColor: Color.fromARGB(255, 51, 64, 113),
+                ),
+                body: galleryScreen(context, snapshot.data!),
+              );
+            } else {
+              return Scaffold(
+                appBar: AppBar(
+                  title: const Text('Gallery Page'),
+                  backgroundColor: Color.fromARGB(255, 70, 88, 152),
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.logout),
+                      onPressed: () {
+                        helpers.logout(jwt, context);
+                      },
+                    ),
+                  ],
+                ),
+                body: galleryScreen(context, snapshot.data!),
+              );
+            }
+          } else {
+            return Container(
+              color: const Color.fromARGB(255, 236, 249, 255),
+              child: const Center(
+                child: SizedBox(
+                  height: 35.0,
+                  width: 35.0,
+                  child: CircularProgressIndicator(
+                      backgroundColor: Color.fromARGB(255, 91, 170, 255),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                          Color.fromARGB(255, 184, 218, 255)),
+                      strokeWidth: 8),
+                ),
+              ),
+            );
+          }
+        }));
   }
 }

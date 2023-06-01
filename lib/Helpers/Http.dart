@@ -83,6 +83,21 @@ class HttpHelpers {
     }
   }
 
+  Future<User> viewAnyUserRequest(int userid) async {
+    String url = 'http://10.0.2.2:3000/user/$userid';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      return User.fromJson(json.decode(response.body)[0]);
+    } else {
+      throw Exception('User not found! Error ${response.statusCode}');
+    }
+  }
+
   Future<String> updateUserRequest(
       String email, String username, String password, String jwt) async {
     String url = 'http://10.0.2.2:3000/user';
@@ -138,18 +153,15 @@ class HttpHelpers {
       },
     );
     if (response.statusCode == 200) {
-      return Post.fromJson(json.decode(response.body));
+      return Post.fromJson(json.decode(response.body)[0]);
     } else {
       throw Exception('Post not found! Error ${response.statusCode}');
     }
   }
 
   Future<String> uploadPostRequest(
-    int userid,
-    String username,
     String title,
     String description,
-    String uploadTime,
     String sightingLocation,
     String sightingTime,
     String imageURL,
@@ -163,11 +175,8 @@ class HttpHelpers {
         'Authorisation': jwt
       },
       body: json.encode(<String, dynamic>{
-        'userid': userid,
-        'username': username,
         'title': title,
         'description': description,
-        'uploadTime': uploadTime,
         'sightingLocation': sightingLocation,
         'sightingTime': sightingTime,
         'imageURL': imageURL
@@ -177,6 +186,7 @@ class HttpHelpers {
     if (response.statusCode == 201) {
       return ('Post Uploaded');
     } else {
+      debugPrint(response.body);
       return ('Post Upload Failed');
     }
   }
