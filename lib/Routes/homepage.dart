@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ichthyolog/Routes/gallerypage.dart';
 import '../Models/user.dart';
-import '../main.dart';
 import '../Helpers/Helper.dart';
 import '../Helpers/Http.dart';
-import './login.dart';
 import 'camerapage.dart';
 import './experthomepage.dart';
 

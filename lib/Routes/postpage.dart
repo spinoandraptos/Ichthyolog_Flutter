@@ -46,8 +46,11 @@ class _PostPageState extends State<PostPage> {
                 backgroundColor: Color.fromARGB(255, 51, 64, 113),
               ),
               body: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   ListTile(
+                    contentPadding: EdgeInsets.only(
+                        top: 6, bottom: 10, left: 14, right: 12),
                     leading: CircleAvatar(
                         backgroundImage:
                             NetworkImage(snapshot.data!.authorpic)),
@@ -60,10 +63,14 @@ class _PostPageState extends State<PostPage> {
                     subtitle: Text(
                         'Sighted at ${snapshot.data!.sightingLocation} at ${snapshot.data!.sightingTime} '),
                   ),
-                  Image(
-                    image: NetworkImage(snapshot.data!.pic),
-                    width: MediaQuery.of(context).size.width,
-                  ),
+                  ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: 450,
+                        minWidth: MediaQuery.of(context).size.width,
+                      ),
+                      child: Image(
+                        image: NetworkImage(snapshot.data!.pic),
+                      )),
                   Container(
                       padding:
                           const EdgeInsets.only(left: 20, right: 20, top: 15),
@@ -86,7 +93,7 @@ class _PostPageState extends State<PostPage> {
                         Container(
                           alignment: Alignment.centerLeft,
                           padding:
-                              EdgeInsets.only(left: 20, top: 25, bottom: 15),
+                              EdgeInsets.only(left: 20, top: 16, bottom: 15),
                           child: Text(
                             "Comments",
                             style: TextStyle(

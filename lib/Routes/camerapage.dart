@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
@@ -7,7 +8,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 import '../Helpers/Helper.dart';
 import '../Helpers/Http.dart';
 import 'package:intl/intl.dart';
-import 'datetimepicker.dart';
+import 'gallerypage.dart';
+
+class Utils {
+  static String getFormattedDateSimple(int time) {
+    DateFormat newFormat = DateFormat("yyyy-MM-dd");
+    return newFormat.format(DateTime.fromMillisecondsSinceEpoch(time));
+  }
+}
 
 class CameraPage extends StatefulWidget {
   @override
@@ -16,13 +24,16 @@ class CameraPage extends StatefulWidget {
 
 class _CameraPageState extends State<CameraPage> {
   File? _image;
+  late Future<DateTime?> selectedDate;
+  String date = "";
+  late Future<TimeOfDay?> selectedTime;
+  String time = "";
   String _title = '';
   String _description = '';
   String sightingLocation = '';
   final helpers = Helpers();
   final httpHelpers = HttpHelpers();
   String jwt = '';
-  final dateTimePicker = PickerDateTimeRoute();
 
   @override
   void initState() {
@@ -78,6 +89,10 @@ class _CameraPageState extends State<CameraPage> {
             gravity: ToastGravity.BOTTOM,
             timeInSecForIosWeb: 1,
           );
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const GalleryPage()),
+          );
         } else {
           Fluttertoast.showToast(
             msg: 'Post upload failed!',
@@ -110,41 +125,49 @@ class _CameraPageState extends State<CameraPage> {
   // ignore: unused_element
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Post an image'),
-        backgroundColor: Color.fromARGB(255, 70, 88, 152),
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _image != null
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextFormField(
-                          decoration: const InputDecoration(
-                            hintText: 'Enter a title',
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              _title = value;
-                            });
-                          },
+    if (_image != null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Post a sighting'),
+          backgroundColor: Color.fromARGB(255, 51, 64, 113),
+        ),
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 5, left: 15, right: 15),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          hintText: 'Enter species name',
                         ),
-                        TextFormField(
+                        onChanged: (value) {
+                          setState(() {
+                            _title = value;
+                          });
+                        },
+                      ),
+                    ),
+                    Padding(
+                        padding: EdgeInsets.only(left: 15, right: 15),
+                        child: TextFormField(
                           decoration: const InputDecoration(
-                            hintText: 'Enter a description',
+                            hintText: 'Enter species description',
                           ),
                           onChanged: (value) {
                             setState(() {
                               _description = value;
                             });
                           },
-                        ),
-                        TextFormField(
+                        )),
+                    Padding(
+                        padding:
+                            EdgeInsets.only(left: 15, right: 15, bottom: 18),
+                        child: TextFormField(
                           decoration: const InputDecoration(
                             hintText: 'Enter the location of sighting',
                           ),
@@ -153,63 +176,215 @@ class _CameraPageState extends State<CameraPage> {
                               sightingLocation = value;
                             });
                           },
-                        ),
-                        dateTimePicker,
-                        ElevatedButton(
-                          onPressed: () {
-                            debugPrint(dateTimePicker.getDateAndTime());
-                            _uploadPost(
-                              _title,
-                              _description,
-                              sightingLocation,
-                              dateTimePicker.getDateAndTime(),
-                              jwt,
-                            );
-                          },
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
-                                Color.fromARGB(255, 70, 88, 152)),
+                        )),
+                    Column(
+                      children: <Widget>[
+                        Container(
+                          margin: EdgeInsets.only(bottom: 10),
+                          alignment: Alignment.center,
+                          width: double.infinity,
+                          height: 45,
+                          color: Color.fromARGB(255, 224, 228, 238),
+                          child: Text(
+                            "Sighting timing: $date $time",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color.fromARGB(255, 51, 64, 113)),
                           ),
-                          child: const Text('Upload'),
                         ),
-                        const SizedBox(height: 10),
-                        ElevatedButton(
-                          onPressed: () => setState(() => _image = null),
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
-                                Color.fromARGB(255, 70, 88, 152)),
-                          ),
-                          child: const Text('Clear'),
-                        ),
+                        Container(
+                            padding: EdgeInsets.only(bottom: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(right: 10),
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        backgroundColor:
+                                            Color.fromARGB(255, 80, 100, 170),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(5)),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10)),
+                                    child: const Text("Select date of sighting",
+                                        style: TextStyle(color: Colors.white)),
+                                    onPressed: () {
+                                      showDialogPicker(context);
+                                    },
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(left: 10),
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        backgroundColor:
+                                            Color.fromARGB(255, 80, 100, 170),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(5)),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10)),
+                                    child: const Text("Select time of sighting",
+                                        style: TextStyle(color: Colors.white)),
+                                    onPressed: () {
+                                      showDialogTimePicker(context);
+                                    },
+                                  ),
+                                )
+                              ],
+                            ))
+                      ],
+                    ),
+                    Image.file(_image!),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                            margin:
+                                EdgeInsets.only(top: 6, right: 12, bottom: 10),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                _uploadPost(
+                                  _title,
+                                  _description,
+                                  sightingLocation,
+                                  "$date $time",
+                                  jwt,
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      Color.fromARGB(255, 80, 170, 121)),
+                              child: const Text('Upload',
+                                  style: TextStyle(fontSize: 18)),
+                            )),
+                        Container(
+                            margin:
+                                EdgeInsets.only(top: 6, right: 12, bottom: 10),
+                            child: ElevatedButton(
+                              onPressed: () => setState(() => _image = null),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      Color.fromARGB(255, 170, 80, 80)),
+                              child: const Text('Clear',
+                                  style: TextStyle(fontSize: 18)),
+                            ))
                       ],
                     )
-                  : const SizedBox(
-                      height: 40,
-                    ),
-              _image != null
-                  ? Image.file(_image!)
-                  : const Icon(Icons.photo, size: 80),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => _takePhoto(ImageSource.camera),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                      Color.fromARGB(255, 70, 88, 152)),
-                ),
-                child: const Text('Take Photo'),
-              ),
-              ElevatedButton(
-                onPressed: _selectFromGallery,
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                      Color.fromARGB(255, 70, 88, 152)),
-                ),
-                child: const Text('Select from Gallery'),
-              ),
-            ],
+                  ],
+                )
+              ],
+            ),
           ),
         ),
-      ),
+      );
+    } else {
+      return Scaffold(
+          appBar: AppBar(
+            title: const Text('Post an image'),
+            backgroundColor: Color.fromARGB(255, 51, 64, 113),
+          ),
+          body: SingleChildScrollView(
+              child: Center(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  SizedBox(height: MediaQuery.of(context).size.height * 2 / 7),
+                  const Icon(
+                    Icons.photo,
+                    size: 100,
+                    color: Color.fromARGB(255, 51, 64, 113),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () => _takePhoto(ImageSource.camera),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(255, 74, 112, 178),
+                    ),
+                    child: const Text('Take Photo'),
+                  ),
+                  ElevatedButton(
+                    onPressed: _selectFromGallery,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(255, 87, 131, 206),
+                    ),
+                    child: const Text('Select from Gallery'),
+                  ),
+                ])
+              ]))));
+    }
+  }
+
+  void showDialogPicker(BuildContext context) {
+    selectedDate = showDatePicker(
+      context: context,
+      helpText: 'Select the date of sighting',
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2050),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(
+              // primary: MyColors.primary,
+              primary: Color.fromARGB(255, 64, 81, 141),
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+            //.dialogBackgroundColor:Colors.blue[900],
+          ),
+          child: child!,
+        );
+      },
     );
+    selectedDate.then((value) {
+      setState(() {
+        if (value == null) return;
+        date = Utils.getFormattedDateSimple(value.millisecondsSinceEpoch);
+      });
+    }, onError: (error) {
+      if (kDebugMode) {
+        print(error);
+      }
+    });
+  }
+
+  void showDialogTimePicker(BuildContext context) {
+    selectedTime = showTimePicker(
+      context: context,
+      helpText: 'Select the time of sighting',
+      initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(
+              // primary: MyColors.primary,
+              primary: Color.fromARGB(255, 64, 81, 141),
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Color.fromARGB(255, 64, 81, 141),
+            ),
+            //.dialogBackgroundColor:Colors.blue[900],
+          ),
+          child: child!,
+        );
+      },
+    );
+    selectedTime.then((value) {
+      setState(() {
+        if (value == null) return;
+        time = "${value.hour}:${value.minute}:00";
+      });
+    }, onError: (error) {
+      if (kDebugMode) {
+        print(error);
+      }
+    });
   }
 }
