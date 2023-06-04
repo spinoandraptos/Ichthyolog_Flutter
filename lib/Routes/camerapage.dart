@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'datetimepicker.dart';
 import '../Helpers/Helper.dart';
 import '../Helpers/Http.dart';
 import 'package:intl/intl.dart';
@@ -24,9 +25,7 @@ class CameraPage extends StatefulWidget {
 
 class _CameraPageState extends State<CameraPage> {
   File? _image;
-  late Future<DateTime?> selectedDate;
   String date = "";
-  late Future<TimeOfDay?> selectedTime;
   String time = "";
   String _title = '';
   String _description = '';
@@ -34,6 +33,18 @@ class _CameraPageState extends State<CameraPage> {
   final helpers = Helpers();
   final httpHelpers = HttpHelpers();
   String jwt = '';
+
+  timeCallback(newValue) {
+    setState(() {
+      time = newValue;
+    });
+  }
+
+  dateCallback(newValue) {
+    setState(() {
+      date = newValue;
+    });
+  }
 
   @override
   void initState() {
@@ -74,13 +85,14 @@ class _CameraPageState extends State<CameraPage> {
       //send description and other post information to database
       httpHelpers
           .uploadPostRequest(
-        title,
-        description,
-        sightingLocation,
-        sightingTime,
-        "https://ichthyolog175756-dev.s3.ap-southeast-1.amazonaws.com/public/$key",
-        jwt,
-      )
+              title,
+              description,
+              sightingLocation,
+              sightingTime,
+              "https://ichthyolog175756-dev.s3.ap-southeast-1.amazonaws.com/public/$key",
+              jwt,
+              1,
+              1)
           .then((String response) {
         if (response == 'Post Uploaded') {
           Fluttertoast.showToast(
@@ -192,52 +204,11 @@ class _CameraPageState extends State<CameraPage> {
                                 color: Color.fromARGB(255, 51, 64, 113)),
                           ),
                         ),
-                        Container(
-                            padding: EdgeInsets.only(bottom: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(right: 10),
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        elevation: 0,
-                                        backgroundColor:
-                                            Color.fromARGB(255, 80, 100, 170),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(5)),
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10)),
-                                    child: const Text("Select date of sighting",
-                                        style: TextStyle(color: Colors.white)),
-                                    onPressed: () {
-                                      showDialogPicker(context);
-                                    },
-                                  ),
-                                ),
-                                Container(
-                                  margin: EdgeInsets.only(left: 10),
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        elevation: 0,
-                                        backgroundColor:
-                                            Color.fromARGB(255, 80, 100, 170),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(5)),
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10)),
-                                    child: const Text("Select time of sighting",
-                                        style: TextStyle(color: Colors.white)),
-                                    onPressed: () {
-                                      showDialogTimePicker(context);
-                                    },
-                                  ),
-                                )
-                              ],
-                            ))
                       ],
+                    ),
+                    PickerDateTimeRoute(
+                      dateCallback: dateCallback,
+                      timeCallback: timeCallback,
                     ),
                     Image.file(_image!),
                     Row(
@@ -297,7 +268,7 @@ class _CameraPageState extends State<CameraPage> {
                   SizedBox(height: MediaQuery.of(context).size.height * 2 / 7),
                   const Icon(
                     Icons.photo,
-                    size: 100,
+                    size: 110,
                     color: Color.fromARGB(255, 51, 64, 113),
                   ),
                   const SizedBox(height: 10),
@@ -318,73 +289,5 @@ class _CameraPageState extends State<CameraPage> {
                 ])
               ]))));
     }
-  }
-
-  void showDialogPicker(BuildContext context) {
-    selectedDate = showDatePicker(
-      context: context,
-      helpText: 'Select the date of sighting',
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2050),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            colorScheme: ColorScheme.light(
-              // primary: MyColors.primary,
-              primary: Color.fromARGB(255, 64, 81, 141),
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: Colors.black,
-            ),
-            //.dialogBackgroundColor:Colors.blue[900],
-          ),
-          child: child!,
-        );
-      },
-    );
-    selectedDate.then((value) {
-      setState(() {
-        if (value == null) return;
-        date = Utils.getFormattedDateSimple(value.millisecondsSinceEpoch);
-      });
-    }, onError: (error) {
-      if (kDebugMode) {
-        print(error);
-      }
-    });
-  }
-
-  void showDialogTimePicker(BuildContext context) {
-    selectedTime = showTimePicker(
-      context: context,
-      helpText: 'Select the time of sighting',
-      initialTime: TimeOfDay.now(),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            colorScheme: ColorScheme.light(
-              // primary: MyColors.primary,
-              primary: Color.fromARGB(255, 64, 81, 141),
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: Color.fromARGB(255, 64, 81, 141),
-            ),
-            //.dialogBackgroundColor:Colors.blue[900],
-          ),
-          child: child!,
-        );
-      },
-    );
-    selectedTime.then((value) {
-      setState(() {
-        if (value == null) return;
-        time = "${value.hour}:${value.minute}:00";
-      });
-    }, onError: (error) {
-      if (kDebugMode) {
-        print(error);
-      }
-    });
   }
 }

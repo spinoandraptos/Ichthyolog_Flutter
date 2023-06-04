@@ -13,6 +13,10 @@ class Post {
   final String sightingTime;
   final String sightingLocation;
   final String authorpic;
+  final String? class_;
+  final String? order;
+  final String? family;
+  final String? genus;
 
 //use of required keyword as none of these fields can be null
   Post(
@@ -25,7 +29,11 @@ class Post {
       required this.uploadTime,
       required this.sightingTime,
       required this.sightingLocation,
-      required this.authorpic});
+      required this.authorpic,
+      this.class_,
+      this.order,
+      this.family,
+      this.genus});
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
@@ -38,6 +46,10 @@ class Post {
         uploadTime: json['time'],
         sightingLocation: json['sightinglocation'],
         sightingTime: json['sightingtime'],
-        authorpic: json['authorpicurl']);
+        authorpic: json['authorpicurl'],
+        class_: json['class'],
+        order: json['_order'],
+        family: json['family'],
+        genus: json['genus']);
   }
 }

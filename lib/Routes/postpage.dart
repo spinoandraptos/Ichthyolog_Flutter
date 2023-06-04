@@ -26,7 +26,11 @@ class _PostPageState extends State<PostPage> {
       uploadTime: '',
       sightingTime: '',
       sightingLocation: '',
-      authorpic: '');
+      authorpic: '',
+      class_: '',
+      order: '',
+      family: '',
+      genus: '');
 
   final httpHelpers = HttpHelpers();
   final helpers = Helpers();
