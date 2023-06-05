@@ -3,14 +3,14 @@ import 'package:selectable_list/selectable_list.dart';
 import 'package:flutter/material.dart';
 
 class ClassPicker extends StatefulWidget {
-  Function classCallback;
-  ClassPicker({required this.classCallback});
+  final Function classCallback;
+  const ClassPicker({Key? key, required this.classCallback}) : super(key: key);
 
   @override
-  _classPickerState createState() => _classPickerState();
+  ClassPickerState createState() => ClassPickerState();
 }
 
-class _classPickerState extends State<ClassPicker> {
+class ClassPickerState extends State<ClassPicker> {
   final classes = [
     SpeciesClassification(
         classification: 'Chondrichthyes',
@@ -38,7 +38,7 @@ class _classPickerState extends State<ClassPicker> {
         selectedClass = class_.classification;
         widget.classCallback(selectedClass);
       }),
-      onItemDeselected: (person) => setState(() {
+      onItemDeselected: (class_) => setState(() {
         selectedClass = null;
         widget.classCallback(selectedClass);
       }),

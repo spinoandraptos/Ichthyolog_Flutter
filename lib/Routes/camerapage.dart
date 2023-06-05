@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
@@ -10,6 +9,7 @@ import '../Helpers/Helper.dart';
 import '../Helpers/Http.dart';
 import 'package:intl/intl.dart';
 import 'gallerypage.dart';
+import 'Stepper.dart';
 
 class Utils {
   static String getFormattedDateSimple(int time) {
@@ -19,32 +19,25 @@ class Utils {
 }
 
 class CameraPage extends StatefulWidget {
+  const CameraPage({Key? key}) : super(key: key);
   @override
-  _CameraPageState createState() => _CameraPageState();
+  CameraPageState createState() => CameraPageState();
 }
 
-class _CameraPageState extends State<CameraPage> {
-  File? _image;
+class CameraPageState extends State<CameraPage> {
+  File? image;
+  String jwt = '';
   String date = "";
   String time = "";
-  String _title = '';
-  String _description = '';
+  String title = '';
+  String description = '';
   String sightingLocation = '';
+  String class_ = '';
+  String order = '';
+  String family = '';
+  String genus = '';
   final helpers = Helpers();
   final httpHelpers = HttpHelpers();
-  String jwt = '';
-
-  timeCallback(newValue) {
-    setState(() {
-      time = newValue;
-    });
-  }
-
-  dateCallback(newValue) {
-    setState(() {
-      date = newValue;
-    });
-  }
 
   @override
   void initState() {
@@ -62,6 +55,217 @@ class _CameraPageState extends State<CameraPage> {
     });
   }
 
+  // ignore: unused_element
+  @override
+  Widget build(BuildContext context) {
+    if (image != null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Post a sighting'),
+          backgroundColor: const Color.fromARGB(255, 51, 64, 113),
+        ),
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(top: 5, left: 15, right: 15),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          hintText: 'Enter species name',
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            title = value;
+                          });
+                        },
+                      ),
+                    ),
+                    Padding(
+                        padding: const EdgeInsets.only(left: 15, right: 15),
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                            hintText: 'Enter species description',
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              description = value;
+                            });
+                          },
+                        )),
+                    Padding(
+                        padding: const EdgeInsets.only(
+                            left: 15, right: 15, bottom: 16),
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                            hintText: 'Enter the location of sighting',
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              sightingLocation = value;
+                            });
+                          },
+                        )),
+                    Column(
+                      children: <Widget>[
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          alignment: Alignment.center,
+                          width: double.infinity,
+                          height: 45,
+                          color: const Color.fromARGB(255, 224, 228, 238),
+                          child: (date == '' && time == '')
+                              ? Text(
+                                  'Sighting timing: ${DateFormat("yyyy-mm-dd hh:mm:ss").format(DateTime.now())}',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Color.fromARGB(255, 51, 64, 113)),
+                                )
+                              : Text(
+                                  "Sighting timing: $date $time",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Color.fromARGB(255, 51, 64, 113)),
+                                ),
+                        ),
+                      ],
+                    ),
+                    PickerDateTimeRoute(
+                      dateCallback: dateCallback,
+                      timeCallback: timeCallback,
+                    ),
+                    Image.file(image!),
+                    Container(
+                        margin: const EdgeInsets.only(bottom: 5),
+                        padding: EdgeInsets.only(left: 12, right: 12),
+                        alignment: Alignment.center,
+                        width: double.infinity,
+                        color: const Color.fromARGB(255, 224, 228, 238),
+                        child: Text(
+                            'Class: $class_, Order: $order, Family: $family, Genus: $genus')),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                            margin: const EdgeInsets.only(
+                                top: 6, left: 12, right: 12, bottom: 10),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        content: SizedBox(
+                                          height: 500,
+                                          width: 500,
+                                          child: SpeciesStepper(
+                                            class_: class_,
+                                            order: order,
+                                            family: family,
+                                            classCallback: classCallback,
+                                            orderCallback: orderCallback,
+                                            familyCallback: familyCallback,
+                                            genusCallback: genusCallback,
+                                          ),
+                                        ),
+                                        actions: <Widget>[
+                                          TextButton(
+                                              child: const Text("Cancel"),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              })
+                                        ],
+                                      );
+                                    });
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 102, 154, 217)),
+                              child: const Text('Add classification',
+                                  style: TextStyle(fontSize: 16)),
+                            )),
+                        Container(
+                            margin: const EdgeInsets.only(
+                                top: 6, right: 12, bottom: 10),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                _uploadPost(
+                                  title,
+                                  description,
+                                  sightingLocation,
+                                  "$date $time",
+                                  jwt,
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 80, 170, 121)),
+                              child: const Text('Upload',
+                                  style: TextStyle(fontSize: 18)),
+                            )),
+                        Container(
+                            margin: const EdgeInsets.only(
+                                top: 6, right: 12, bottom: 10),
+                            child: ElevatedButton(
+                              onPressed: () => setState(() => image = null),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 170, 80, 80)),
+                              child: const Text('Clear',
+                                  style: TextStyle(fontSize: 18)),
+                            ))
+                      ],
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+    } else {
+      return Scaffold(
+          appBar: AppBar(
+            title: const Text('Post an image'),
+            backgroundColor: const Color.fromARGB(255, 51, 64, 113),
+          ),
+          body: SingleChildScrollView(
+              child: Center(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  SizedBox(height: MediaQuery.of(context).size.height * 2 / 7),
+                  const Icon(
+                    Icons.photo,
+                    size: 110,
+                    color: Color.fromARGB(255, 51, 64, 113),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () => _takePhoto(ImageSource.camera),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 74, 112, 178),
+                    ),
+                    child: const Text('Take Photo'),
+                  ),
+                  ElevatedButton(
+                    onPressed: _selectFromGallery,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 87, 131, 206),
+                    ),
+                    child: const Text('Select from Gallery'),
+                  ),
+                ])
+              ]))));
+    }
+  }
+
   void _uploadPost(
     String title,
     String description,
@@ -70,7 +274,7 @@ class _CameraPageState extends State<CameraPage> {
     String jwt,
   ) async {
     final key = const Uuid().v4();
-    final file = AWSFile.fromPath(_image!.path);
+    final file = AWSFile.fromPath(image!.path);
 
     try {
       final result = Amplify.Storage.uploadFile(
@@ -125,7 +329,7 @@ class _CameraPageState extends State<CameraPage> {
 
     if (pickedImage != null) {
       setState(() {
-        _image = File(pickedImage.path);
+        image = File(pickedImage.path);
       });
     }
   }
@@ -134,160 +338,39 @@ class _CameraPageState extends State<CameraPage> {
     _takePhoto(ImageSource.gallery);
   }
 
-  // ignore: unused_element
-  @override
-  Widget build(BuildContext context) {
-    if (_image != null) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Post a sighting'),
-          backgroundColor: Color.fromARGB(255, 51, 64, 113),
-        ),
-        body: SingleChildScrollView(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 5, left: 15, right: 15),
-                      child: TextFormField(
-                        decoration: const InputDecoration(
-                          hintText: 'Enter species name',
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _title = value;
-                          });
-                        },
-                      ),
-                    ),
-                    Padding(
-                        padding: EdgeInsets.only(left: 15, right: 15),
-                        child: TextFormField(
-                          decoration: const InputDecoration(
-                            hintText: 'Enter species description',
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              _description = value;
-                            });
-                          },
-                        )),
-                    Padding(
-                        padding:
-                            EdgeInsets.only(left: 15, right: 15, bottom: 18),
-                        child: TextFormField(
-                          decoration: const InputDecoration(
-                            hintText: 'Enter the location of sighting',
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              sightingLocation = value;
-                            });
-                          },
-                        )),
-                    Column(
-                      children: <Widget>[
-                        Container(
-                          margin: EdgeInsets.only(bottom: 10),
-                          alignment: Alignment.center,
-                          width: double.infinity,
-                          height: 45,
-                          color: Color.fromARGB(255, 224, 228, 238),
-                          child: Text(
-                            "Sighting timing: $date $time",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: Color.fromARGB(255, 51, 64, 113)),
-                          ),
-                        ),
-                      ],
-                    ),
-                    PickerDateTimeRoute(
-                      dateCallback: dateCallback,
-                      timeCallback: timeCallback,
-                    ),
-                    Image.file(_image!),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Container(
-                            margin:
-                                EdgeInsets.only(top: 6, right: 12, bottom: 10),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                _uploadPost(
-                                  _title,
-                                  _description,
-                                  sightingLocation,
-                                  "$date $time",
-                                  jwt,
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Color.fromARGB(255, 80, 170, 121)),
-                              child: const Text('Upload',
-                                  style: TextStyle(fontSize: 18)),
-                            )),
-                        Container(
-                            margin:
-                                EdgeInsets.only(top: 6, right: 12, bottom: 10),
-                            child: ElevatedButton(
-                              onPressed: () => setState(() => _image = null),
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Color.fromARGB(255, 170, 80, 80)),
-                              child: const Text('Clear',
-                                  style: TextStyle(fontSize: 18)),
-                            ))
-                      ],
-                    )
-                  ],
-                )
-              ],
-            ),
-          ),
-        ),
-      );
-    } else {
-      return Scaffold(
-          appBar: AppBar(
-            title: const Text('Post an image'),
-            backgroundColor: Color.fromARGB(255, 51, 64, 113),
-          ),
-          body: SingleChildScrollView(
-              child: Center(
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  SizedBox(height: MediaQuery.of(context).size.height * 2 / 7),
-                  const Icon(
-                    Icons.photo,
-                    size: 110,
-                    color: Color.fromARGB(255, 51, 64, 113),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: () => _takePhoto(ImageSource.camera),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 74, 112, 178),
-                    ),
-                    child: const Text('Take Photo'),
-                  ),
-                  ElevatedButton(
-                    onPressed: _selectFromGallery,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 87, 131, 206),
-                    ),
-                    child: const Text('Select from Gallery'),
-                  ),
-                ])
-              ]))));
-    }
+  timeCallback(newValue) {
+    setState(() {
+      time = newValue;
+    });
+  }
+
+  dateCallback(newValue) {
+    setState(() {
+      date = newValue;
+    });
+  }
+
+  classCallback(newValue) {
+    setState(() {
+      class_ = newValue;
+    });
+  }
+
+  orderCallback(newValue) {
+    setState(() {
+      order = newValue;
+    });
+  }
+
+  familyCallback(newValue) {
+    setState(() {
+      family = newValue;
+    });
+  }
+
+  genusCallback(newValue) {
+    setState(() {
+      genus = newValue;
+    });
   }
 }
