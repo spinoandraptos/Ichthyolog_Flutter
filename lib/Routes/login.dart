@@ -27,6 +27,7 @@ class _LoginPageState extends State<LoginPage> {
           .loginRequest(emailUsernameController.text,
               emailUsernameController.text, passwordController.text)
           .then((String response) async {
+        debugPrint(response);
         Widget continueButton = TextButton(
             child: Text("OK"),
             onPressed: () {
