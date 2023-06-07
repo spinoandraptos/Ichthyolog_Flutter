@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Comment {
   final int commentId;
   final int authorId;
@@ -24,6 +26,7 @@ class Comment {
         authorName: json['authorname'],
         content: json['content'],
         authorPic: json['authorpic'],
-        postedTime: json['postedtime']);
+        postedTime: DateFormat("hh:mm a, dd/MM/yyyy")
+            .format(DateTime.parse(json['postedtime'])));
   }
 }

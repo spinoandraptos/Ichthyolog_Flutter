@@ -44,10 +44,11 @@ class Post {
         title: json['title'],
         description: json['description'],
         pic: json['imageurl'],
-        uploadTime: json['time'],
+        uploadTime: DateFormat("hh:mm a, dd/MM/yyyy")
+            .format(DateTime.parse(json['time'])),
         sightingLocation: json['sightinglocation'],
-        sightingTime: DateFormat("dd-MM-yyyy hh:mm a")
-            .format(json['sightingtime'].toDate()),
+        sightingTime: DateFormat("hh:mm a, dd/MM/yyyy")
+            .format(DateTime.parse(json['sightingtime'])),
         authorpic: json['authorpicurl'],
         class_: json['class'],
         order: json['_order'],
