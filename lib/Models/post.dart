@@ -1,5 +1,6 @@
 //This file stores classes that represent the major objects used
 //These classes will be used to store the data returned from backend
+import 'package:intl/intl.dart';
 
 //Post class for user posts
 class Post {
@@ -45,7 +46,8 @@ class Post {
         pic: json['imageurl'],
         uploadTime: json['time'],
         sightingLocation: json['sightinglocation'],
-        sightingTime: json['sightingtime'],
+        sightingTime: DateFormat("dd-MM-yyyy hh:mm a")
+            .format(json['sightingtime'].toDate()),
         authorpic: json['authorpicurl'],
         class_: json['class'],
         order: json['_order'],
