@@ -27,8 +27,8 @@ class CameraPage extends StatefulWidget {
 class CameraPageState extends State<CameraPage> {
   File? image;
   String jwt = '';
-  String date = "";
-  String time = "";
+  String date = '';
+  String time = '';
   String title = '';
   String description = '';
   String sightingLocation = '';

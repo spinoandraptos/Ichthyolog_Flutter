@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:gallery_saver/files.dart';
-import 'package:http/http.dart';
-import 'package:ichthyolog/Models/post.dart';
-import 'package:ichthyolog/Models/user.dart';
 import '../Helpers/Helper.dart';
 import '../Helpers/Http.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'commentspage.dart';
 
 class PostPage extends StatefulWidget {
   final int postid;
@@ -16,26 +14,28 @@ class PostPage extends StatefulWidget {
 class _PostPageState extends State<PostPage> {
   String jwt = '';
   int _postid = 0;
-  Post post = Post(
-      postid: 0,
-      userid: 0,
-      authorname: '',
-      title: '',
-      description: '',
-      pic: '',
-      uploadTime: '',
-      sightingTime: '',
-      sightingLocation: '',
-      authorpic: '',
-      class_: '',
-      order: '',
-      family: '',
-      genus: '');
+  String content = '';
 
   final httpHelpers = HttpHelpers();
   final helpers = Helpers();
   _PostPageState(int postid) {
     _postid = postid;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    helpers.checkJwt().then((token) {
+      if (token == '') {
+        setState(() {
+          jwt = '';
+        });
+      } else {
+        setState(() {
+          jwt = token;
+        });
+      }
+    });
   }
 
   @override
@@ -47,85 +47,267 @@ class _PostPageState extends State<PostPage> {
             return Scaffold(
               appBar: AppBar(
                 title: Text(snapshot.data!.title),
-                backgroundColor: Color.fromARGB(255, 51, 64, 113),
+                backgroundColor: const Color.fromARGB(255, 51, 64, 113),
               ),
-              body: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ListTile(
-                    contentPadding: EdgeInsets.only(
-                        top: 6, bottom: 10, left: 14, right: 12),
-                    leading: CircleAvatar(
-                        backgroundImage:
-                            NetworkImage(snapshot.data!.authorpic)),
-                    title: Text(
-                      snapshot.data!.authorname,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Color.fromARGB(255, 51, 64, 113)),
-                    ),
-                    subtitle: Text(
-                        'Sighted at ${snapshot.data!.sightingLocation} at ${snapshot.data!.sightingTime} '),
-                  ),
-                  ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxHeight: 450,
-                        minWidth: MediaQuery.of(context).size.width,
-                      ),
-                      child: Image(
-                        image: NetworkImage(snapshot.data!.pic),
-                      )),
-                  Container(
-                      padding:
-                          const EdgeInsets.only(left: 20, right: 20, top: 15),
-                      alignment: Alignment.centerLeft,
-                      child: const Text(
-                        "Description",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 18,
-                            color: Color.fromARGB(255, 51, 64, 113)),
-                      )),
-                  Container(
-                      padding: const EdgeInsets.only(
-                          left: 20, top: 5, right: 20, bottom: 5),
-                      alignment: Alignment.centerLeft,
-                      child: Text(snapshot.data!.description)),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          padding:
-                              EdgeInsets.only(left: 20, top: 16, bottom: 15),
-                          child: Text(
-                            "Comments",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18,
-                                color: Color.fromARGB(255, 51, 64, 113)),
+              body: SingleChildScrollView(
+                  child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 1.5,
+                      width: MediaQuery.of(context).size.width,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ListTile(
+                            contentPadding: const EdgeInsets.only(
+                                top: 6, bottom: 10, left: 14, right: 12),
+                            leading: CircleAvatar(
+                                backgroundImage:
+                                    NetworkImage(snapshot.data!.authorpic)),
+                            title: Text(
+                              snapshot.data!.authorname,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Color.fromARGB(255, 51, 64, 113)),
+                            ),
+                            subtitle: Text(
+                                'Sighted at ${snapshot.data!.sightingLocation} at ${snapshot.data!.sightingTime} '),
                           ),
-                        ),
-                        Expanded(
-                            child: ListView.builder(
-                                itemCount: 4,
-                                itemBuilder: ((context, index) {
-                                  return ListTile(
-                                    horizontalTitleGap: 6,
-                                    contentPadding:
-                                        EdgeInsets.only(left: 20, right: 20),
-                                    leading: CircleAvatar(
-                                        radius: 15,
-                                        backgroundImage: NetworkImage(
-                                            'https://images.fandango.com/imagerelay/500/0/video.fandango.com/MPX/image/NBCU_Fandango/857/211/thumb_95E77E41-AF48-49E7-A5C4-CB2EFCF088AE.jpg/image.jpg/redesign/static/img/noxSquare.jpg')),
-                                    title: Text("Comment $index"),
-                                  );
-                                }))),
-                      ],
-                    ),
-                  )
-                ],
-              ),
+                          ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxHeight: 425,
+                                minWidth: MediaQuery.of(context).size.width,
+                              ),
+                              child: Image(
+                                image: NetworkImage(snapshot.data!.pic),
+                              )),
+                          Container(
+                              padding: const EdgeInsets.only(
+                                  left: 20, right: 20, top: 15),
+                              alignment: Alignment.centerLeft,
+                              child: const Text(
+                                "Description",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18,
+                                    color: Color.fromARGB(255, 51, 64, 113)),
+                              )),
+                          Container(
+                              padding: const EdgeInsets.only(
+                                  left: 20, top: 5, right: 20, bottom: 5),
+                              alignment: Alignment.centerLeft,
+                              child: Text(snapshot.data!.description)),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Container(
+                                  alignment: Alignment.centerLeft,
+                                  padding: const EdgeInsets.only(
+                                      left: 20, top: 18, bottom: 12),
+                                  child: const Text(
+                                    "Comments",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 18,
+                                        color:
+                                            Color.fromARGB(255, 51, 64, 113)),
+                                  ),
+                                ),
+                                FutureBuilder(
+                                  future: httpHelpers
+                                      .viewPostCommentsRequest(_postid),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData &&
+                                        snapshot.data!.length > 1) {
+                                      return Column(children: [
+                                        ListTile(
+                                          horizontalTitleGap: 6,
+                                          contentPadding: const EdgeInsets.only(
+                                              left: 20, right: 20),
+                                          leading: CircleAvatar(
+                                              radius: 15,
+                                              backgroundImage: NetworkImage(
+                                                  snapshot
+                                                      .data![snapshot
+                                                              .data!.length -
+                                                          1]
+                                                      .authorPic)),
+                                          title: Text(snapshot
+                                              .data![snapshot.data!.length - 1]
+                                              .content),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      CommentPage(
+                                                          postid: _postid)),
+                                            );
+                                          },
+                                          child: Text(
+                                            'View ${snapshot.data!.length - 1} other replies',
+                                            style: const TextStyle(
+                                                color: Color.fromARGB(
+                                                    255, 51, 64, 113)),
+                                          ),
+                                        ),
+                                      ]);
+                                    } else if (snapshot.hasData &&
+                                        snapshot.data!.length == 1) {
+                                      return Column(children: [
+                                        ListTile(
+                                          horizontalTitleGap: 6,
+                                          contentPadding: const EdgeInsets.only(
+                                              left: 20, right: 20),
+                                          leading: CircleAvatar(
+                                              radius: 15,
+                                              backgroundImage: NetworkImage(
+                                                  snapshot
+                                                      .data![snapshot
+                                                              .data!.length -
+                                                          1]
+                                                      .authorPic)),
+                                          title: Text(snapshot
+                                              .data![snapshot.data!.length - 1]
+                                              .authorName),
+                                          subtitle: Text(snapshot
+                                              .data![snapshot.data!.length - 1]
+                                              .content),
+                                          trailing: Text(
+                                              'Posted at ${snapshot.data![snapshot.data!.length - 1].postedTime}'),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 5, left: 20, right: 20),
+                                          child: TextFormField(
+                                            decoration: const InputDecoration(
+                                              hintText: 'Enter comment',
+                                            ),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                content = value;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                        Container(
+                                            alignment: Alignment.centerRight,
+                                            margin: const EdgeInsets.only(
+                                                top: 6, right: 20, bottom: 10),
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                httpHelpers
+                                                    .addCommentRequest(
+                                                        _postid, content, jwt)
+                                                    .then((response) {
+                                                  setState(() {});
+                                                  if (response ==
+                                                      'Comment Posted') {
+                                                    Fluttertoast.showToast(
+                                                      msg:
+                                                          'Comment posted successfully!',
+                                                      toastLength:
+                                                          Toast.LENGTH_SHORT,
+                                                      gravity:
+                                                          ToastGravity.BOTTOM,
+                                                      timeInSecForIosWeb: 1,
+                                                    );
+                                                  } else {
+                                                    Fluttertoast.showToast(
+                                                      msg:
+                                                          'Comment failed to post :(',
+                                                      toastLength:
+                                                          Toast.LENGTH_SHORT,
+                                                      gravity:
+                                                          ToastGravity.BOTTOM,
+                                                      timeInSecForIosWeb: 1,
+                                                    );
+                                                  }
+                                                });
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      const Color.fromARGB(
+                                                          255, 68, 86, 148)),
+                                              child: const Text('Post',
+                                                  style:
+                                                      TextStyle(fontSize: 15)),
+                                            )),
+                                      ]);
+                                    } else {
+                                      return Column(children: [
+                                        Container(
+                                            padding: const EdgeInsets.only(
+                                                left: 20, right: 20, bottom: 5),
+                                            alignment: Alignment.centerLeft,
+                                            child:
+                                                const Text('No comments yet')),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 5, left: 20, right: 20),
+                                          child: TextFormField(
+                                            decoration: const InputDecoration(
+                                              hintText: 'Enter comment',
+                                            ),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                content = value;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                        Container(
+                                            alignment: Alignment.centerRight,
+                                            margin: const EdgeInsets.only(
+                                                top: 6, right: 20, bottom: 10),
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                httpHelpers
+                                                    .addCommentRequest(
+                                                        _postid, content, jwt)
+                                                    .then((response) {
+                                                  setState(() {});
+                                                  if (response ==
+                                                      'Comment Posted') {
+                                                    Fluttertoast.showToast(
+                                                      msg:
+                                                          'Comment posted successfully!',
+                                                      toastLength:
+                                                          Toast.LENGTH_SHORT,
+                                                      gravity:
+                                                          ToastGravity.BOTTOM,
+                                                      timeInSecForIosWeb: 1,
+                                                    );
+                                                  } else {
+                                                    Fluttertoast.showToast(
+                                                      msg:
+                                                          'Comment failed to post :(',
+                                                      toastLength:
+                                                          Toast.LENGTH_SHORT,
+                                                      gravity:
+                                                          ToastGravity.BOTTOM,
+                                                      timeInSecForIosWeb: 1,
+                                                    );
+                                                  }
+                                                });
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      const Color.fromARGB(
+                                                          255, 68, 86, 148)),
+                                              child: const Text('Post',
+                                                  style:
+                                                      TextStyle(fontSize: 15)),
+                                            )),
+                                      ]);
+                                    }
+                                  },
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ))),
             );
           } else {
             return Container(

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:ichthyolog/Models/comment.dart';
 import 'package:ichthyolog/Models/post.dart';
 import 'package:ichthyolog/Models/user.dart';
 
@@ -134,7 +135,7 @@ class HttpHelpers {
     );
     if (response.statusCode == 200) {
       List<Post> postlist = [];
-      var responseData = (json.decode(response.body));
+      var responseData = json.decode(response.body);
       for (var everypost in responseData) {
         Post post = Post.fromJson(everypost);
         postlist.add(post);
@@ -208,6 +209,99 @@ class HttpHelpers {
       return ('Post Uploaded');
     } else {
       return ('Post Upload Failed');
+    }
+  }
+
+  Future<List<Comment>> viewPostCommentsRequest(int postid) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/comments/$postid';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<Comment> comments = [];
+      var responseData = json.decode(response.body);
+      for (var everycomment in responseData) {
+        Comment comment = Comment.fromJson(everycomment);
+        comments.add(comment);
+      }
+      return comments;
+    } else {
+      throw Exception('Comment not found! Error ${response.statusCode}');
+    }
+  }
+
+  Future<Comment> viewLatestPostCommentRequest(int postid) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/comment/$postid';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      return Comment.fromJson(json.decode(response.body)[0]);
+    } else {
+      throw Exception('Comment not found! Error ${response.statusCode}');
+    }
+  }
+
+  Future<List<Comment>> viewUserCommentsRequest(String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/comments/user';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      List<Comment> comments = [];
+      var responseData = json.decode(response.body);
+      for (var everycomment in responseData) {
+        Comment comment = Comment.fromJson(everycomment);
+        comments.add(comment);
+      }
+      return comments;
+    } else {
+      throw Exception('Comment not found! Error ${response.statusCode}');
+    }
+  }
+
+  Future<Comment> viewCommentRequest(int commentid) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/comments/$commentid';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      return Comment.fromJson(json.decode(response.body)[0]);
+    } else {
+      throw Exception('Comment not found! Error ${response.statusCode}');
+    }
+  }
+
+  Future<String> addCommentRequest(
+      int postid, String content, String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/comment';
+    var response = await http.post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+      body:
+          json.encode(<String, dynamic>{'postid': postid, 'content': content}),
+    );
+    debugPrint('${response.statusCode}');
+    if (response.statusCode == 201) {
+      return ('Comment Posted');
+    } else {
+      return ('Comment Post Failed');
     }
   }
 }
