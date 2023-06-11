@@ -10,15 +10,10 @@ class OrderPicker extends StatefulWidget {
       : super(key: key);
 
   @override
-  OrderPickerState createState() => OrderPickerState(this.class_);
+  OrderPickerState createState() => OrderPickerState();
 }
 
 class OrderPickerState extends State<OrderPicker> {
-  String class_ = '';
-  OrderPickerState(String classes) {
-    class_ = classes;
-  }
-
   final ordersActinopterygii = [
     SpeciesClassification(
         classification: 'Perciformes',
@@ -60,6 +55,7 @@ class OrderPickerState extends State<OrderPicker> {
 
   @override
   Widget build(BuildContext context) {
+    String class_ = widget.class_;
     switch (class_) {
       case 'Chondrichthyes':
         return SelectableList<SpeciesClassification, String?>(
@@ -71,14 +67,18 @@ class OrderPickerState extends State<OrderPicker> {
               onTap: onTap),
           valueSelector: (order) => order.classification,
           selectedValue: selectedOrder,
-          onItemSelected: (order) => setState(() {
-            selectedOrder = order.classification;
+          onItemSelected: (order) {
+            setState(() {
+              selectedOrder = order.classification;
+            });
             widget.orderCallback(selectedOrder);
-          }),
-          onItemDeselected: (order) => setState(() {
-            selectedOrder = null;
+          },
+          onItemDeselected: (order) {
+            setState(() {
+              selectedOrder = '';
+            });
             widget.orderCallback(selectedOrder);
-          }),
+          },
         );
       //TODO
       case 'Actinopterygii':
@@ -91,14 +91,18 @@ class OrderPickerState extends State<OrderPicker> {
               onTap: onTap),
           valueSelector: (order) => order.classification,
           selectedValue: selectedOrder,
-          onItemSelected: (order) => setState(() {
-            selectedOrder = order.classification;
+          onItemSelected: (order) {
+            setState(() {
+              selectedOrder = order.classification;
+            });
             widget.orderCallback(selectedOrder);
-          }),
-          onItemDeselected: (order) => setState(() {
-            selectedOrder = null;
+          },
+          onItemDeselected: (order) {
+            setState(() {
+              selectedOrder = '';
+            });
             widget.orderCallback(selectedOrder);
-          }),
+          },
         );
       //TODO
       case 'Sarcopterygii':
@@ -111,14 +115,18 @@ class OrderPickerState extends State<OrderPicker> {
               onTap: onTap),
           valueSelector: (order) => order.classification,
           selectedValue: selectedOrder,
-          onItemSelected: (order) => setState(() {
-            selectedOrder = order.classification;
+          onItemSelected: (order) {
+            setState(() {
+              selectedOrder = order.classification;
+            });
             widget.orderCallback(selectedOrder);
-          }),
-          onItemDeselected: (order) => setState(() {
-            selectedOrder = null;
+          },
+          onItemDeselected: (order) {
+            setState(() {
+              selectedOrder = '';
+            });
             widget.orderCallback(selectedOrder);
-          }),
+          },
         );
       //TODO
       default:
@@ -131,14 +139,18 @@ class OrderPickerState extends State<OrderPicker> {
               onTap: onTap),
           valueSelector: (order) => order.classification,
           selectedValue: selectedOrder,
-          onItemSelected: (order) => setState(() {
-            selectedOrder = order.classification;
+          onItemSelected: (order) {
+            setState(() {
+              selectedOrder = order.classification;
+            });
             widget.orderCallback(selectedOrder);
-          }),
-          onItemDeselected: (order) => setState(() {
-            selectedOrder = null;
+          },
+          onItemDeselected: (order) {
+            setState(() {
+              selectedOrder = '';
+            });
             widget.orderCallback(selectedOrder);
-          }),
+          },
         );
     }
   }

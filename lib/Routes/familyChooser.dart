@@ -58,14 +58,18 @@ class _FamilyPickerState extends State<FamilyPicker> {
               onTap: onTap),
           valueSelector: (family) => family.classification,
           selectedValue: selectedFamily,
-          onItemSelected: (family) => setState(() {
-            selectedFamily = family.classification;
+          onItemSelected: (family) {
+            setState(() {
+              selectedFamily = family.classification;
+            });
             widget.familyCallback(selectedFamily);
-          }),
-          onItemDeselected: (family) => setState(() {
-            selectedFamily = null;
+          },
+          onItemDeselected: (family) {
+            setState(() {
+              selectedFamily = '';
+            });
             widget.familyCallback(selectedFamily);
-          }),
+          },
         );
 
       case 'Perciformes':
@@ -78,14 +82,18 @@ class _FamilyPickerState extends State<FamilyPicker> {
               onTap: onTap),
           valueSelector: (family) => family.classification,
           selectedValue: selectedFamily,
-          onItemSelected: (family) => setState(() {
-            selectedFamily = family.classification;
+          onItemSelected: (family) {
+            setState(() {
+              selectedFamily = family.classification;
+            });
             widget.familyCallback(selectedFamily);
-          }),
-          onItemDeselected: (family) => setState(() {
-            selectedFamily = null;
+          },
+          onItemDeselected: (family) {
+            setState(() {
+              selectedFamily = '';
+            });
             widget.familyCallback(selectedFamily);
-          }),
+          },
         );
 
       case 'Anabantiformes':
@@ -98,14 +106,18 @@ class _FamilyPickerState extends State<FamilyPicker> {
               onTap: onTap),
           valueSelector: (family) => family.classification,
           selectedValue: selectedFamily,
-          onItemSelected: (family) => setState(() {
-            selectedFamily = family.classification;
+          onItemSelected: (family) {
+            setState(() {
+              selectedFamily = family.classification;
+            });
             widget.familyCallback(selectedFamily);
-          }),
-          onItemDeselected: (family) => setState(() {
-            selectedFamily = null;
+          },
+          onItemDeselected: (family) {
+            setState(() {
+              selectedFamily = '';
+            });
             widget.familyCallback(selectedFamily);
-          }),
+          },
         );
 
       //TODO: Update default return widget
@@ -119,14 +131,18 @@ class _FamilyPickerState extends State<FamilyPicker> {
               onTap: onTap),
           valueSelector: (family) => family.classification,
           selectedValue: selectedFamily,
-          onItemSelected: (family) => setState(() {
-            selectedFamily = family.classification;
+          onItemSelected: (family) {
+            setState(() {
+              selectedFamily = family.classification;
+            });
             widget.familyCallback(selectedFamily);
-          }),
-          onItemDeselected: (family) => setState(() {
-            selectedFamily = null;
+          },
+          onItemDeselected: (family) {
+            setState(() {
+              selectedFamily = '';
+            });
             widget.familyCallback(selectedFamily);
-          }),
+          },
         );
     }
   }

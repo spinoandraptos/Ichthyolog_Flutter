@@ -84,14 +84,18 @@ class GenusPickerState extends State<GenusPicker> {
               onTap: onTap),
           valueSelector: (genus) => genus.classification,
           selectedValue: selectedGenus,
-          onItemSelected: (genus) => setState(() {
-            selectedGenus = genus.classification;
+          onItemSelected: (genus) {
+            setState(() {
+              selectedGenus = genus.classification;
+            });
             widget.genusCallback(selectedGenus);
-          }),
-          onItemDeselected: (genus) => setState(() {
-            selectedGenus = null;
+          },
+          onItemDeselected: (genus) {
+            setState(() {
+              selectedGenus = '';
+            });
             widget.genusCallback(selectedGenus);
-          }),
+          },
         );
 
       //TODO: Update default return widget
@@ -105,14 +109,18 @@ class GenusPickerState extends State<GenusPicker> {
               onTap: onTap),
           valueSelector: (genus) => genus.classification,
           selectedValue: selectedGenus,
-          onItemSelected: (genus) => setState(() {
-            selectedGenus = genus.classification;
+          onItemSelected: (genus) {
+            setState(() {
+              selectedGenus = genus.classification;
+            });
             widget.genusCallback(selectedGenus);
-          }),
-          onItemDeselected: (genus) => setState(() {
-            selectedGenus = null;
+          },
+          onItemDeselected: (genus) {
+            setState(() {
+              selectedGenus = '';
+            });
             widget.genusCallback(selectedGenus);
-          }),
+          },
         );
     }
   }

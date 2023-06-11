@@ -10,9 +10,11 @@ class Utils {
 }
 
 class PickerDateTimeRoute extends StatefulWidget {
-  Function dateCallback;
-  Function timeCallback;
-  PickerDateTimeRoute({required this.dateCallback, required this.timeCallback});
+  final Function dateCallback;
+  final Function timeCallback;
+  const PickerDateTimeRoute(
+      {Key? key, required this.dateCallback, required this.timeCallback})
+      : super(key: key);
 
   @override
   PickerDateTimeRouteState createState() => PickerDateTimeRouteState();
@@ -28,37 +30,37 @@ class PickerDateTimeRouteState extends State<PickerDateTimeRoute> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.only(bottom: 12),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              margin: EdgeInsets.only(right: 10),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    elevation: 0,
-                    backgroundColor: Color.fromARGB(255, 80, 100, 170),
+              margin: const EdgeInsets.only(right: 10),
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5)),
-                    padding: const EdgeInsets.symmetric(horizontal: 10)),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    side: const BorderSide(
+                        color: Color.fromARGB(255, 179, 195, 236))),
                 child: const Text("Select date of sighting",
-                    style: TextStyle(color: Colors.white)),
+                    style: TextStyle(color: Color.fromARGB(255, 82, 108, 175))),
                 onPressed: () {
                   showDialogPicker(context);
                 },
               ),
             ),
             Container(
-              margin: EdgeInsets.only(left: 10),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    elevation: 0,
-                    backgroundColor: Color.fromARGB(255, 80, 100, 170),
+              margin: const EdgeInsets.only(left: 10),
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5)),
-                    padding: const EdgeInsets.symmetric(horizontal: 10)),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    side: const BorderSide(
+                        color: Color.fromARGB(255, 179, 195, 236))),
                 child: const Text("Select time of sighting",
-                    style: TextStyle(color: Colors.white)),
+                    style: TextStyle(color: Color.fromARGB(255, 82, 108, 175))),
                 onPressed: () {
                   showDialogTimePicker(context);
                 },
@@ -78,9 +80,9 @@ class PickerDateTimeRouteState extends State<PickerDateTimeRoute> {
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               // primary: MyColors.primary,
-              primary: Theme.of(context).colorScheme.primary,
+              primary: Color.fromARGB(255, 51, 64, 113),
               onPrimary: Colors.white,
               surface: Colors.white,
               onSurface: Colors.black,
@@ -111,9 +113,9 @@ class PickerDateTimeRouteState extends State<PickerDateTimeRoute> {
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               // primary: MyColors.primary,
-              primary: Theme.of(context).colorScheme.primary,
+              primary: Color.fromARGB(255, 51, 64, 113),
               onPrimary: Colors.white,
               surface: Colors.white,
               onSurface: Colors.black,

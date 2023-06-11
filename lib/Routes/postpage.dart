@@ -59,34 +59,39 @@ class PostPageState extends State<PostPage> {
               ),
               body: SingleChildScrollView(
                   child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 1.5,
+                      height: MediaQuery.of(context).size.height * 1.2,
                       width: MediaQuery.of(context).size.width,
                       child: Column(
-                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          ListTile(
-                            contentPadding: const EdgeInsets.only(
-                                top: 6, bottom: 10, left: 14, right: 12),
-                            leading: CircleAvatar(
-                                backgroundImage:
-                                    NetworkImage(snapshot.data!.authorpic)),
-                            title: Text(
-                              snapshot.data!.authorname,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Color.fromARGB(255, 51, 64, 113)),
-                            ),
-                            subtitle: Text(
-                                'Sighted at ${snapshot.data!.sightingLocation} at ${snapshot.data!.sightingTime} '),
-                          ),
+                          Container(
+                              margin: const EdgeInsets.only(top: 6, bottom: 8),
+                              child: ListTile(
+                                visualDensity:
+                                    VisualDensity(horizontal: 0, vertical: -4),
+                                leading: CircleAvatar(
+                                    backgroundImage:
+                                        NetworkImage(snapshot.data!.authorpic)),
+                                title: Text(
+                                  snapshot.data!.authorname,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Color.fromARGB(255, 51, 64, 113)),
+                                ),
+                                subtitle: Text(
+                                    'Sighted at ${snapshot.data!.sightingLocation} at ${snapshot.data!.sightingTime} '),
+                              )),
                           ConstrainedBox(
                               constraints: BoxConstraints(
-                                maxHeight: 425,
+                                maxHeight: 350,
                                 minWidth: MediaQuery.of(context).size.width,
+                                maxWidth: MediaQuery.of(context).size.width,
                               ),
-                              child: Image(
-                                image: NetworkImage(snapshot.data!.pic),
-                              )),
+                              child: FittedBox(
+                                  clipBehavior: Clip.hardEdge,
+                                  fit: BoxFit.cover,
+                                  child: Image(
+                                    image: NetworkImage(snapshot.data!.pic),
+                                  ))),
                           Container(
                               padding: const EdgeInsets.only(
                                   left: 20, right: 20, top: 15),

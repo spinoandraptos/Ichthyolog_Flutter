@@ -48,6 +48,8 @@ dependencies:
   intl: ^0.17.0
   list_picker: ^1.1.0
   selectable_list: ^0.1.1
+  easy_stepper: ^0.6.0
+  equatable: ^2.0.5
 
 dev_dependencies:
   flutter_test:

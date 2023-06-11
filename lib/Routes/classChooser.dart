@@ -34,14 +34,18 @@ class ClassPickerState extends State<ClassPicker> {
           onTap: onTap),
       valueSelector: (class_) => class_.classification,
       selectedValue: selectedClass,
-      onItemSelected: (class_) => setState(() {
-        selectedClass = class_.classification;
+      onItemSelected: (class_) {
+        setState(() {
+          selectedClass = class_.classification;
+        });
         widget.classCallback(selectedClass);
-      }),
-      onItemDeselected: (class_) => setState(() {
-        selectedClass = null;
+      },
+      onItemDeselected: (class_) {
+        setState(() {
+          selectedClass = '';
+        });
         widget.classCallback(selectedClass);
-      }),
+      },
     );
   }
 }

@@ -9,14 +9,9 @@ class SpeciesStepper extends StatefulWidget {
   final Function orderCallback;
   final Function familyCallback;
   final Function genusCallback;
-  final String order;
-  final String class_;
-  final String family;
+
   const SpeciesStepper(
       {Key? key,
-      required this.order,
-      required this.class_,
-      required this.family,
       required this.classCallback,
       required this.orderCallback,
       required this.familyCallback,
@@ -24,62 +19,88 @@ class SpeciesStepper extends StatefulWidget {
       : super(key: key);
 
   @override
-  SpeciesStepperState createState() => SpeciesStepperState(order, class_,
-      family, classCallback, orderCallback, familyCallback, genusCallback);
+  SpeciesStepperState createState() => SpeciesStepperState();
 }
 
 class SpeciesStepperState extends State<SpeciesStepper> {
   String order = '';
   String class_ = '';
   String family = '';
-  late Function classCallback;
-  late Function orderCallback;
-  late Function familyCallback;
-  late Function genusCallback;
-
-  SpeciesStepperState(
-      String order_,
-      String class_2,
-      String family_,
-      Function classCallback_,
-      Function orderCallback_,
-      Function familyCallback_,
-      Function genusCallback_) {
-    order = order_;
-    class_ = class_2;
-    classCallback = classCallback_;
-    orderCallback = orderCallback_;
-    familyCallback = familyCallback_;
-    genusCallback = genusCallback_;
-  }
-
+  String genus = '';
   int currentStep = 0;
 
   @override
   Widget build(BuildContext context) {
-    return Stepper(
-        type: StepperType.vertical,
-        physics: const ScrollPhysics(),
-        currentStep: currentStep,
-        onStepCancel: () => currentStep == 0
-            ? null
-            : setState(() {
-                currentStep--;
-              }),
-        onStepTapped: (stepIndex) => setState(() {
-              currentStep = stepIndex;
-            }),
-        onStepContinue: () {
-          bool isLastStep = (currentStep == showSpeciesSteps().length - 1);
-          if (isLastStep) {
-            return;
-          } else {
-            setState(() {
-              currentStep += 1;
-            });
-          }
-        },
-        steps: showSpeciesSteps());
+    bool isLastStep = (currentStep == showSpeciesSteps().length - 1);
+    return StatefulBuilder(builder: (context, setState) {
+      return SizedBox(
+          height: 500,
+          width: 800,
+          child: Theme(
+              data: ThemeData(
+                  colorScheme: Theme.of(context).colorScheme.copyWith(
+                        primary: const Color.fromARGB(255, 75, 92, 154),
+                        secondary: const Color.fromARGB(255, 162, 182, 255),
+                      ),
+                  iconTheme: Theme.of(context).iconTheme.copyWith()),
+              child: Stepper(
+                type: StepperType.vertical,
+                physics: const ScrollPhysics(),
+                currentStep: currentStep,
+                onStepCancel: () => currentStep == 0
+                    ? null
+                    : setState(() {
+                        currentStep--;
+                      }),
+                onStepTapped: (stepIndex) => setState(() {
+                  currentStep = stepIndex;
+                }),
+                onStepContinue: () {
+                  print(
+                      'CLASS: $class_, ORDER: $order, FAMILY: $family, GENUS: $genus');
+                  if (isLastStep) {
+                    Navigator.pop(context);
+                  } else {
+                    setState(() {
+                      currentStep += 1;
+                    });
+                  }
+                },
+                steps: showSpeciesSteps(),
+                controlsBuilder: (context, controls) {
+                  return Container(
+                      margin: const EdgeInsets.only(top: 25, left: 15),
+                      child: Wrap(
+                        spacing: 16,
+                        children: <Widget>[
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromARGB(255, 91, 119, 189),
+                                padding: const EdgeInsets.all(10)),
+                            onPressed: controls.onStepContinue,
+                            child: isLastStep
+                                ? const Text('Finish')
+                                : const Text('Continue'),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromARGB(255, 199, 105, 105),
+                                padding: const EdgeInsets.all(10)),
+                            onPressed: controls.onStepCancel,
+                            child: const Text('Go back'),
+                          ),
+                          TextButton(
+                              child: const Text("Cancel"),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              })
+                        ],
+                      ));
+                },
+              )));
+    });
   }
 
   List<Step> showSpeciesSteps() {
@@ -87,32 +108,63 @@ class SpeciesStepperState extends State<SpeciesStepper> {
       Step(
           state: currentStep > 0 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 0,
-          title: const Text("Choose Class"),
-          content: ClassPicker(classCallback: classCallback)),
+          title: const Text("Class"),
+          content: ClassPicker(classCallback: stepperClassChooser)),
       Step(
           state: currentStep > 1 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 0,
-          title: const Text("Choose Order"),
+          title: const Text("Order"),
           content: OrderPicker(
-            orderCallback: orderCallback,
+            key: ObjectKey(class_),
+            orderCallback: stepperOrderChooser,
             class_: class_,
           )),
       Step(
           state: currentStep > 2 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 0,
-          title: const Text("Choose Family"),
+          title: const Text("Family"),
           content: FamilyPicker(
-            familyCallback: familyCallback,
+            key: ObjectKey(order),
+            familyCallback: stepperFamilyChooser,
             order: order,
           )),
       Step(
           state: currentStep > 3 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 0,
-          title: const Text("Choose Genus"),
+          title: const Text("Genus"),
           content: GenusPicker(
-            genusCallback: genusCallback,
+            key: ObjectKey(family),
+            genusCallback: stepperGenusChooser,
             family: family,
           )),
     ];
+  }
+
+  stepperClassChooser(newvalue) {
+    setState(() {
+      class_ = newvalue;
+    });
+    widget.classCallback(newvalue);
+  }
+
+  stepperOrderChooser(newvalue) {
+    setState(() {
+      order = newvalue;
+    });
+    widget.orderCallback(newvalue);
+  }
+
+  stepperFamilyChooser(newvalue) {
+    setState(() {
+      family = newvalue;
+    });
+    widget.familyCallback(newvalue);
+  }
+
+  stepperGenusChooser(newvalue) {
+    setState(() {
+      genus = newvalue;
+    });
+    widget.genusCallback(newvalue);
   }
 }

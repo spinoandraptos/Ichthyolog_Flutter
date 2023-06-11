@@ -100,7 +100,7 @@ class CameraPageState extends State<CameraPage> {
                         )),
                     Padding(
                         padding: const EdgeInsets.only(
-                            left: 15, right: 15, bottom: 16),
+                            left: 15, right: 15, bottom: 8),
                         child: TextFormField(
                           decoration: const InputDecoration(
                             hintText: 'Enter the location of sighting',
@@ -111,45 +111,101 @@ class CameraPageState extends State<CameraPage> {
                             });
                           },
                         )),
-                    Column(
-                      children: <Widget>[
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          alignment: Alignment.center,
-                          width: double.infinity,
-                          height: 45,
-                          color: const Color.fromARGB(255, 224, 228, 238),
-                          child: (date == '' && time == '')
+                    Container(
+                        alignment: Alignment.center,
+                        width: double.infinity,
+                        height: 45,
+                        child: Wrap(children: [
+                          const Text(
+                            'Sighting timing:  ',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          (date == '' && time == '')
                               ? Text(
-                                  'Sighting timing: ${DateFormat("yyyy-mm-dd hh:mm:ss").format(DateTime.now())}',
+                                  DateFormat("yyyy-mm-dd hh:mm:ss")
+                                      .format(DateTime.now()),
                                   style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      color: Color.fromARGB(255, 51, 64, 113)),
+                                      fontWeight: FontWeight.w600,
+                                      color: Color.fromARGB(255, 51, 64, 113),
+                                      fontSize: 16),
                                 )
                               : Text(
-                                  "Sighting timing: $date $time",
+                                  "$date $time",
                                   style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      color: Color.fromARGB(255, 51, 64, 113)),
+                                      fontWeight: FontWeight.w600,
+                                      color: Color.fromARGB(255, 51, 64, 113),
+                                      fontSize: 16),
                                 ),
-                        ),
-                      ],
-                    ),
+                        ])),
                     PickerDateTimeRoute(
                       dateCallback: dateCallback,
                       timeCallback: timeCallback,
                     ),
                     Image.file(image!),
                     Container(
-                        margin: const EdgeInsets.only(bottom: 5),
-                        padding: EdgeInsets.only(left: 12, right: 12),
+                        margin: const EdgeInsets.only(bottom: 7, top: 15),
+                        padding: const EdgeInsets.only(left: 12, right: 12),
                         alignment: Alignment.center,
                         width: double.infinity,
-                        color: const Color.fromARGB(255, 224, 228, 238),
-                        child: Text(
-                            'Class: $class_, Order: $order, Family: $family, Genus: $genus')),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                        child: Column(children: [
+                          Wrap(
+                            children: [
+                              const Text(
+                                'Class: ',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 51, 64, 113),
+                                    fontSize: 16),
+                              ),
+                              Text(
+                                class_ == ''
+                                    ? '[Choose below]   '
+                                    : '$class_   ',
+                                style: const TextStyle(fontSize: 15),
+                              ),
+                              const Text(
+                                'Order: ',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 51, 64, 113),
+                                    fontSize: 16),
+                              ),
+                              Text(
+                                order == '' ? '[Choose below]' : order,
+                                style: const TextStyle(fontSize: 15),
+                              ),
+                            ],
+                          ),
+                          Wrap(
+                            children: [
+                              const Text(
+                                'Family: ',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 51, 64, 113),
+                                    fontSize: 16),
+                              ),
+                              Text(
+                                family == ''
+                                    ? '[Choose below]   '
+                                    : '$family   ',
+                                style: const TextStyle(fontSize: 15),
+                              ),
+                              const Text(
+                                'Genus: ',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 51, 64, 113),
+                                    fontSize: 16),
+                              ),
+                              Text(
+                                genus == '' ? '[Choose below]' : genus,
+                                style: const TextStyle(fontSize: 15),
+                              ),
+                            ],
+                          ),
+                        ])),
+                    Wrap(
                       children: [
                         Container(
                             margin: const EdgeInsets.only(
@@ -160,27 +216,16 @@ class CameraPageState extends State<CameraPage> {
                                     context: context,
                                     builder: (BuildContext context) {
                                       return AlertDialog(
-                                        content: SizedBox(
-                                          height: 500,
-                                          width: 500,
-                                          child: SpeciesStepper(
-                                            class_: class_,
-                                            order: order,
-                                            family: family,
+                                          content: StatefulBuilder(
+                                        builder: (context, setState) {
+                                          return SpeciesStepper(
                                             classCallback: classCallback,
                                             orderCallback: orderCallback,
                                             familyCallback: familyCallback,
                                             genusCallback: genusCallback,
-                                          ),
-                                        ),
-                                        actions: <Widget>[
-                                          TextButton(
-                                              child: const Text("Cancel"),
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              })
-                                        ],
-                                      );
+                                          );
+                                        },
+                                      ));
                                     });
                               },
                               style: ElevatedButton.styleFrom(
@@ -206,18 +251,24 @@ class CameraPageState extends State<CameraPage> {
                                   backgroundColor:
                                       const Color.fromARGB(255, 80, 170, 121)),
                               child: const Text('Upload',
-                                  style: TextStyle(fontSize: 18)),
+                                  style: TextStyle(fontSize: 17)),
                             )),
                         Container(
                             margin: const EdgeInsets.only(
                                 top: 6, right: 12, bottom: 10),
                             child: ElevatedButton(
-                              onPressed: () => setState(() => image = null),
+                              onPressed: () => setState(() {
+                                image = null;
+                                class_ = '';
+                                order = '';
+                                family = '';
+                                genus = '';
+                              }),
                               style: ElevatedButton.styleFrom(
                                   backgroundColor:
                                       const Color.fromARGB(255, 170, 80, 80)),
                               child: const Text('Clear',
-                                  style: TextStyle(fontSize: 18)),
+                                  style: TextStyle(fontSize: 17)),
                             ))
                       ],
                     )
@@ -318,8 +369,8 @@ class CameraPageState extends State<CameraPage> {
           );
         }
       });
-    } catch (e) {
-      print(e);
+    } catch (error) {
+      print(error);
     }
   }
 
