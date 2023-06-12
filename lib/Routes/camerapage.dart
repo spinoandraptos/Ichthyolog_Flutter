@@ -122,7 +122,7 @@ class CameraPageState extends State<CameraPage> {
                           ),
                           (date == '' && time == '')
                               ? Text(
-                                  DateFormat("yyyy-mm-dd hh:mm:ss")
+                                  DateFormat("yyyy-MM-dd hh:mm:ss")
                                       .format(DateTime.now()),
                                   style: const TextStyle(
                                       fontWeight: FontWeight.w600,
