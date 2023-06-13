@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../Models/comment.dart';
-import '../Helpers/Http.dart';
+import '../Helpers/http.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class OwnComment extends StatelessWidget {
@@ -55,7 +55,7 @@ class OwnComment extends StatelessWidget {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                          title: const Text("Notice"),
+                          title: const Text("Warning"),
                           content: const Text(
                               'Are you sure? This action is irreversible!'),
                           actions: [

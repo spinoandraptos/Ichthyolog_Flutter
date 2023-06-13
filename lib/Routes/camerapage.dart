@@ -5,7 +5,7 @@ import 'package:uuid/uuid.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'datetimepicker.dart';
-import '../Helpers/Helper.dart';
+import '../Helpers/helper.dart';
 import '../Helpers/Http.dart';
 import 'package:intl/intl.dart';
 import 'gallerypage.dart';
