@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:ichthyolog/Helpers/standardwidgets.dart';
 import 'package:ichthyolog/Routes/gallerypage.dart';
 import '../Models/user.dart';
-import '../Helpers/Helper.dart';
-import '../Helpers/Http.dart';
-import 'camerapage.dart';
-import './experthomepage.dart';
+import '../Helpers/helper.dart';
+import '../Helpers/http.dart';
+import 'cameraPage.dart';
+import 'expertHomePage.dart';
 import 'statisticspage.dart';
 
 class regularHomePage extends StatefulWidget {
@@ -39,24 +40,15 @@ class HomePageState extends State<regularHomePage> {
   @override
   Widget build(BuildContext context) {
     if (!_authorised) {
-      return AlertDialog(
-        title: const Text("Notice"),
-        content: const Text('Not authorised. Please sign in again'),
-        actions: [
-          TextButton(
-              child: const Text("OK"),
-              onPressed: () {
-                Navigator.pop(context);
-              })
-        ],
-      );
+      return const NoticeDialog(
+          content: 'Not authorised. Please sign in again');
     } else {
       return FutureBuilder<User>(
-          future: httpHelpers.viewUserRequest(jwt),
+          future: httpHelpers.viewOwnUserProfileRequest(jwt),
           builder: ((context, snapshot) {
             if (snapshot.hasData) {
               if (snapshot.data!.expert) {
-                return expertHomePage();
+                return const ExpertHomePage();
               } else {
                 return Scaffold(
                   appBar: AppBar(
@@ -171,21 +163,12 @@ class HomePageState extends State<regularHomePage> {
                   ),
                 );
               }
+            } else if (snapshot.hasError) {
+              return const NoticeDialog(
+                  content: 'User not found! Please try again');
+            } else {
+              return const LoadingScreen();
             }
-            return Container(
-              color: const Color.fromARGB(255, 236, 249, 255),
-              child: const Center(
-                child: SizedBox(
-                  height: 35.0,
-                  width: 35.0,
-                  child: CircularProgressIndicator(
-                      backgroundColor: Color.fromARGB(255, 91, 170, 255),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          Color.fromARGB(255, 184, 218, 255)),
-                      strokeWidth: 8),
-                ),
-              ),
-            );
           }));
     }
   }

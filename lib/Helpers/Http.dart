@@ -69,7 +69,7 @@ class HttpHelpers {
     }
   }
 
-  Future<User> viewUserRequest(String jwt) async {
+  Future<User> viewOwnUserProfileRequest(String jwt) async {
     String url = 'https://ichthyolog-nodejs.onrender.com/user';
     var response = await http.get(
       Uri.parse(url),
@@ -81,11 +81,11 @@ class HttpHelpers {
     if (response.statusCode == 200) {
       return User.fromJson(json.decode(response.body)[0]);
     } else {
-      throw Exception('User not found! Error ${response.statusCode}');
+      return Future.error("User Not Found");
     }
   }
 
-  Future<User> viewAnyUserRequest(int userid) async {
+  Future<User> viewAnyUserProfileRequest(int userid) async {
     String url = 'https://ichthyolog-nodejs.onrender.com/user/$userid';
     var response = await http.get(
       Uri.parse(url),
@@ -96,7 +96,7 @@ class HttpHelpers {
     if (response.statusCode == 200) {
       return User.fromJson(json.decode(response.body)[0]);
     } else {
-      throw Exception('User not found! Error ${response.statusCode}');
+      return Future.error("User Not Found");
     }
   }
 
@@ -142,7 +142,7 @@ class HttpHelpers {
       }
       return postlist;
     } else {
-      throw Exception('Posts not found! Error ${response.statusCode}');
+      return Future.error("Posts Not Found");
     }
   }
 
@@ -163,7 +163,7 @@ class HttpHelpers {
       }
       return postlist;
     } else {
-      throw Exception('Posts not found! Error ${response.statusCode}');
+      return Future.error("Posts Not Found");
     }
   }
 
@@ -184,7 +184,7 @@ class HttpHelpers {
       }
       return postlist;
     } else {
-      throw Exception('Posts not found! Error ${response.statusCode}');
+      return Future.error("Posts Not Found");
     }
   }
 
@@ -199,7 +199,7 @@ class HttpHelpers {
     if (response.statusCode == 200) {
       return Post.fromJson(json.decode(response.body)[0]);
     } else {
-      throw Exception('Post not found! Error ${response.statusCode}');
+      return Future.error("Post Not Found");
     }
   }
 
@@ -271,7 +271,7 @@ class HttpHelpers {
       }
       return comments;
     } else {
-      throw Exception('Comment not found! Error ${response.statusCode}');
+      return Future.error("Comments Not Found");
     }
   }
 
@@ -286,7 +286,7 @@ class HttpHelpers {
     if (response.statusCode == 200) {
       return Comment.fromJson(json.decode(response.body)[0]);
     } else {
-      throw Exception('Comment not found! Error ${response.statusCode}');
+      return Future.error("Comment Not Found");
     }
   }
 
@@ -308,7 +308,7 @@ class HttpHelpers {
       }
       return comments;
     } else {
-      throw Exception('Comment not found! Error ${response.statusCode}');
+      return Future.error("Comments Not Found");
     }
   }
 
@@ -323,7 +323,7 @@ class HttpHelpers {
     if (response.statusCode == 200) {
       return Comment.fromJson(json.decode(response.body)[0]);
     } else {
-      throw Exception('Comment not found! Error ${response.statusCode}');
+      return Future.error("Comment Not Found");
     }
   }
 

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import '../Helpers/Helper.dart';
-import '../Helpers/Http.dart';
+import 'package:ichthyolog/Helpers/standardwidgets.dart';
+import 'package:ichthyolog/Routes/postpagecomments.dart';
+import '../Helpers/helper.dart';
+import '../Helpers/http.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'commentspage.dart';
+import 'commentsPage.dart';
 
 class PostPage extends StatefulWidget {
   final int postid;
@@ -14,7 +16,6 @@ class PostPage extends StatefulWidget {
 class PostPageState extends State<PostPage> {
   String jwt = '';
   int _postid = 0;
-  final contentText = TextEditingController();
 
   final httpHelpers = HttpHelpers();
   final helpers = Helpers();
@@ -36,14 +37,6 @@ class PostPageState extends State<PostPage> {
         });
       }
     });
-  }
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is removed from the widget tree
-    contentText.dispose();
-    contentText.dispose();
-    super.dispose();
   }
 
   @override
@@ -130,403 +123,19 @@ class PostPageState extends State<PostPage> {
                                   builder: (context, snapshot) {
                                     if (snapshot.hasData &&
                                         snapshot.data!.length > 1) {
-                                      return Column(children: [
-                                        ListTile(
-                                          horizontalTitleGap: 10,
-                                          contentPadding: const EdgeInsets.only(
-                                              left: 20, right: 20),
-                                          leading: CircleAvatar(
-                                              radius: 18,
-                                              backgroundImage: NetworkImage(
-                                                  snapshot
-                                                      .data![snapshot
-                                                              .data!.length -
-                                                          1]
-                                                      .authorPic)),
-                                          title: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 3),
-                                              child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .only(
-                                                                bottom: 2),
-                                                        child: Text(
-                                                          snapshot
-                                                              .data![snapshot
-                                                                      .data!
-                                                                      .length -
-                                                                  1]
-                                                              .authorName,
-                                                          style:
-                                                              const TextStyle(
-                                                                  fontSize: 14,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                  color: Color
-                                                                      .fromARGB(
-                                                                          255,
-                                                                          51,
-                                                                          64,
-                                                                          113)),
-                                                        )),
-                                                    Text(snapshot
-                                                        .data![snapshot
-                                                                .data!.length -
-                                                            1]
-                                                        .content)
-                                                  ])),
-                                          subtitle: Text(
-                                            'Posted at ${snapshot.data![snapshot.data!.length - 1].postedTime}',
-                                            style:
-                                                const TextStyle(fontSize: 11),
-                                          ),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      CommentPage(
-                                                          postid: _postid)),
-                                            );
-                                          },
-                                          child: Text(
-                                            'View ${snapshot.data!.length - 1} other replies',
-                                            style: const TextStyle(
-                                                color: Color.fromARGB(
-                                                    255, 51, 64, 113)),
-                                          ),
-                                        ),
-                                      ]);
+                                      return PostPageMultiComment(
+                                          comments: snapshot.data!,
+                                          jwt: jwt,
+                                          postid: _postid);
                                     } else if (snapshot.hasData &&
                                         snapshot.data!.length == 1) {
-                                      return jwt == ''
-                                          ? ListTile(
-                                              horizontalTitleGap: 10,
-                                              contentPadding:
-                                                  const EdgeInsets.only(
-                                                      left: 20, right: 20),
-                                              leading: CircleAvatar(
-                                                  radius: 18,
-                                                  backgroundImage: NetworkImage(
-                                                      snapshot
-                                                          .data![snapshot.data!
-                                                                  .length -
-                                                              1]
-                                                          .authorPic)),
-                                              title: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          bottom: 3),
-                                                  child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    bottom: 2),
-                                                            child: Text(
-                                                              snapshot
-                                                                  .data![snapshot
-                                                                          .data!
-                                                                          .length -
-                                                                      1]
-                                                                  .authorName,
-                                                              style: const TextStyle(
-                                                                  fontSize: 14,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                  color: Color
-                                                                      .fromARGB(
-                                                                          255,
-                                                                          51,
-                                                                          64,
-                                                                          113)),
-                                                            )),
-                                                        Text(snapshot
-                                                            .data![snapshot
-                                                                    .data!
-                                                                    .length -
-                                                                1]
-                                                            .content)
-                                                      ])),
-                                              subtitle: Text(
-                                                'Posted at ${snapshot.data![snapshot.data!.length - 1].postedTime}',
-                                                style: const TextStyle(
-                                                    fontSize: 11),
-                                              ),
-                                            )
-                                          : Column(children: [
-                                              ListTile(
-                                                horizontalTitleGap: 10,
-                                                contentPadding:
-                                                    const EdgeInsets.only(
-                                                        left: 20, right: 20),
-                                                leading: CircleAvatar(
-                                                    radius: 18,
-                                                    backgroundImage:
-                                                        NetworkImage(snapshot
-                                                            .data![snapshot
-                                                                    .data!
-                                                                    .length -
-                                                                1]
-                                                            .authorPic)),
-                                                title: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            bottom: 3),
-                                                    child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .only(
-                                                                      bottom:
-                                                                          2),
-                                                              child: Text(
-                                                                snapshot
-                                                                    .data![snapshot
-                                                                            .data!
-                                                                            .length -
-                                                                        1]
-                                                                    .authorName,
-                                                                style: const TextStyle(
-                                                                    fontSize:
-                                                                        14,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
-                                                                    color: Color
-                                                                        .fromARGB(
-                                                                            255,
-                                                                            51,
-                                                                            64,
-                                                                            113)),
-                                                              )),
-                                                          Text(snapshot
-                                                              .data![snapshot
-                                                                      .data!
-                                                                      .length -
-                                                                  1]
-                                                              .content)
-                                                        ])),
-                                                subtitle: Text(
-                                                  'Posted at ${snapshot.data![snapshot.data!.length - 1].postedTime}',
-                                                  style: const TextStyle(
-                                                      fontSize: 11),
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 5,
-                                                    left: 20,
-                                                    right: 20),
-                                                child: TextFormField(
-                                                  controller: contentText,
-                                                  decoration: InputDecoration(
-                                                    hintText: 'Reply',
-                                                    suffixIcon: IconButton(
-                                                      onPressed: () {
-                                                        setState(() {
-                                                          contentText.clear();
-                                                        });
-                                                      },
-                                                      icon: const Icon(
-                                                          Icons.clear),
-                                                    ),
-                                                  ),
-                                                  onFieldSubmitted: (value) {
-                                                    setState(() {
-                                                      contentText.text = value;
-                                                    });
-                                                  },
-                                                ),
-                                              ),
-                                              Container(
-                                                  alignment:
-                                                      Alignment.centerRight,
-                                                  margin: const EdgeInsets.only(
-                                                      top: 6,
-                                                      right: 20,
-                                                      bottom: 10),
-                                                  child: ElevatedButton(
-                                                    onPressed: () {
-                                                      httpHelpers
-                                                          .addCommentRequest(
-                                                              _postid,
-                                                              contentText.text,
-                                                              jwt)
-                                                          .then((response) {
-                                                        if (response ==
-                                                            'Comment Posted') {
-                                                          Fluttertoast
-                                                              .showToast(
-                                                            msg:
-                                                                'Comment posted successfully!',
-                                                            toastLength: Toast
-                                                                .LENGTH_SHORT,
-                                                            gravity:
-                                                                ToastGravity
-                                                                    .BOTTOM,
-                                                            timeInSecForIosWeb:
-                                                                1,
-                                                          );
-                                                          setState(() {
-                                                            contentText.clear();
-                                                          });
-                                                        } else {
-                                                          Fluttertoast
-                                                              .showToast(
-                                                            msg:
-                                                                'Comment failed to post :(',
-                                                            toastLength: Toast
-                                                                .LENGTH_SHORT,
-                                                            gravity:
-                                                                ToastGravity
-                                                                    .BOTTOM,
-                                                            timeInSecForIosWeb:
-                                                                1,
-                                                          );
-                                                        }
-                                                      });
-                                                    },
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                            backgroundColor:
-                                                                const Color
-                                                                        .fromARGB(
-                                                                    255,
-                                                                    68,
-                                                                    86,
-                                                                    148)),
-                                                    child: const Text('Post',
-                                                        style: TextStyle(
-                                                            fontSize: 15)),
-                                                  )),
-                                            ]);
+                                      return PostPageSingleComment(
+                                          comments: snapshot.data!,
+                                          jwt: jwt,
+                                          postid: _postid);
                                     } else {
-                                      return jwt == ''
-                                          ? Container(
-                                              padding: const EdgeInsets.only(
-                                                  left: 20,
-                                                  right: 20,
-                                                  bottom: 5),
-                                              alignment: Alignment.centerLeft,
-                                              child:
-                                                  const Text('No comments yet'))
-                                          : Column(children: [
-                                              Container(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 20,
-                                                          right: 20,
-                                                          bottom: 5),
-                                                  alignment:
-                                                      Alignment.centerLeft,
-                                                  child: const Text(
-                                                      'No comments yet')),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 5,
-                                                    left: 20,
-                                                    right: 20),
-                                                child: TextFormField(
-                                                  controller: contentText,
-                                                  decoration: InputDecoration(
-                                                    hintText: 'Reply',
-                                                    suffixIcon: IconButton(
-                                                      onPressed: () {
-                                                        setState(() {
-                                                          contentText.clear();
-                                                        });
-                                                      },
-                                                      icon: const Icon(
-                                                          Icons.clear),
-                                                    ),
-                                                  ),
-                                                  onFieldSubmitted: (value) {
-                                                    setState(() {
-                                                      contentText.text = value;
-                                                    });
-                                                  },
-                                                ),
-                                              ),
-                                              Container(
-                                                  alignment:
-                                                      Alignment.centerRight,
-                                                  margin: const EdgeInsets.only(
-                                                      top: 6,
-                                                      right: 20,
-                                                      bottom: 10),
-                                                  child: ElevatedButton(
-                                                    onPressed: () {
-                                                      httpHelpers
-                                                          .addCommentRequest(
-                                                              _postid,
-                                                              contentText.text,
-                                                              jwt)
-                                                          .then((response) {
-                                                        if (response ==
-                                                            'Comment Posted') {
-                                                          Fluttertoast
-                                                              .showToast(
-                                                            msg:
-                                                                'Comment posted successfully!',
-                                                            toastLength: Toast
-                                                                .LENGTH_SHORT,
-                                                            gravity:
-                                                                ToastGravity
-                                                                    .BOTTOM,
-                                                            timeInSecForIosWeb:
-                                                                1,
-                                                          );
-                                                          setState(() {
-                                                            contentText.clear();
-                                                          });
-                                                        } else {
-                                                          Fluttertoast
-                                                              .showToast(
-                                                            msg:
-                                                                'Comment failed to post :(',
-                                                            toastLength: Toast
-                                                                .LENGTH_SHORT,
-                                                            gravity:
-                                                                ToastGravity
-                                                                    .BOTTOM,
-                                                            timeInSecForIosWeb:
-                                                                1,
-                                                          );
-                                                        }
-                                                      });
-                                                    },
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                            backgroundColor:
-                                                                const Color
-                                                                        .fromARGB(
-                                                                    255,
-                                                                    68,
-                                                                    86,
-                                                                    148)),
-                                                    child: const Text('Post',
-                                                        style: TextStyle(
-                                                            fontSize: 15)),
-                                                  )),
-                                            ]);
+                                      return PostPageNoComment(
+                                          jwt: jwt, postid: _postid);
                                     }
                                   },
                                 )
@@ -536,21 +145,11 @@ class PostPageState extends State<PostPage> {
                         ],
                       ))),
             );
+          } else if (snapshot.hasError) {
+            return const NoticeDialog(
+                content: 'Post not found! Please try again');
           } else {
-            return Container(
-              color: const Color.fromARGB(255, 236, 249, 255),
-              child: const Center(
-                child: SizedBox(
-                  height: 35.0,
-                  width: 35.0,
-                  child: CircularProgressIndicator(
-                      backgroundColor: Color.fromARGB(255, 91, 170, 255),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          Color.fromARGB(255, 184, 218, 255)),
-                      strokeWidth: 8),
-                ),
-              ),
-            );
+            return const LoadingScreen();
           }
         }));
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ichthyolog/Routes/login.dart';
-import 'login_background.dart';
+import 'loginBackground.dart';
 import '../Helpers/Http.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -30,31 +30,29 @@ class _SignUpPageState extends State<SignUpPage> {
       httpHelpers
           .signupRequest(_userName, _password, _userEmail)
           .then((String response) {
-        Widget continueButton = TextButton(
-            child: Text("OK"),
-            onPressed: () {
-              if (response == 'Signup Successful') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
-                );
-              } else {
-                Navigator.pop(context);
-              }
-            });
-
-        AlertDialog alert = AlertDialog(
-          title: Text("Notice"),
-          content: Text(response == 'Signup Successful'
-              ? 'Signup Successful! Please login.'
-              : 'Signup Failed. Please try again.'),
-          actions: [continueButton],
-        );
-
         showDialog(
           context: context,
           builder: (BuildContext context) {
-            return alert;
+            return AlertDialog(
+              title: const Text("Notice"),
+              content: Text(response == 'Signup Successful'
+                  ? 'Signup Successful! Please login.'
+                  : 'Signup Failed. Please try again.'),
+              actions: [
+                TextButton(
+                    child: const Text("OK"),
+                    onPressed: () {
+                      if (response == 'Signup Successful') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
+                      } else {
+                        Navigator.pop(context);
+                      }
+                    })
+              ],
+            );
           },
         );
       });

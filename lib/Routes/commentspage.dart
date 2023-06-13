@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../Helpers/Helper.dart';
-import '../Helpers/Http.dart';
+import 'package:ichthyolog/Helpers/standardWidgets.dart';
+import '../Helpers/helper.dart';
+import '../Helpers/http.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'comments.dart';
 
@@ -182,21 +183,11 @@ class CommentPageState extends State<CommentPage> {
                                     )),
                               ],
                             ))));
+          } else if (snapshot.hasError) {
+            return const NoticeDialog(
+                content: 'Comments not found! Please try again');
           } else {
-            return Container(
-              color: const Color.fromARGB(255, 236, 249, 255),
-              child: const Center(
-                child: SizedBox(
-                  height: 35.0,
-                  width: 35.0,
-                  child: CircularProgressIndicator(
-                      backgroundColor: Color.fromARGB(255, 91, 170, 255),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          Color.fromARGB(255, 184, 218, 255)),
-                      strokeWidth: 8),
-                ),
-              ),
-            );
+            return const LoadingScreen();
           }
         }));
   }

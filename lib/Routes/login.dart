@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:ichthyolog/Helpers/standardwidgets.dart';
 import 'package:ichthyolog/main.dart';
-import 'login_background.dart';
+import 'loginBackground.dart';
 import 'signup.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/Http.dart';
-import 'homepage.dart';
+import 'homePage.dart';
 import './gallerypage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final emailUsernameController = TextEditingController();
   final passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -27,20 +28,6 @@ class _LoginPageState extends State<LoginPage> {
           .loginRequest(emailUsernameController.text,
               emailUsernameController.text, passwordController.text)
           .then((String response) async {
-        debugPrint(response);
-        Widget continueButton = TextButton(
-            child: Text("OK"),
-            onPressed: () {
-              Navigator.pop(context);
-            });
-
-        AlertDialog alert = AlertDialog(
-            title: Text("Notice"),
-            content: Text(response == 'Password Incorrect'
-                ? 'Incorrect password, please try again.'
-                : 'Username not found, please try again.'),
-            actions: [continueButton]);
-
         if (response != 'Password Incorrect' &&
             response != 'Username Not Found') {
           await storage.write(key: "jwt", value: response);
@@ -54,15 +41,16 @@ class _LoginPageState extends State<LoginPage> {
           showDialog(
               context: context,
               builder: (BuildContext context) {
-                return alert;
+                return NoticeDialog(
+                    content: response == 'Password Incorrect'
+                        ? 'Incorrect password, please try again.'
+                        : 'Username not found, please try again.');
               });
         }
       });
     }
   }
 
-  //TODO: add futurebuilder so that this page will not load as long as jwt is
-  //still valid (user need not login again)
   @override
   Widget build(BuildContext context) {
     return Scaffold(
