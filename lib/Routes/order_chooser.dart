@@ -55,8 +55,7 @@ class OrderPickerState extends State<OrderPicker> {
 
   @override
   Widget build(BuildContext context) {
-    String class_ = widget.class_;
-    switch (class_) {
+    switch (widget.class_) {
       case 'Chondrichthyes':
         return SelectableList<SpeciesClassification, String?>(
           items: ordersChondrichthyes,

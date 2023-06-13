@@ -4,11 +4,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'datetimepicker.dart';
+import 'date_time_picker.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/Http.dart';
 import 'package:intl/intl.dart';
-import 'gallerypage.dart';
+import 'gallery_page.dart';
 import 'Stepper.dart';
 
 class Utils {

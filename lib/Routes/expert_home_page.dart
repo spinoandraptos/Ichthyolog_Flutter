@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:ichthyolog/Helpers/standardwidgets.dart';
+import '../Helpers/standard_widgets.dart';
 import '../Models/user.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
-import 'cameraPage.dart';
-import './gallerypage.dart';
+import 'camera_page.dart';
+import './gallery_page.dart';
 
 class ExpertHomePage extends StatefulWidget {
   const ExpertHomePage({super.key});
@@ -129,7 +129,7 @@ class HomePageState extends State<ExpertHomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => CameraPage()),
+                                builder: (context) => const CameraPage()),
                           );
                         },
                       ),

@@ -10,16 +10,10 @@ class GenusPicker extends StatefulWidget {
       : super(key: key);
 
   @override
-  GenusPickerState createState() => GenusPickerState(this.family);
+  GenusPickerState createState() => GenusPickerState();
 }
 
 class GenusPickerState extends State<GenusPicker> {
-  String family = '';
-
-  GenusPickerState(String family_) {
-    family = family_;
-  }
-
   final genusChannidae = [
     SpeciesClassification(
         classification: 'Channidae', description: 'Snakeheads'),
@@ -73,7 +67,7 @@ class GenusPickerState extends State<GenusPicker> {
 
   @override
   Widget build(BuildContext context) {
-    switch (family) {
+    switch (widget.family) {
       case 'Cichlidae':
         return SelectableList<SpeciesClassification, String?>(
           items: genusCichlidae,

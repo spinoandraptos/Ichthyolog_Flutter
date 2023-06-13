@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:ichthyolog/Helpers/standardwidgets.dart';
-import 'package:ichthyolog/main.dart';
-import 'loginBackground.dart';
+import '../Helpers/standard_widgets.dart';
+import '../main.dart';
+import 'login_background.dart';
 import 'signup.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/Http.dart';
-import 'homePage.dart';
-import './gallerypage.dart';
+import 'gallery_page.dart';
+import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -34,7 +34,7 @@ class LoginPageState extends State<LoginPage> {
           if (context.mounted) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => regularHomePage()),
+              MaterialPageRoute(builder: (context) => const RegularHomePage()),
             );
           }
         } else {
@@ -55,7 +55,7 @@ class LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(children: [
-        const BackgroundPage(),
+        const LoginBackgroundPage(),
         ListView(children: [
           Center(
             child: Form(
@@ -146,7 +146,7 @@ class LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 20),
 
                   //Login button
-                  Container(
+                  SizedBox(
                     width: 250,
                     height: 36,
                     child: ElevatedButton(
@@ -171,7 +171,8 @@ class LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => SignUpPage()),
+                          MaterialPageRoute(
+                              builder: (context) => const SignUpPage()),
                         );
                       },
                       child: const Text('Sign up'),
@@ -184,7 +185,7 @@ class LoginPageState extends State<LoginPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => GalleryPage()),
+                              builder: (context) => const GalleryPage()),
                         );
                       },
                       child: const Text('Use this app without an account',

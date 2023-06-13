@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
-import 'dateTimePicker.dart';
+import 'date_time_picker.dart';
 import 'Stepper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -10,10 +10,10 @@ class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});
 
   @override
-  _StatisticsPageState createState() => _StatisticsPageState();
+  StatisticsPageState createState() => StatisticsPageState();
 }
 
-class _StatisticsPageState extends State<StatisticsPage> {
+class StatisticsPageState extends State<StatisticsPage> {
   String mux = '';
   String jwt = '';
   String date1 = '';

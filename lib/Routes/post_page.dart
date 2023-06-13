@@ -1,27 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:ichthyolog/Helpers/standardwidgets.dart';
-import 'package:ichthyolog/Routes/postpagecomments.dart';
+import '../Helpers/standard_widgets.dart';
+import 'post_page_comments.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'commentsPage.dart';
 
 class PostPage extends StatefulWidget {
   final int postid;
   const PostPage({Key? key, required this.postid}) : super(key: key);
   @override
-  PostPageState createState() => PostPageState(postid);
+  PostPageState createState() => PostPageState();
 }
 
 class PostPageState extends State<PostPage> {
   String jwt = '';
-  int _postid = 0;
 
   final httpHelpers = HttpHelpers();
   final helpers = Helpers();
-  PostPageState(int postid) {
-    _postid = postid;
-  }
 
   @override
   void initState() {
@@ -42,7 +36,7 @@ class PostPageState extends State<PostPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: httpHelpers.viewPostRequest(_postid),
+        future: httpHelpers.viewPostRequest(widget.postid),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
             return Scaffold(
@@ -59,8 +53,8 @@ class PostPageState extends State<PostPage> {
                           Container(
                               margin: const EdgeInsets.only(top: 6, bottom: 8),
                               child: ListTile(
-                                visualDensity:
-                                    VisualDensity(horizontal: 0, vertical: -4),
+                                visualDensity: const VisualDensity(
+                                    horizontal: 0, vertical: -4),
                                 leading: CircleAvatar(
                                     backgroundImage:
                                         NetworkImage(snapshot.data!.authorpic)),
@@ -119,23 +113,23 @@ class PostPageState extends State<PostPage> {
                                 ),
                                 FutureBuilder(
                                   future: httpHelpers
-                                      .viewPostCommentsRequest(_postid),
+                                      .viewPostCommentsRequest(widget.postid),
                                   builder: (context, snapshot) {
                                     if (snapshot.hasData &&
                                         snapshot.data!.length > 1) {
                                       return PostPageMultiComment(
                                           comments: snapshot.data!,
                                           jwt: jwt,
-                                          postid: _postid);
+                                          postid: widget.postid);
                                     } else if (snapshot.hasData &&
                                         snapshot.data!.length == 1) {
                                       return PostPageSingleComment(
                                           comments: snapshot.data!,
                                           jwt: jwt,
-                                          postid: _postid);
+                                          postid: widget.postid);
                                     } else {
                                       return PostPageNoComment(
-                                          jwt: jwt, postid: _postid);
+                                          jwt: jwt, postid: widget.postid);
                                     }
                                   },
                                 )

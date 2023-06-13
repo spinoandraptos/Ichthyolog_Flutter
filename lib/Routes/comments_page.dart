@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:ichthyolog/Helpers/standardWidgets.dart';
+import '../Helpers/standard_widgets.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -10,20 +10,16 @@ class CommentPage extends StatefulWidget {
   final int postid;
   const CommentPage({Key? key, required this.postid}) : super(key: key);
   @override
-  CommentPageState createState() => CommentPageState(postid);
+  CommentPageState createState() => CommentPageState();
 }
 
 class CommentPageState extends State<CommentPage> {
   String jwt = '';
   Map<String, dynamic> decodedJWT = {};
-  int _postid = 0;
   final contentText = TextEditingController();
 
   final httpHelpers = HttpHelpers();
   final helpers = Helpers();
-  CommentPageState(int postid) {
-    _postid = postid;
-  }
 
   @override
   void initState() {
@@ -52,7 +48,7 @@ class CommentPageState extends State<CommentPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: httpHelpers.viewPostCommentsRequest(_postid),
+        future: httpHelpers.viewPostCommentsRequest(widget.postid),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
             return jwt == ''
@@ -151,8 +147,8 @@ class CommentPageState extends State<CommentPage> {
                                     child: ElevatedButton(
                                       onPressed: () {
                                         httpHelpers
-                                            .addCommentRequest(
-                                                _postid, contentText.text, jwt)
+                                            .addCommentRequest(widget.postid,
+                                                contentText.text, jwt)
                                             .then((response) {
                                           if (response == 'Comment Posted') {
                                             Fluttertoast.showToast(

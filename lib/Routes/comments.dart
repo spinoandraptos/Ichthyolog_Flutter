@@ -7,7 +7,7 @@ class OwnComment extends StatelessWidget {
   final Comment comment;
   final httpHelpers = HttpHelpers();
   final String jwt;
-  Function deleteCallBack;
+  final Function deleteCallBack;
   OwnComment(
       {Key? key,
       required this.comment,

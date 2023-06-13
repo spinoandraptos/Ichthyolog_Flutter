@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:ichthyolog/Routes/login.dart';
-import 'loginBackground.dart';
+import 'login_background.dart';
 import '../Helpers/Http.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
   @override
-  _SignUpPageState createState() => _SignUpPageState();
+  SignUpPageState createState() => SignUpPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class SignUpPageState extends State<SignUpPage> {
   String _userName = '';
   String _userEmail = '';
   String _password = '';
@@ -45,7 +45,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       if (response == 'Signup Successful') {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          MaterialPageRoute(
+                              builder: (context) => const LoginPage()),
                         );
                       } else {
                         Navigator.pop(context);
@@ -87,7 +88,7 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(children: [
-        const BackgroundPage(),
+        const LoginBackgroundPage(),
         ListView(children: [
           Center(
             child: Form(
@@ -100,13 +101,13 @@ class _SignUpPageState extends State<SignUpPage> {
                     alignment: Alignment.topLeft,
                     margin: const EdgeInsets.only(top: 20),
                     child: IconButton(
-                        color: Color.fromARGB(255, 57, 81, 189),
+                        color: const Color.fromARGB(255, 57, 81, 189),
                         iconSize: 35,
                         icon: const Icon(Icons.arrow_back),
                         onPressed: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => LoginPage()),
+                                  builder: (context) => const LoginPage()),
                             )),
                   ),
 
@@ -244,12 +245,11 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 20),
 
                   //Sign up button
-                  Container(
+                  SizedBox(
                     width: 250,
                     height: 36,
                     child: ElevatedButton(
                       onPressed: () {
-                        String output = 'Signup Unsuccessful';
                         validateForm();
                       },
                       style: ButtonStyle(

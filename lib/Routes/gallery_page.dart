@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ichthyolog/Helpers/standardwidgets.dart';
-import 'package:ichthyolog/Models/post.dart';
-import 'package:ichthyolog/Routes/postpage.dart';
+import '../Helpers/standard_widgets.dart';
+import '../Models/post.dart';
+import 'post_page.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
@@ -102,8 +102,8 @@ class GalleryPageState extends State<GalleryPage> {
                   SizedBox(
                       width: 40,
                       child: TextButton(
-                          style:
-                              TextButton.styleFrom(padding: EdgeInsets.all(0)),
+                          style: TextButton.styleFrom(
+                              padding: const EdgeInsets.all(0)),
                           onPressed: () {},
                           child: const Text('Edit Post',
                               style: TextStyle(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'classChooser.dart';
-import 'orderChooser.dart';
-import 'familyChooser.dart';
-import 'genusChooser.dart';
+import 'class_chooser.dart';
+import 'order_chooser.dart';
+import 'family_chooser.dart';
+import 'genus_chooser.dart';
 
 class SpeciesStepper extends StatefulWidget {
   final Function classCallback;
