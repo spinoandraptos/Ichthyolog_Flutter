@@ -5,13 +5,14 @@ import '../Helpers/Helper.dart';
 import '../Helpers/Http.dart';
 import 'camerapage.dart';
 import './experthomepage.dart';
+import 'statisticspage.dart';
 
 class regularHomePage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<regularHomePage> {
+class HomePageState extends State<regularHomePage> {
   bool _authorised = false;
   String jwt = '';
   final helpers = Helpers();
@@ -61,7 +62,7 @@ class _HomePageState extends State<regularHomePage> {
                   appBar: AppBar(
                     leading: const Icon(Icons.menu),
                     title: const Text('Regular Home'),
-                    backgroundColor: Color.fromARGB(255, 70, 88, 152),
+                    backgroundColor: const Color.fromARGB(255, 70, 88, 152),
                     actions: [
                       IconButton(
                         icon: const Icon(Icons.logout),
@@ -121,9 +122,9 @@ class _HomePageState extends State<regularHomePage> {
                         'Species Count: ${snapshot.data!.speciescount}', // Replace with the actual number of species found
                         style: const TextStyle(fontSize: 16),
                       ),
-                      Text(
+                      const Text(
                         'Species with Most Posts: ', // Replace with the actual species
-                        style: const TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 16),
                       ),
                     ],
                   ),
@@ -141,7 +142,7 @@ class _HomePageState extends State<regularHomePage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => CameraPage()),
+                                  builder: (context) => const CameraPage()),
                             );
                           },
                         ),
@@ -152,6 +153,16 @@ class _HomePageState extends State<regularHomePage> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => const GalleryPage()),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.question_mark_outlined),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const StatisticsPage()),
                             );
                           },
                         ),

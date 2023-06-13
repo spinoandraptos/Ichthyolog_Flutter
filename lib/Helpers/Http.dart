@@ -146,6 +146,48 @@ class HttpHelpers {
     }
   }
 
+  Future<List<Post>> viewAllVerifiedPostsRequest() async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/posts/verified';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<Post> postlist = [];
+      var responseData = json.decode(response.body);
+      for (var everypost in responseData) {
+        Post post = Post.fromJson(everypost);
+        postlist.add(post);
+      }
+      return postlist;
+    } else {
+      throw Exception('Posts not found! Error ${response.statusCode}');
+    }
+  }
+
+  Future<List<Post>> viewAllUnverifiedPostsRequest() async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/posts/unverified';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<Post> postlist = [];
+      var responseData = json.decode(response.body);
+      for (var everypost in responseData) {
+        Post post = Post.fromJson(everypost);
+        postlist.add(post);
+      }
+      return postlist;
+    } else {
+      throw Exception('Posts not found! Error ${response.statusCode}');
+    }
+  }
+
   Future<Post> viewPostRequest(int postid) async {
     String url = 'https://ichthyolog-nodejs.onrender.com/post/$postid';
     var response = await http.get(
@@ -297,11 +339,59 @@ class HttpHelpers {
       body:
           json.encode(<String, dynamic>{'postid': postid, 'content': content}),
     );
-    debugPrint('${response.statusCode}');
     if (response.statusCode == 201) {
       return ('Comment Posted');
     } else {
       return ('Comment Post Failed');
+    }
+  }
+
+  Future<String> deleteUserRequest(String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/user';
+    var response = await http.delete(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      return ('User Deleted');
+    } else {
+      return ('User Deletion Failed');
+    }
+  }
+
+  Future<String> deletePostRequest(int postid, String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/post/$postid';
+    var response = await http.delete(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      return ('Post Deleted');
+    } else {
+      return ('Post Deletion Failed');
+    }
+  }
+
+  Future<String> deleteCommentRequest(int commentid, String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/comment/$commentid';
+    var response = await http.delete(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      return ('Comment Deleted');
+    } else {
+      print(response.body);
+      return ('Comment Deletion Failed');
     }
   }
 }

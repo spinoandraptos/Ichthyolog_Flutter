@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../Helpers/Helper.dart';
 import '../Helpers/Http.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'comments.dart';
 
 class CommentPage extends StatefulWidget {
   final int postid;
@@ -12,6 +14,7 @@ class CommentPage extends StatefulWidget {
 
 class CommentPageState extends State<CommentPage> {
   String jwt = '';
+  Map<String, dynamic> decodedJWT = {};
   int _postid = 0;
   final contentText = TextEditingController();
 
@@ -32,6 +35,7 @@ class CommentPageState extends State<CommentPage> {
       } else {
         setState(() {
           jwt = token;
+          decodedJWT = JwtDecoder.decode(token);
         });
       }
     });
@@ -70,57 +74,8 @@ class CommentPageState extends State<CommentPage> {
                                   child: ListView.builder(
                                     itemCount: snapshot.data!.length,
                                     itemBuilder: (context, index) {
-                                      return Container(
-                                          padding: const EdgeInsets.only(
-                                              left: 5, right: 5),
-                                          child: ListTile(
-                                            horizontalTitleGap: 10,
-                                            contentPadding:
-                                                const EdgeInsets.only(
-                                                    left: 20, right: 20),
-                                            leading: CircleAvatar(
-                                                radius: 18,
-                                                backgroundImage: NetworkImage(
-                                                    snapshot.data![index]
-                                                        .authorPic)),
-                                            title: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    bottom: 3),
-                                                child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  bottom: 2),
-                                                          child: Text(
-                                                            snapshot
-                                                                .data![index]
-                                                                .authorName,
-                                                            style: const TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500,
-                                                                color: Color
-                                                                    .fromARGB(
-                                                                        255,
-                                                                        51,
-                                                                        64,
-                                                                        113)),
-                                                          )),
-                                                      Text(snapshot
-                                                          .data![index].content)
-                                                    ])),
-                                            subtitle: Text(
-                                              'Posted at ${snapshot.data![index].postedTime}',
-                                              style:
-                                                  const TextStyle(fontSize: 11),
-                                            ),
-                                          ));
+                                      return OtherComment(
+                                          comment: snapshot.data![index]);
                                     },
                                   ))
                             ]))))
@@ -151,59 +106,18 @@ class CommentPageState extends State<CommentPage> {
                                     child: ListView.builder(
                                       itemCount: snapshot.data!.length,
                                       itemBuilder: (context, index) {
-                                        return Container(
-                                            padding: const EdgeInsets.only(
-                                                left: 5, right: 5),
-                                            child: ListTile(
-                                              horizontalTitleGap: 10,
-                                              contentPadding:
-                                                  const EdgeInsets.only(
-                                                      left: 20, right: 20),
-                                              leading: CircleAvatar(
-                                                  radius: 18,
-                                                  backgroundImage: NetworkImage(
-                                                      snapshot.data![index]
-                                                          .authorPic)),
-                                              title: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          bottom: 3),
-                                                  child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    bottom: 2),
-                                                            child: Text(
-                                                              snapshot
-                                                                  .data![index]
-                                                                  .authorName,
-                                                              style: const TextStyle(
-                                                                  fontSize: 14,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                  color: Color
-                                                                      .fromARGB(
-                                                                          255,
-                                                                          51,
-                                                                          64,
-                                                                          113)),
-                                                            )),
-                                                        Text(snapshot
-                                                            .data![index]
-                                                            .content)
-                                                      ])),
-                                              subtitle: Text(
-                                                'Posted at ${snapshot.data![index].postedTime}',
-                                                style: const TextStyle(
-                                                    fontSize: 11),
-                                              ),
-                                            ));
+                                        if (snapshot.data![index].authorName ==
+                                            decodedJWT['username']) {
+                                          return OwnComment(
+                                            comment: snapshot.data![index],
+                                            jwt: jwt,
+                                            deleteCallBack:
+                                                deleteCommentCallback,
+                                          );
+                                        } else {
+                                          return OtherComment(
+                                              comment: snapshot.data![index]);
+                                        }
                                       },
                                     )),
                                 Padding(
@@ -285,5 +199,9 @@ class CommentPageState extends State<CommentPage> {
             );
           }
         }));
+  }
+
+  deleteCommentCallback(response) {
+    if (response == 'Comment Deleted') setState(() {});
   }
 }
