@@ -3,6 +3,7 @@ import '../Models/comment.dart';
 import '../Helpers/http.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'comments_page.dart';
+import 'comments.dart';
 
 class PostPageMultiComment extends StatelessWidget {
   final List<Comment> comments;
@@ -67,13 +68,19 @@ class PostPageSingleComment extends StatefulWidget {
   final List<Comment> comments;
   final String jwt;
   final int postid;
+  final Map<String, dynamic> decodedJWT;
+  final Function deleteCallBack;
+  final Function addCallBack;
 
-  const PostPageSingleComment({
-    Key? key,
-    required this.comments,
-    required this.jwt,
-    required this.postid,
-  }) : super(key: key);
+  const PostPageSingleComment(
+      {Key? key,
+      required this.comments,
+      required this.jwt,
+      required this.postid,
+      required this.decodedJWT,
+      required this.deleteCallBack,
+      required this.addCallBack})
+      : super(key: key);
 
   @override
   PostPageSingleCommentState createState() => PostPageSingleCommentState();
@@ -93,68 +100,18 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
   @override
   Widget build(BuildContext context) {
     return widget.jwt == ''
-        ? ListTile(
-            horizontalTitleGap: 10,
-            contentPadding: const EdgeInsets.only(left: 20, right: 20),
-            leading: CircleAvatar(
-                radius: 18,
-                backgroundImage: NetworkImage(
-                    widget.comments[widget.comments.length - 1].authorPic)),
-            title: Padding(
-                padding: const EdgeInsets.only(bottom: 3),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                          padding: const EdgeInsets.only(bottom: 2),
-                          child: Text(
-                            widget.comments[widget.comments.length - 1]
-                                .authorName,
-                            style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Color.fromARGB(255, 51, 64, 113)),
-                          )),
-                      Text(widget.comments[widget.comments.length - 1].content)
-                    ])),
-            subtitle: Text(
-              'Posted at ${widget.comments[widget.comments.length - 1].postedTime}',
-              style: const TextStyle(fontSize: 11),
-            ),
-          )
+        ? OtherComment(comment: widget.comments[widget.comments.length - 1])
         : Column(children: [
-            ListTile(
-              horizontalTitleGap: 10,
-              contentPadding: const EdgeInsets.only(left: 20, right: 20),
-              leading: CircleAvatar(
-                  radius: 18,
-                  backgroundImage: NetworkImage(
-                      widget.comments[widget.comments.length - 1].authorPic)),
-              title: Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                            padding: const EdgeInsets.only(bottom: 2),
-                            child: Text(
-                              widget.comments[widget.comments.length - 1]
-                                  .authorName,
-                              style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color.fromARGB(255, 51, 64, 113)),
-                            )),
-                        Text(
-                            widget.comments[widget.comments.length - 1].content)
-                      ])),
-              subtitle: Text(
-                'Posted at ${widget.comments[widget.comments.length - 1].postedTime}',
-                style: const TextStyle(fontSize: 11),
-              ),
-            ),
+            widget.comments[widget.comments.length - 1].authorId ==
+                    widget.decodedJWT['userid']
+                ? OwnComment(
+                    comment: widget.comments[widget.comments.length - 1],
+                    jwt: widget.jwt,
+                    deleteCallBack: widget.deleteCallBack)
+                : OtherComment(
+                    comment: widget.comments[widget.comments.length - 1]),
             Padding(
-              padding: const EdgeInsets.only(top: 5, left: 20, right: 20),
+              padding: const EdgeInsets.only(left: 20, right: 20),
               child: TextFormField(
                 controller: contentText,
                 decoration: InputDecoration(
@@ -185,6 +142,7 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
                             widget.postid, contentText.text, widget.jwt)
                         .then((response) {
                       if (response == 'Comment Posted') {
+                        widget.addCallBack(response);
                         Fluttertoast.showToast(
                           msg: 'Comment posted successfully!',
                           toastLength: Toast.LENGTH_SHORT,
@@ -215,15 +173,17 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
 class PostPageNoComment extends StatefulWidget {
   final String jwt;
   final int postid;
+  final Function addCallBack;
 
-  const PostPageNoComment({
-    Key? key,
-    required this.jwt,
-    required this.postid,
-  }) : super(key: key);
+  const PostPageNoComment(
+      {Key? key,
+      required this.jwt,
+      required this.postid,
+      required this.addCallBack})
+      : super(key: key);
 
   @override
-  PostPageSingleCommentState createState() => PostPageSingleCommentState();
+  PostPageNoCommentState createState() => PostPageNoCommentState();
 }
 
 class PostPageNoCommentState extends State<PostPageNoComment> {
@@ -241,7 +201,7 @@ class PostPageNoCommentState extends State<PostPageNoComment> {
   Widget build(BuildContext context) {
     return widget.jwt == ''
         ? Container(
-            padding: const EdgeInsets.only(left: 20, right: 20, bottom: 5),
+            padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
             alignment: Alignment.centerLeft,
             child: const Text('No comments yet'))
         : Column(children: [
@@ -281,6 +241,7 @@ class PostPageNoCommentState extends State<PostPageNoComment> {
                             widget.postid, contentText.text, widget.jwt)
                         .then((response) {
                       if (response == 'Comment Posted') {
+                        widget.addCallBack(response);
                         Fluttertoast.showToast(
                           msg: 'Comment posted successfully!',
                           toastLength: Toast.LENGTH_SHORT,

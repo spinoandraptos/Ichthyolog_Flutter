@@ -6,7 +6,7 @@ import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
 import 'camera_page.dart';
 import 'expert_home_page.dart';
-import 'statisticspage.dart';
+import 'statistics_page.dart';
 
 class RegularHomePage extends StatefulWidget {
   const RegularHomePage({super.key});

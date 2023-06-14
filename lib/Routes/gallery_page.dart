@@ -95,90 +95,92 @@ class GalleryPageState extends State<GalleryPage> {
           Container(
               alignment: Alignment.centerRight,
               padding: const EdgeInsets.only(right: 4, bottom: 2),
-              height: 18,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  SizedBox(
-                      width: 40,
-                      child: TextButton(
-                          style: TextButton.styleFrom(
-                              padding: const EdgeInsets.all(0)),
-                          onPressed: () {},
-                          child: const Text('Edit Post',
-                              style: TextStyle(
-                                  fontSize: 7,
-                                  color: Color.fromARGB(255, 33, 53, 88))))),
-                  SizedBox(
-                      width: 46,
-                      child: TextButton(
-                          style: TextButton.styleFrom(
-                              padding: const EdgeInsets.all(0)),
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                      title: const Text("Warning"),
-                                      content: const Text(
-                                          'Are you sure? This action is irreversible!'),
-                                      actions: [
-                                        ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                                backgroundColor:
-                                                    const Color.fromARGB(
-                                                        255, 80, 170, 121)),
-                                            child: const Text("Yes"),
-                                            onPressed: () {
-                                              httpHelpers
-                                                  .deletePostRequest(
-                                                      post.postid, jwt)
-                                                  .then(
-                                                (response) {
-                                                  Navigator.pop(context);
-                                                  if (response ==
-                                                      'Post Deleted') {
-                                                    setState(() {});
-                                                    Fluttertoast.showToast(
-                                                      msg: 'Post deleted',
-                                                      toastLength:
-                                                          Toast.LENGTH_SHORT,
-                                                      gravity:
-                                                          ToastGravity.BOTTOM,
-                                                      timeInSecForIosWeb: 1,
-                                                    );
-                                                  } else {
-                                                    Fluttertoast.showToast(
-                                                      msg:
-                                                          'Post failed to delete :(',
-                                                      toastLength:
-                                                          Toast.LENGTH_SHORT,
-                                                      gravity:
-                                                          ToastGravity.BOTTOM,
-                                                      timeInSecForIosWeb: 1,
-                                                    );
-                                                  }
-                                                },
-                                              );
-                                            }),
-                                        ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                                backgroundColor:
-                                                    const Color.fromARGB(
-                                                        255, 170, 80, 80)),
-                                            child: const Text("Cancel"),
-                                            onPressed: () {
+                  TextButton(
+                      style: TextButton.styleFrom(
+                          padding: const EdgeInsets.all(3),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                      onPressed: () {},
+                      child: const Text('Edit Post',
+                          style: TextStyle(
+                              fontSize: 7,
+                              color: Color.fromARGB(255, 33, 53, 88)))),
+                  TextButton(
+                      style: TextButton.styleFrom(
+                          padding: const EdgeInsets.all(3),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                  title: const Text("Warning"),
+                                  content: const Text(
+                                      'Are you sure? This action is irreversible!'),
+                                  actions: [
+                                    ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                const Color.fromARGB(
+                                                    255, 80, 170, 121)),
+                                        child: const Text("Yes"),
+                                        onPressed: () {
+                                          httpHelpers
+                                              .deletePostRequest(
+                                                  post.postid, jwt)
+                                              .then(
+                                            (response) {
                                               Navigator.pop(context);
-                                            })
-                                      ]);
-                                });
-                          },
-                          child: const Text('Delete Post',
-                              style: TextStyle(
-                                  fontSize: 7,
-                                  color: Color.fromARGB(255, 33, 53, 88)))))
+                                              if (response == 'Post Deleted') {
+                                                setState(() {});
+                                                Fluttertoast.showToast(
+                                                  msg: 'Post deleted',
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  timeInSecForIosWeb: 1,
+                                                );
+                                              } else {
+                                                Fluttertoast.showToast(
+                                                  msg:
+                                                      'Post failed to delete :(',
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  timeInSecForIosWeb: 1,
+                                                );
+                                              }
+                                            },
+                                          );
+                                        }),
+                                    ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                const Color.fromARGB(
+                                                    255, 170, 80, 80)),
+                                        child: const Text("Cancel"),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        })
+                                  ]);
+                            });
+                      },
+                      child: const Text('Delete Post',
+                          style: TextStyle(
+                              fontSize: 7,
+                              color: Color.fromARGB(255, 33, 53, 88)))),
                 ],
-              ))
+              )),
+          Container(
+              padding: const EdgeInsets.only(left: 6, bottom: 5, right: 8),
+              child: Text('Sighted at ${post.sightingLocation}',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(
+                      fontSize: 7, color: Color.fromARGB(255, 33, 53, 88)))),
         ]));
   }
 
@@ -232,7 +234,7 @@ class GalleryPageState extends State<GalleryPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: httpHelpers.viewAllVerifiedPostsRequest(),
+        future: httpHelpers.viewAllPostsRequest(),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
             if (jwt == '') {

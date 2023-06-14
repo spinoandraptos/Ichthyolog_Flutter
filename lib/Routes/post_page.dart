@@ -3,6 +3,7 @@ import '../Helpers/standard_widgets.dart';
 import 'post_page_comments.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class PostPage extends StatefulWidget {
   final int postid;
@@ -13,7 +14,7 @@ class PostPage extends StatefulWidget {
 
 class PostPageState extends State<PostPage> {
   String jwt = '';
-
+  Map<String, dynamic> decodedJWT = {};
   final httpHelpers = HttpHelpers();
   final helpers = Helpers();
 
@@ -28,6 +29,7 @@ class PostPageState extends State<PostPage> {
       } else {
         setState(() {
           jwt = token;
+          decodedJWT = JwtDecoder.decode(token);
         });
       }
     });
@@ -46,7 +48,7 @@ class PostPageState extends State<PostPage> {
               ),
               body: SingleChildScrollView(
                   child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 1.2,
+                      height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
                       child: Column(
                         children: [
@@ -69,7 +71,9 @@ class PostPageState extends State<PostPage> {
                               )),
                           ConstrainedBox(
                               constraints: BoxConstraints(
-                                maxHeight: 350,
+                                maxHeight: MediaQuery.of(context).size.height *
+                                    3 /
+                                    8.25,
                                 minWidth: MediaQuery.of(context).size.width,
                                 maxWidth: MediaQuery.of(context).size.width,
                               ),
@@ -81,7 +85,7 @@ class PostPageState extends State<PostPage> {
                                   ))),
                           Container(
                               padding: const EdgeInsets.only(
-                                  left: 20, right: 20, top: 15),
+                                  left: 20, right: 20, top: 15, bottom: 7),
                               alignment: Alignment.centerLeft,
                               child: const Text(
                                 "Description",
@@ -90,52 +94,62 @@ class PostPageState extends State<PostPage> {
                                     fontSize: 18,
                                     color: Color.fromARGB(255, 51, 64, 113)),
                               )),
-                          Container(
-                              padding: const EdgeInsets.only(
-                                  left: 20, top: 5, right: 20, bottom: 5),
-                              alignment: Alignment.centerLeft,
-                              child: Text(snapshot.data!.description)),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                Container(
-                                  alignment: Alignment.centerLeft,
-                                  padding: const EdgeInsets.only(
-                                      left: 20, top: 18, bottom: 12),
-                                  child: const Text(
-                                    "Comments",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 18,
-                                        color:
-                                            Color.fromARGB(255, 51, 64, 113)),
-                                  ),
+                          Flexible(
+                              fit: FlexFit.loose,
+                              child: SingleChildScrollView(
+                                  child: Container(
+                                      padding: const EdgeInsets.only(
+                                          left: 20,
+                                          top: 5,
+                                          right: 20,
+                                          bottom: 5),
+                                      alignment: Alignment.centerLeft,
+                                      child:
+                                          Text(snapshot.data!.description)))),
+                          Column(
+                            children: [
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                padding: const EdgeInsets.only(
+                                    left: 20, top: 18, bottom: 12),
+                                child: const Text(
+                                  "Comments",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 18,
+                                      color: Color.fromARGB(255, 51, 64, 113)),
                                 ),
-                                FutureBuilder(
-                                  future: httpHelpers
-                                      .viewPostCommentsRequest(widget.postid),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData &&
-                                        snapshot.data!.length > 1) {
-                                      return PostPageMultiComment(
-                                          comments: snapshot.data!,
-                                          jwt: jwt,
-                                          postid: widget.postid);
-                                    } else if (snapshot.hasData &&
-                                        snapshot.data!.length == 1) {
-                                      return PostPageSingleComment(
-                                          comments: snapshot.data!,
-                                          jwt: jwt,
-                                          postid: widget.postid);
-                                    } else {
-                                      return PostPageNoComment(
-                                          jwt: jwt, postid: widget.postid);
-                                    }
-                                  },
-                                )
-                              ],
-                            ),
-                          )
+                              ),
+                              FutureBuilder(
+                                future: httpHelpers
+                                    .viewPostCommentsRequest(widget.postid),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData &&
+                                      snapshot.data!.length > 1) {
+                                    return PostPageMultiComment(
+                                        comments: snapshot.data!,
+                                        jwt: jwt,
+                                        postid: widget.postid);
+                                  } else if (snapshot.hasData &&
+                                      snapshot.data!.length == 1) {
+                                    return PostPageSingleComment(
+                                      comments: snapshot.data!,
+                                      jwt: jwt,
+                                      decodedJWT: decodedJWT,
+                                      postid: widget.postid,
+                                      deleteCallBack: changeCommentCallback,
+                                      addCallBack: changeCommentCallback,
+                                    );
+                                  } else {
+                                    return PostPageNoComment(
+                                        jwt: jwt,
+                                        postid: widget.postid,
+                                        addCallBack: changeCommentCallback);
+                                  }
+                                },
+                              )
+                            ],
+                          ),
                         ],
                       ))),
             );
@@ -146,5 +160,11 @@ class PostPageState extends State<PostPage> {
             return const LoadingScreen();
           }
         }));
+  }
+
+  changeCommentCallback(response) {
+    if (response == 'Comment Deleted' || response == 'Comment Posted') {
+      setState(() {});
+    }
   }
 }

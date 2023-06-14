@@ -87,20 +87,15 @@ class CommentPageState extends State<CommentPage> {
                             width: MediaQuery.of(context).size.width,
                             child: Column(
                               children: [
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                SizedBox(
-                                    height: snapshot.data!.length <= 8
-                                        ? MediaQuery.of(context).size.height *
-                                            snapshot.data!.length *
-                                            1 /
-                                            11
-                                        : MediaQuery.of(context).size.height *
-                                            4.35 /
-                                            6,
-                                    width: MediaQuery.of(context).size.width,
+                                Container(
+                                    padding: const EdgeInsets.only(top: 6),
+                                    constraints: BoxConstraints(
+                                      maxHeight:
+                                          MediaQuery.of(context).size.height -
+                                              210,
+                                    ),
                                     child: ListView.builder(
+                                      shrinkWrap: true,
                                       itemCount: snapshot.data!.length,
                                       itemBuilder: (context, index) {
                                         if (snapshot.data![index].authorName ==
@@ -189,6 +184,8 @@ class CommentPageState extends State<CommentPage> {
   }
 
   deleteCommentCallback(response) {
-    if (response == 'Comment Deleted') setState(() {});
+    if (response == 'Comment Deleted') {
+      setState(() {});
+    }
   }
 }

@@ -328,14 +328,13 @@ class CameraPageState extends State<CameraPage> {
     final file = AWSFile.fromPath(image!.path);
 
     try {
-      final result = Amplify.Storage.uploadFile(
+      Amplify.Storage.uploadFile(
         key: key,
         localFile: file,
         options: const StorageUploadFileOptions(
           accessLevel: StorageAccessLevel.guest,
         ),
       );
-      print('Upload result: $result');
 
       //send description and other post information to database
       httpHelpers
