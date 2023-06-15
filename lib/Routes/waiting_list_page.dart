@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
-import '../Helpers/standard_widgets.dart';
-import '../Models/post.dart';
-import 'post_page.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
+import '../Models/post.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'post_page.dart';
+import '../Helpers/standard_widgets.dart';
 
-class GalleryPage extends StatefulWidget {
-  const GalleryPage({super.key});
+class WaitingListPage extends StatefulWidget {
+  const WaitingListPage({super.key});
   @override
-  GalleryPageState createState() => GalleryPageState();
+  WaitingListPageState createState() => WaitingListPageState();
 }
 
-class GalleryPageState extends State<GalleryPage> {
+class WaitingListPageState extends State<WaitingListPage> {
   String jwt = '';
   Map<String, dynamic> decodedJWT = {};
   final httpHelpers = HttpHelpers();
   final helpers = Helpers();
-
   @override
   void initState() {
     super.initState();
@@ -38,7 +37,6 @@ class GalleryPageState extends State<GalleryPage> {
 
   Widget galleryScreen(BuildContext context, List<Post> posts) {
     return Column(children: [
-      galleryLegend(),
       GridView.builder(
           itemCount: posts.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -212,91 +210,116 @@ class GalleryPageState extends State<GalleryPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(3),
         ),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Padding(
-                  padding: const EdgeInsets.only(left: 9, top: 5, right: 9),
-                  child: Row(children: [
-                    Container(
-                        padding: const EdgeInsets.only(right: 5),
-                        width: 77,
-                        child: Text(
-                          post.title,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 8,
-                              color: Color.fromARGB(255, 33, 53, 88)),
-                        )),
-                    CircleAvatar(
-                      radius: 8,
-                      backgroundColor: post.verified
-                          ? const Color.fromARGB(255, 73, 155, 109)
-                          : const Color.fromARGB(255, 152, 72, 85),
-                      child: Icon(
-                        post.verified ? Icons.verified : Icons.pending,
-                        size: 10,
-                        color: Colors.white,
-                      ),
-                    )
-                  ])),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(6),
-                  child: InkWell(
-                      child: Ink.image(
-                          image: NetworkImage(post.pic), fit: BoxFit.cover),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  PostPage(postid: post.postid)),
-                        );
-                      }),
-                ),
-              ),
-              Container(
-                  padding: const EdgeInsets.only(left: 6, bottom: 5, right: 8),
-                  child: Text('Sighted at ${post.sightingLocation}',
-                      textAlign: TextAlign.right,
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <
+                Widget>[
+          Padding(
+              padding: const EdgeInsets.only(left: 9, top: 5, right: 9),
+              child: Row(children: [
+                Container(
+                    padding: const EdgeInsets.only(right: 5),
+                    width: 77,
+                    child: Text(
+                      post.title,
                       style: const TextStyle(
-                          fontSize: 7,
-                          color: Color.fromARGB(255, 33, 53, 88)))),
-            ]));
+                          fontWeight: FontWeight.bold,
+                          fontSize: 8,
+                          color: Color.fromARGB(255, 33, 53, 88)),
+                    )),
+                const CircleAvatar(
+                  radius: 8,
+                  backgroundColor: Color.fromARGB(255, 152, 72, 85),
+                  child: Icon(
+                    Icons.priority_high,
+                    size: 10,
+                    color: Colors.white,
+                  ),
+                )
+              ])),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(6),
+              child: InkWell(
+                  child: Ink.image(
+                      image: NetworkImage(post.pic), fit: BoxFit.cover),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PostPage(postid: post.postid)),
+                    );
+                  }),
+            ),
+          ),
+          Padding(
+              padding: const EdgeInsets.only(right: 5, bottom: 6),
+              child: Wrap(spacing: 4, alignment: WrapAlignment.end, children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.only(
+                          left: 5, top: 3, bottom: 3, right: 5),
+                      minimumSize: Size.zero,
+                      backgroundColor: const Color.fromARGB(255, 80, 106, 170),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                  child: const Text('Edit', style: TextStyle(fontSize: 8)),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    httpHelpers
+                        .verifyPostRequest(post.postid, jwt)
+                        .then((response) {
+                      if (response == 'Post Verified') {
+                        setState(() {});
+                        Fluttertoast.showToast(
+                          msg: 'Post Verified',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                        );
+                      } else {
+                        Fluttertoast.showToast(
+                          msg: 'Post Verification Failed',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                        );
+                      }
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.only(
+                          left: 5, top: 3, bottom: 3, right: 5),
+                      minimumSize: Size.zero,
+                      backgroundColor: const Color.fromARGB(255, 170, 80, 80),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                  child: const Text('Verify', style: TextStyle(fontSize: 8)),
+                )
+              ]))
+        ]));
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: httpHelpers.viewAllPostsRequest(),
+        future: httpHelpers.viewAllUnverifiedPostsRequest(),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
-            if (jwt == '') {
-              return Scaffold(
-                appBar: AppBar(
-                  title: const Text('Gallery Page'),
-                  backgroundColor: const Color.fromARGB(255, 51, 64, 113),
-                ),
-                body: galleryScreen(context, snapshot.data!),
-              );
-            } else {
-              return Scaffold(
-                appBar: AppBar(
-                  title: const Text('Gallery Page'),
-                  backgroundColor: const Color.fromARGB(255, 70, 88, 152),
-                  actions: [
-                    IconButton(
-                      icon: const Icon(Icons.logout),
-                      onPressed: () {
-                        helpers.logout(jwt, context);
-                      },
-                    ),
-                  ],
-                ),
-                body: galleryScreen(context, snapshot.data!),
-              );
-            }
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('Pending ID Waiting List'),
+                backgroundColor: const Color.fromARGB(255, 70, 88, 152),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.logout),
+                    onPressed: () {
+                      helpers.logout(jwt, context);
+                    },
+                  ),
+                ],
+              ),
+              body: galleryScreen(context, snapshot.data!),
+            );
           } else if (snapshot.hasError) {
             return const NoticeDialog(
                 content: 'Posts not found! Please try again');

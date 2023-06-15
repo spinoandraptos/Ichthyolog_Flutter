@@ -389,8 +389,23 @@ class HttpHelpers {
     if (response.statusCode == 200) {
       return ('Comment Deleted');
     } else {
-      print(response.body);
       return ('Comment Deletion Failed');
+    }
+  }
+
+  Future<String> verifyPostRequest(int postid, String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/post/$postid/verify';
+    var response = await http.put(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      return ('Post Verified');
+    } else {
+      return ('Post Verification Failed');
     }
   }
 }

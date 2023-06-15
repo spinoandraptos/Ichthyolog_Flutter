@@ -126,10 +126,6 @@ class HomePageState extends State<RegularHomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.person),
-                          onPressed: () {},
-                        ),
-                        IconButton(
                           icon: const Icon(Icons.add_a_photo_rounded),
                           onPressed: () {
                             Navigator.push(
@@ -140,7 +136,7 @@ class HomePageState extends State<RegularHomePage> {
                           },
                         ),
                         IconButton(
-                          icon: const Icon(Icons.post_add),
+                          icon: const Icon(Icons.photo_library),
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -150,7 +146,7 @@ class HomePageState extends State<RegularHomePage> {
                           },
                         ),
                         IconButton(
-                          icon: const Icon(Icons.question_mark_outlined),
+                          icon: const Icon(Icons.search),
                           onPressed: () {
                             Navigator.push(
                               context,

@@ -18,6 +18,7 @@ class Post {
   final String? order;
   final String? family;
   final String? genus;
+  final bool verified;
 
 //use of required keyword as none of these fields can be null
   Post(
@@ -34,7 +35,8 @@ class Post {
       this.class_,
       this.order,
       this.family,
-      this.genus});
+      this.genus,
+      required this.verified});
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
@@ -53,6 +55,7 @@ class Post {
         class_: json['class'],
         order: json['_order'],
         family: json['family'],
-        genus: json['genus']);
+        genus: json['genus'],
+        verified: json['verified']);
   }
 }

@@ -1,10 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../Helpers/standard_widgets.dart';
 import '../Models/user.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
 import 'camera_page.dart';
-import './gallery_page.dart';
+import 'gallery_page.dart';
+import 'statistics_page.dart';
+import 'waiting_list_page.dart';
 
 class ExpertHomePage extends StatefulWidget {
   const ExpertHomePage({super.key});
@@ -63,7 +66,7 @@ class HomePageState extends State<ExpertHomePage> {
                 body: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 60),
                     CircleAvatar(
                       radius: 80,
                       backgroundColor: Colors.white,
@@ -120,10 +123,6 @@ class HomePageState extends State<ExpertHomePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.person),
-                        onPressed: () {},
-                      ),
-                      IconButton(
                         icon: const Icon(Icons.add_a_photo_rounded),
                         onPressed: () {
                           Navigator.push(
@@ -134,12 +133,32 @@ class HomePageState extends State<ExpertHomePage> {
                         },
                       ),
                       IconButton(
-                        icon: const Icon(Icons.post_add),
+                        icon: const Icon(Icons.photo_library),
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const GalleryPage()),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const StatisticsPage()),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.feedback),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const WaitingListPage()),
                           );
                         },
                       ),
