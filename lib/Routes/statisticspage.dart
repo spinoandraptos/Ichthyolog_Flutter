@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../Helpers/Helper.dart';
-import '../Helpers/Http.dart';
+import '../Helpers/Http.dart' as http;
 import 'datetimepicker.dart';
 import 'Stepper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'statsresult.dart';
+import 'searchresult.dart';
 
 class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});
@@ -15,7 +17,6 @@ class StatisticsPage extends StatefulWidget {
 
 class _StatisticsPageState extends State<StatisticsPage> {
   String mux = '';
-  String jwt = '';
   String date1 = '';
   String time1 = '';
   String date2 = '';
@@ -27,7 +28,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
   String family = '';
   String genus = '';
   final helpers = Helpers();
-  final httpHelpers = HttpHelpers();
   final speciesController = TextEditingController();
   final locationController = TextEditingController();
 
@@ -53,24 +53,57 @@ class _StatisticsPageState extends State<StatisticsPage> {
       String time1,
       String date2,
       String time2,
-      String location,
+      String sightinglocation,
       String species,
       String class_,
       String order,
       String family,
       String genus,
-      String jwt) {
+      String mux) {
     // Insert HTTP search query here with given parameters
     // Return a result page with approriate contents
+    if (date2 == '' && time2 == '') {
+      date2 = DateFormat("yyyy-MM-dd").format(DateTime.now());
+      time2 = DateFormat("hh:mm:ss").format(DateTime.now());
+    }
+    if (mux == 'species') {
+      try {
+        http
+            .searchSpecies(
+                species, '$date1 $time1', '$date2 $time2', sightinglocation)
+            .then((response) => {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => StatsResultPage(
+                            dataList: response, species: species)),
+                  )
+                });
+      } catch (e) {
+        print(e);
+      }
+    }
 
-    Fluttertoast.showToast(
-        msg: "Search query sent",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: const Color.fromARGB(255, 51, 64, 113),
-        textColor: Colors.white,
-        fontSize: 16.0);
+    if (mux == 'classification') {
+      try {
+        http
+            .searchClassification(class_, order, family, genus, '$date1 $time1',
+                '$date2 $time2', sightinglocation)
+            .then((value) => {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SearchResultPage(
+                            dataList: value,
+                            startTime: '$date1 $time1',
+                            endTime: '$date2 $time2',
+                            sightinglocation: sightinglocation)),
+                  )
+                });
+      } catch (e) {
+        print(e);
+      }
+    }
   }
 
   @override
@@ -278,7 +311,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     ElevatedButton(
                       onPressed: () {
                         _search(date1, time1, date2, time2, sightingLocation,
-                            species, class_, order, family, genus, jwt);
+                            species, class_, order, family, genus, mux);
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor:

@@ -231,7 +231,7 @@ class GalleryPageState extends State<GalleryPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: httpHelpers.viewAllVerifiedPostsRequest(),
+        future: httpHelpers.viewAllPostsRequest(),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
             if (jwt == '') {
