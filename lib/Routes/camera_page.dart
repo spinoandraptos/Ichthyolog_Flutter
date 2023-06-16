@@ -6,7 +6,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'date_time_picker.dart';
 import '../Helpers/helper.dart';
-import '../Helpers/Http.dart';
+import '../Helpers/http.dart';
 import 'package:intl/intl.dart';
 import 'gallery_page.dart';
 import 'Stepper.dart';
@@ -240,12 +240,15 @@ class CameraPageState extends State<CameraPage> {
                             child: ElevatedButton(
                               onPressed: () {
                                 _uploadPost(
-                                  title,
-                                  description,
-                                  sightingLocation,
-                                  "$date $time",
-                                  jwt,
-                                );
+                                    title,
+                                    description,
+                                    sightingLocation,
+                                    "$date $time",
+                                    jwt,
+                                    class_,
+                                    order,
+                                    family,
+                                    genus);
                               },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor:
@@ -318,12 +321,15 @@ class CameraPageState extends State<CameraPage> {
   }
 
   void _uploadPost(
-    String title,
-    String description,
-    String sightingLocation,
-    String sightingTime,
-    String jwt,
-  ) async {
+      String title,
+      String description,
+      String sightingLocation,
+      String sightingTime,
+      String jwt,
+      String class_,
+      String order,
+      String family,
+      String genus) async {
     final key = const Uuid().v4();
     final file = AWSFile.fromPath(image!.path);
 
@@ -346,7 +352,11 @@ class CameraPageState extends State<CameraPage> {
               "https://ichthyolog175756-dev.s3.ap-southeast-1.amazonaws.com/public/$key",
               jwt,
               1,
-              1)
+              1,
+              class_,
+              order,
+              family,
+              genus)
           .then((String response) {
         if (response == 'Post Uploaded') {
           Fluttertoast.showToast(

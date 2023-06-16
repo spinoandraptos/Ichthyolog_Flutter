@@ -84,11 +84,9 @@ class WaitingListPageState extends State<WaitingListPage> {
                     )),
                 CircleAvatar(
                   radius: 8,
-                  backgroundColor: post.verified
-                      ? const Color.fromARGB(255, 73, 155, 109)
-                      : const Color.fromARGB(255, 152, 72, 85),
+                  backgroundColor: const Color.fromARGB(255, 152, 72, 85),
                   child: Icon(
-                    post.verified ? Icons.verified : Icons.pending,
+                    post.flagged ? Icons.priority_high : Icons.pending,
                     size: 10,
                     color: Colors.white,
                   ),
@@ -192,68 +190,63 @@ class WaitingListPageState extends State<WaitingListPage> {
                               color: Color.fromARGB(255, 33, 53, 88)))),
                 ],
               )),
-          Container(
-              padding: const EdgeInsets.only(left: 6, bottom: 5, right: 8),
-              child: Text('Sighted at ${post.sightingLocation}',
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                      fontSize: 7, color: Color.fromARGB(255, 33, 53, 88)))),
-        ]));
-  }
-
-  Widget otherPostCard(Post post) {
-    return Card(
-        color: const Color.fromARGB(255, 253, 254, 255),
-        elevation: 4.5,
-        shadowColor: const Color.fromARGB(255, 113, 165, 255),
-        clipBehavior: Clip.hardEdge,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(3),
-        ),
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <
-                Widget>[
-          Padding(
-              padding: const EdgeInsets.only(left: 9, top: 5, right: 9),
-              child: Row(children: [
-                Container(
-                    padding: const EdgeInsets.only(right: 5),
-                    width: 77,
-                    child: Text(
-                      post.title,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 8,
-                          color: Color.fromARGB(255, 33, 53, 88)),
-                    )),
-                const CircleAvatar(
-                  radius: 8,
-                  backgroundColor: Color.fromARGB(255, 152, 72, 85),
-                  child: Icon(
-                    Icons.priority_high,
-                    size: 10,
-                    color: Colors.white,
-                  ),
-                )
-              ])),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(6),
-              child: InkWell(
-                  child: Ink.image(
-                      image: NetworkImage(post.pic), fit: BoxFit.cover),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => PostPage(postid: post.postid)),
-                    );
-                  }),
-            ),
-          ),
           Padding(
               padding: const EdgeInsets.only(right: 5, bottom: 6),
               child: Wrap(spacing: 4, alignment: WrapAlignment.end, children: [
+                ElevatedButton(
+                  onPressed: () {
+                    post.flagged
+                        ? httpHelpers
+                            .unFlagPostRequest(post.postid, jwt)
+                            .then((response) {
+                            if (response == 'Post Unflagged') {
+                              setState(() {});
+                              Fluttertoast.showToast(
+                                msg: 'Post Unflagged',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: 'Post Unflagging Failed',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            }
+                          })
+                        : httpHelpers
+                            .flagPostRequest(post.postid, jwt)
+                            .then((response) {
+                            if (response == 'Post Flagged') {
+                              setState(() {});
+                              Fluttertoast.showToast(
+                                msg: 'Post Flagged',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: 'Post Flagging Failed',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            }
+                          });
+                  },
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.only(
+                          left: 5, top: 3, bottom: 3, right: 5),
+                      minimumSize: Size.zero,
+                      backgroundColor: const Color.fromARGB(255, 170, 80, 80),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                  child: post.flagged
+                      ? const Text('Unflag', style: TextStyle(fontSize: 7))
+                      : const Text('Flag', style: TextStyle(fontSize: 7)),
+                ),
                 ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
@@ -262,7 +255,7 @@ class WaitingListPageState extends State<WaitingListPage> {
                       minimumSize: Size.zero,
                       backgroundColor: const Color.fromARGB(255, 80, 106, 170),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                  child: const Text('Edit', style: TextStyle(fontSize: 8)),
+                  child: const Text('Edit', style: TextStyle(fontSize: 7)),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -293,7 +286,159 @@ class WaitingListPageState extends State<WaitingListPage> {
                       minimumSize: Size.zero,
                       backgroundColor: const Color.fromARGB(255, 170, 80, 80),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                  child: const Text('Verify', style: TextStyle(fontSize: 8)),
+                  child: const Text('Verify', style: TextStyle(fontSize: 7)),
+                )
+              ])),
+        ]));
+  }
+
+  Widget otherPostCard(Post post) {
+    return Card(
+        color: const Color.fromARGB(255, 253, 254, 255),
+        elevation: 4.5,
+        shadowColor: const Color.fromARGB(255, 113, 165, 255),
+        clipBehavior: Clip.hardEdge,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(3),
+        ),
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <
+                Widget>[
+          Padding(
+              padding: const EdgeInsets.only(left: 9, top: 5, right: 9),
+              child: Row(children: [
+                Container(
+                    padding: const EdgeInsets.only(right: 5),
+                    width: 77,
+                    child: Text(
+                      post.title,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 8,
+                          color: Color.fromARGB(255, 33, 53, 88)),
+                    )),
+                CircleAvatar(
+                  radius: 8,
+                  backgroundColor: const Color.fromARGB(255, 152, 72, 85),
+                  child: Icon(
+                    post.flagged ? Icons.priority_high : Icons.pending,
+                    size: 10,
+                    color: Colors.white,
+                  ),
+                )
+              ])),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(6),
+              child: InkWell(
+                  child: Ink.image(
+                      image: NetworkImage(post.pic), fit: BoxFit.cover),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PostPage(postid: post.postid)),
+                    );
+                  }),
+            ),
+          ),
+          Padding(
+              padding: const EdgeInsets.only(right: 5, bottom: 6),
+              child: Wrap(spacing: 4, alignment: WrapAlignment.end, children: [
+                ElevatedButton(
+                  onPressed: () {
+                    post.flagged
+                        ? httpHelpers
+                            .unFlagPostRequest(post.postid, jwt)
+                            .then((response) {
+                            if (response == 'Post Unflagged') {
+                              setState(() {});
+                              Fluttertoast.showToast(
+                                msg: 'Post Unflagged',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: 'Post Unflagging Failed',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            }
+                          })
+                        : httpHelpers
+                            .flagPostRequest(post.postid, jwt)
+                            .then((response) {
+                            if (response == 'Post Flagged') {
+                              setState(() {});
+                              Fluttertoast.showToast(
+                                msg: 'Post Flagged',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: 'Post Flagging Failed',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            }
+                          });
+                  },
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.only(
+                          left: 5, top: 3, bottom: 3, right: 5),
+                      minimumSize: Size.zero,
+                      backgroundColor: const Color.fromARGB(255, 170, 80, 80),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                  child: post.flagged
+                      ? const Text('Unflag', style: TextStyle(fontSize: 7))
+                      : const Text('Flag', style: TextStyle(fontSize: 7)),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.only(
+                          left: 5, top: 3, bottom: 3, right: 5),
+                      minimumSize: Size.zero,
+                      backgroundColor: const Color.fromARGB(255, 80, 106, 170),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                  child: const Text('Edit', style: TextStyle(fontSize: 7)),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    httpHelpers
+                        .verifyPostRequest(post.postid, jwt)
+                        .then((response) {
+                      if (response == 'Post Verified') {
+                        setState(() {});
+                        Fluttertoast.showToast(
+                          msg: 'Post Verified',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                        );
+                      } else {
+                        Fluttertoast.showToast(
+                          msg: 'Post Verification Failed',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                        );
+                      }
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.only(
+                          left: 5, top: 3, bottom: 3, right: 5),
+                      minimumSize: Size.zero,
+                      backgroundColor: const Color.fromARGB(255, 170, 80, 80),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                  child: const Text('Verify', style: TextStyle(fontSize: 7)),
                 )
               ]))
         ]));
@@ -321,6 +466,7 @@ class WaitingListPageState extends State<WaitingListPage> {
               body: galleryScreen(context, snapshot.data!),
             );
           } else if (snapshot.hasError) {
+            print(snapshot.error);
             return const NoticeDialog(
                 content: 'Posts not found! Please try again');
           } else {

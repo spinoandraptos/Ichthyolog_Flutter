@@ -88,9 +88,15 @@ class GalleryPageState extends State<GalleryPage> {
                   radius: 8,
                   backgroundColor: post.verified
                       ? const Color.fromARGB(255, 73, 155, 109)
-                      : const Color.fromARGB(255, 152, 72, 85),
+                      : post.flagged
+                          ? const Color.fromARGB(255, 152, 72, 85)
+                          : const Color.fromARGB(255, 175, 103, 51),
                   child: Icon(
-                    post.verified ? Icons.verified : Icons.pending,
+                    post.verified
+                        ? Icons.verified
+                        : post.flagged
+                            ? Icons.priority_high
+                            : Icons.pending,
                     size: 10,
                     color: Colors.white,
                   ),
@@ -232,9 +238,15 @@ class GalleryPageState extends State<GalleryPage> {
                       radius: 8,
                       backgroundColor: post.verified
                           ? const Color.fromARGB(255, 73, 155, 109)
-                          : const Color.fromARGB(255, 152, 72, 85),
+                          : post.flagged
+                              ? const Color.fromARGB(255, 152, 72, 85)
+                              : const Color.fromARGB(255, 175, 103, 51),
                       child: Icon(
-                        post.verified ? Icons.verified : Icons.pending,
+                        post.verified
+                            ? Icons.verified
+                            : post.flagged
+                                ? Icons.priority_high
+                                : Icons.pending,
                         size: 10,
                         color: Colors.white,
                       ),
@@ -319,7 +331,7 @@ class GalleryPageState extends State<GalleryPage> {
           ),
           SizedBox(width: 8),
           CircleAvatar(
-              radius: 8,
+              radius: 7,
               backgroundColor: Color.fromARGB(255, 73, 155, 109),
               child: Icon(
                 Icons.verified,
@@ -328,16 +340,16 @@ class GalleryPageState extends State<GalleryPage> {
               )),
           SizedBox(width: 4),
           Text(
-            "[ Verified Post ]",
+            "[ ID Verified ]",
             style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 12,
+                fontSize: 11,
                 color: Color.fromARGB(255, 73, 155, 109)),
           ),
           SizedBox(width: 14),
           CircleAvatar(
-              radius: 8,
-              backgroundColor: Color.fromARGB(255, 152, 72, 85),
+              radius: 7,
+              backgroundColor: Color.fromARGB(255, 175, 103, 51),
               child: Icon(
                 Icons.pending,
                 size: 10,
@@ -348,7 +360,24 @@ class GalleryPageState extends State<GalleryPage> {
             "[ Pending Verification ]",
             style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 12,
+                fontSize: 11,
+                color: Color.fromARGB(255, 175, 103, 51)),
+          ),
+          SizedBox(width: 14),
+          CircleAvatar(
+              radius: 7,
+              backgroundColor: Color.fromARGB(255, 152, 72, 85),
+              child: Icon(
+                Icons.priority_high,
+                size: 10,
+                color: Colors.white,
+              )),
+          SizedBox(width: 4),
+          Text(
+            "[ Flagged ]",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
                 color: Color.fromARGB(255, 152, 72, 85)),
           ),
         ]));

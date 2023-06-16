@@ -210,7 +210,11 @@ class HttpHelpers {
       String imageURL,
       String jwt,
       int level,
-      int postNumber) async {
+      int postNumber,
+      String class_,
+      String order,
+      String family,
+      String genus) async {
     String url1 = 'https://ichthyolog-nodejs.onrender.com/post';
     var response1 = await http.post(
       Uri.parse(url1),
@@ -223,7 +227,11 @@ class HttpHelpers {
         'description': description,
         'sightingLocation': sightingLocation,
         'sightingTime': sightingTime,
-        'imageURL': imageURL
+        'imageURL': imageURL,
+        '_class': class_,
+        'order': order,
+        'family': family,
+        'genus': genus
       }),
     );
     String url2 = 'https://ichthyolog-nodejs.onrender.com/user/level';
@@ -406,6 +414,38 @@ class HttpHelpers {
       return ('Post Verified');
     } else {
       return ('Post Verification Failed');
+    }
+  }
+
+  Future<String> flagPostRequest(int postid, String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/post/$postid/flag';
+    var response = await http.put(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      return ('Post Flagged');
+    } else {
+      return ('Post Flagging Failed');
+    }
+  }
+
+  Future<String> unFlagPostRequest(int postid, String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/post/$postid/unflag';
+    var response = await http.put(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      return ('Post Unflagged');
+    } else {
+      return ('Post Unflagging Failed');
     }
   }
 }
