@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../Helpers/Helper.dart';
-import '../Helpers/Http.dart' as http;
-import 'datetimepicker.dart';
+import '../Helpers/helper.dart';
+import '../Helpers/http.dart' as httpHelpers;
+import 'date_time_picker.dart';
 import 'Stepper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'statsresult.dart';
-import 'searchresult.dart';
+import 'stats_result_page.dart';
+import 'search_result_page.dart';
 
 class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});
 
   @override
-  _StatisticsPageState createState() => _StatisticsPageState();
+  StatisticsPageState createState() => StatisticsPageState();
 }
 
-class _StatisticsPageState extends State<StatisticsPage> {
+class StatisticsPageState extends State<StatisticsPage> {
   String mux = '';
+  String jwt = '';
   String date1 = '';
   String time1 = '';
-  String date2 = '';
-  String time2 = '';
+  String date2 = DateFormat("yyyy-MM-dd").format(DateTime.now());
+  String time2 = DateFormat("hh:mm:ss").format(DateTime.now());
   String species = '';
   String sightingLocation = '';
   String class_ = '';
@@ -35,8 +36,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
     setState(() {
       date1 = '';
       time1 = '';
-      date2 = '';
-      time2 = '';
+      date2 = DateFormat("yyyy-MM-dd").format(DateTime.now());
+      time2 = DateFormat("hh:mm:ss").format(DateTime.now());
       species = '';
       sightingLocation = '';
       class_ = '';
@@ -53,57 +54,69 @@ class _StatisticsPageState extends State<StatisticsPage> {
       String time1,
       String date2,
       String time2,
-      String sightinglocation,
+      String location,
       String species,
       String class_,
       String order,
       String family,
       String genus,
-      String mux) {
+      String jwt) {
     // Insert HTTP search query here with given parameters
     // Return a result page with approriate contents
-    if (date2 == '' && time2 == '') {
-      date2 = DateFormat("yyyy-MM-dd").format(DateTime.now());
-      time2 = DateFormat("hh:mm:ss").format(DateTime.now());
-    }
     if (mux == 'species') {
       try {
-        http
+        httpHelpers
             .searchSpecies(
-                species, '$date1 $time1', '$date2 $time2', sightinglocation)
-            .then((response) => {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => StatsResultPage(
-                            dataList: response, species: species)),
-                  )
-                });
+          species,
+          '$date1 $time1',
+          '$date2 $time2',
+          location,
+        )
+            .then((value) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => StatsResultPage(
+                dataList: value,
+                species: species,
+              ),
+            ),
+          );
+        });
+      } catch (e) {
+        print(e);
+      }
+    } else {
+      try {
+        httpHelpers
+            .searchClassification(class_, order, family, genus, '$date1 $time1',
+                '$date2 $time2', location)
+            .then((value) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SearchResultPage(
+                dataList: value,
+                startTime: '$date1 $time1',
+                endTime: '$date2 $time2',
+                sightinglocation: location,
+              ),
+            ),
+          );
+        });
       } catch (e) {
         print(e);
       }
     }
 
-    if (mux == 'classification') {
-      try {
-        http
-            .searchClassification(class_, order, family, genus, '$date1 $time1',
-                '$date2 $time2', sightinglocation)
-            .then((value) => {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SearchResultPage(
-                            dataList: value,
-                            startTime: '$date1 $time1',
-                            endTime: '$date2 $time2',
-                            sightinglocation: sightinglocation)),
-                  )
-                });
-      } catch (e) {
-        print(e);
-      }
-    }
+    Fluttertoast.showToast(
+        msg: "Search query sent",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: const Color.fromARGB(255, 51, 64, 113),
+        textColor: Colors.white,
+        fontSize: 16.0);
   }
 
   @override
@@ -311,7 +324,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     ElevatedButton(
                       onPressed: () {
                         _search(date1, time1, date2, time2, sightingLocation,
-                            species, class_, order, family, genus, mux);
+                            species, class_, order, family, genus, jwt);
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor:

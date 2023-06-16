@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../Helpers/Helper.dart';
-import '../Helpers/Http.dart';
+import '../Helpers/standard_widgets.dart';
+import '../Helpers/helper.dart';
+import '../Helpers/http.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'comments.dart';
 
@@ -9,20 +10,16 @@ class CommentPage extends StatefulWidget {
   final int postid;
   const CommentPage({Key? key, required this.postid}) : super(key: key);
   @override
-  CommentPageState createState() => CommentPageState(postid);
+  CommentPageState createState() => CommentPageState();
 }
 
 class CommentPageState extends State<CommentPage> {
   String jwt = '';
   Map<String, dynamic> decodedJWT = {};
-  int _postid = 0;
   final contentText = TextEditingController();
 
   final httpHelpers = HttpHelpers();
   final helpers = Helpers();
-  CommentPageState(int postid) {
-    _postid = postid;
-  }
 
   @override
   void initState() {
@@ -51,7 +48,7 @@ class CommentPageState extends State<CommentPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: httpHelpers.viewPostCommentsRequest(_postid),
+        future: httpHelpers.viewPostCommentsRequest(widget.postid),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
             return jwt == ''
@@ -90,20 +87,15 @@ class CommentPageState extends State<CommentPage> {
                             width: MediaQuery.of(context).size.width,
                             child: Column(
                               children: [
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                SizedBox(
-                                    height: snapshot.data!.length <= 8
-                                        ? MediaQuery.of(context).size.height *
-                                            snapshot.data!.length *
-                                            1 /
-                                            11
-                                        : MediaQuery.of(context).size.height *
-                                            4.35 /
-                                            6,
-                                    width: MediaQuery.of(context).size.width,
+                                Container(
+                                    padding: const EdgeInsets.only(top: 6),
+                                    constraints: BoxConstraints(
+                                      maxHeight:
+                                          MediaQuery.of(context).size.height -
+                                              210,
+                                    ),
                                     child: ListView.builder(
+                                      shrinkWrap: true,
                                       itemCount: snapshot.data!.length,
                                       itemBuilder: (context, index) {
                                         if (snapshot.data![index].authorName ==
@@ -150,8 +142,8 @@ class CommentPageState extends State<CommentPage> {
                                     child: ElevatedButton(
                                       onPressed: () {
                                         httpHelpers
-                                            .addCommentRequest(
-                                                _postid, contentText.text, jwt)
+                                            .addCommentRequest(widget.postid,
+                                                contentText.text, jwt)
                                             .then((response) {
                                           if (response == 'Comment Posted') {
                                             Fluttertoast.showToast(
@@ -182,26 +174,18 @@ class CommentPageState extends State<CommentPage> {
                                     )),
                               ],
                             ))));
+          } else if (snapshot.hasError) {
+            return const NoticeDialog(
+                content: 'Comments not found! Please try again');
           } else {
-            return Container(
-              color: const Color.fromARGB(255, 236, 249, 255),
-              child: const Center(
-                child: SizedBox(
-                  height: 35.0,
-                  width: 35.0,
-                  child: CircularProgressIndicator(
-                      backgroundColor: Color.fromARGB(255, 91, 170, 255),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          Color.fromARGB(255, 184, 218, 255)),
-                      strokeWidth: 8),
-                ),
-              ),
-            );
+            return const LoadingScreen();
           }
         }));
   }
 
   deleteCommentCallback(response) {
-    if (response == 'Comment Deleted') setState(() {});
+    if (response == 'Comment Deleted') {
+      setState(() {});
+    }
   }
 }

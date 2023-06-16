@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ichthyolog/Models/comment.dart';
 import 'package:ichthyolog/Models/post.dart';
@@ -69,7 +68,7 @@ class HttpHelpers {
     }
   }
 
-  Future<User> viewUserRequest(String jwt) async {
+  Future<User> viewOwnUserProfileRequest(String jwt) async {
     String url = 'https://ichthyolog-nodejs.onrender.com/user';
     var response = await http.get(
       Uri.parse(url),
@@ -81,11 +80,11 @@ class HttpHelpers {
     if (response.statusCode == 200) {
       return User.fromJson(json.decode(response.body)[0]);
     } else {
-      throw Exception('User not found! Error ${response.statusCode}');
+      return Future.error("User Not Found");
     }
   }
 
-  Future<User> viewAnyUserRequest(int userid) async {
+  Future<User> viewAnyUserProfileRequest(int userid) async {
     String url = 'https://ichthyolog-nodejs.onrender.com/user/$userid';
     var response = await http.get(
       Uri.parse(url),
@@ -96,7 +95,7 @@ class HttpHelpers {
     if (response.statusCode == 200) {
       return User.fromJson(json.decode(response.body)[0]);
     } else {
-      throw Exception('User not found! Error ${response.statusCode}');
+      return Future.error("User Not Found");
     }
   }
 
@@ -142,7 +141,7 @@ class HttpHelpers {
       }
       return postlist;
     } else {
-      throw Exception('Posts not found! Error ${response.statusCode}');
+      return Future.error("Posts Not Found");
     }
   }
 
@@ -163,7 +162,7 @@ class HttpHelpers {
       }
       return postlist;
     } else {
-      throw Exception('Posts not found! Error ${response.statusCode}');
+      return Future.error("Posts Not Found");
     }
   }
 
@@ -184,7 +183,7 @@ class HttpHelpers {
       }
       return postlist;
     } else {
-      throw Exception('Posts not found! Error ${response.statusCode}');
+      return Future.error("Posts Not Found");
     }
   }
 
@@ -199,7 +198,7 @@ class HttpHelpers {
     if (response.statusCode == 200) {
       return Post.fromJson(json.decode(response.body)[0]);
     } else {
-      throw Exception('Post not found! Error ${response.statusCode}');
+      return Future.error("Post Not Found");
     }
   }
 
@@ -211,7 +210,11 @@ class HttpHelpers {
       String imageURL,
       String jwt,
       int level,
-      int postNumber) async {
+      int postNumber,
+      String class_,
+      String order,
+      String family,
+      String genus) async {
     String url1 = 'https://ichthyolog-nodejs.onrender.com/post';
     var response1 = await http.post(
       Uri.parse(url1),
@@ -224,7 +227,11 @@ class HttpHelpers {
         'description': description,
         'sightingLocation': sightingLocation,
         'sightingTime': sightingTime,
-        'imageURL': imageURL
+        'imageURL': imageURL,
+        '_class': class_,
+        'order': order,
+        'family': family,
+        'genus': genus
       }),
     );
     String url2 = 'https://ichthyolog-nodejs.onrender.com/user/level';
@@ -271,7 +278,7 @@ class HttpHelpers {
       }
       return comments;
     } else {
-      throw Exception('Comment not found! Error ${response.statusCode}');
+      return Future.error("Comments Not Found");
     }
   }
 
@@ -286,7 +293,7 @@ class HttpHelpers {
     if (response.statusCode == 200) {
       return Comment.fromJson(json.decode(response.body)[0]);
     } else {
-      throw Exception('Comment not found! Error ${response.statusCode}');
+      return Future.error("Comment Not Found");
     }
   }
 
@@ -308,7 +315,7 @@ class HttpHelpers {
       }
       return comments;
     } else {
-      throw Exception('Comment not found! Error ${response.statusCode}');
+      return Future.error("Comments Not Found");
     }
   }
 
@@ -323,7 +330,7 @@ class HttpHelpers {
     if (response.statusCode == 200) {
       return Comment.fromJson(json.decode(response.body)[0]);
     } else {
-      throw Exception('Comment not found! Error ${response.statusCode}');
+      return Future.error("Comment Not Found");
     }
   }
 
@@ -390,8 +397,55 @@ class HttpHelpers {
     if (response.statusCode == 200) {
       return ('Comment Deleted');
     } else {
-      print(response.body);
       return ('Comment Deletion Failed');
+    }
+  }
+
+  Future<String> verifyPostRequest(int postid, String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/post/$postid/verify';
+    var response = await http.put(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      return ('Post Verified');
+    } else {
+      return ('Post Verification Failed');
+    }
+  }
+
+  Future<String> flagPostRequest(int postid, String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/post/$postid/flag';
+    var response = await http.put(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      return ('Post Flagged');
+    } else {
+      return ('Post Flagging Failed');
+    }
+  }
+
+  Future<String> unFlagPostRequest(int postid, String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/post/$postid/unflag';
+    var response = await http.put(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      return ('Post Unflagged');
+    } else {
+      return ('Post Unflagging Failed');
     }
   }
 }
@@ -459,7 +513,7 @@ Future<List<String>> searchClass(String class_, String startTime,
     List<String> speciesList = [];
     var responseData = json.decode(response.body);
     for (var everyspecies in responseData) {
-      speciesList.add(everyspecies['species']);
+      speciesList.add(everyspecies['title']);
     }
     return speciesList;
   } else {
@@ -481,7 +535,7 @@ Future<List<String>> searchOrder(String class_, String order, String startTime,
     List<String> speciesList = [];
     var responseData = json.decode(response.body);
     for (var everyspecies in responseData) {
-      speciesList.add(everyspecies['species']);
+      speciesList.add(everyspecies['title']);
     }
     return speciesList;
   } else {
@@ -503,7 +557,7 @@ Future<List<String>> searchFamily(String class_, String order, String family,
     List<String> speciesList = [];
     var responseData = json.decode(response.body);
     for (var everyspecies in responseData) {
-      speciesList.add(everyspecies['species']);
+      speciesList.add(everyspecies['title']);
     }
     return speciesList;
   } else {
@@ -531,7 +585,7 @@ Future<List<String>> searchGenus(
     List<String> speciesList = [];
     var responseData = json.decode(response.body);
     for (var everyspecies in responseData) {
-      speciesList.add(everyspecies['species']);
+      speciesList.add(everyspecies['title']);
     }
     return speciesList;
   } else {

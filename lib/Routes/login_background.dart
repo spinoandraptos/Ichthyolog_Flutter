@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class BackgroundPage extends StatelessWidget {
-  const BackgroundPage({super.key});
+class LoginBackgroundPage extends StatelessWidget {
+  const LoginBackgroundPage({super.key});
 
   @override
   Widget build(BuildContext context) {

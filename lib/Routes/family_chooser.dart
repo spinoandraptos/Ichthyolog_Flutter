@@ -1,24 +1,19 @@
-import 'package:ichthyolog/Models/species.dart';
+import '../Models/species.dart';
 import 'package:selectable_list/selectable_list.dart';
 import 'package:flutter/material.dart';
 
 class FamilyPicker extends StatefulWidget {
-  Function familyCallback;
-  String order;
-  FamilyPicker({Key? key, required this.familyCallback, required this.order})
+  final Function familyCallback;
+  final String order;
+  const FamilyPicker(
+      {Key? key, required this.familyCallback, required this.order})
       : super(key: key);
 
   @override
-  _FamilyPickerState createState() => _FamilyPickerState(this.order);
+  FamilyPickerState createState() => FamilyPickerState();
 }
 
-class _FamilyPickerState extends State<FamilyPicker> {
-  String order = '';
-
-  _FamilyPickerState(String order_) {
-    order = order_;
-  }
-
+class FamilyPickerState extends State<FamilyPicker> {
   final familyAnabantiformes = [
     SpeciesClassification(
         classification: 'Channidae', description: 'Snakeheads'),
@@ -47,7 +42,7 @@ class _FamilyPickerState extends State<FamilyPicker> {
 
   @override
   Widget build(BuildContext context) {
-    switch (order) {
+    switch (widget.order) {
       case 'Carangiformes':
         return SelectableList<SpeciesClassification, String?>(
           items: familyCarangiformes,

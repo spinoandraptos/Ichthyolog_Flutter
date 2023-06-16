@@ -6,10 +6,10 @@ import '../Helpers/Http.dart';
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
   @override
-  _SignUpPageState createState() => _SignUpPageState();
+  SignUpPageState createState() => SignUpPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class SignUpPageState extends State<SignUpPage> {
   String _userName = '';
   String _userEmail = '';
   String _password = '';
@@ -30,31 +30,30 @@ class _SignUpPageState extends State<SignUpPage> {
       httpHelpers
           .signupRequest(_userName, _password, _userEmail)
           .then((String response) {
-        Widget continueButton = TextButton(
-            child: Text("OK"),
-            onPressed: () {
-              if (response == 'Signup Successful') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
-                );
-              } else {
-                Navigator.pop(context);
-              }
-            });
-
-        AlertDialog alert = AlertDialog(
-          title: Text("Notice"),
-          content: Text(response == 'Signup Successful'
-              ? 'Signup Successful! Please login.'
-              : 'Signup Failed. Please try again.'),
-          actions: [continueButton],
-        );
-
         showDialog(
           context: context,
           builder: (BuildContext context) {
-            return alert;
+            return AlertDialog(
+              title: const Text("Notice"),
+              content: Text(response == 'Signup Successful'
+                  ? 'Signup Successful! Please login.'
+                  : 'Signup Failed. Please try again.'),
+              actions: [
+                TextButton(
+                    child: const Text("OK"),
+                    onPressed: () {
+                      if (response == 'Signup Successful') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginPage()),
+                        );
+                      } else {
+                        Navigator.pop(context);
+                      }
+                    })
+              ],
+            );
           },
         );
       });
@@ -89,7 +88,7 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(children: [
-        const BackgroundPage(),
+        const LoginBackgroundPage(),
         ListView(children: [
           Center(
             child: Form(
@@ -102,13 +101,13 @@ class _SignUpPageState extends State<SignUpPage> {
                     alignment: Alignment.topLeft,
                     margin: const EdgeInsets.only(top: 20),
                     child: IconButton(
-                        color: Color.fromARGB(255, 57, 81, 189),
+                        color: const Color.fromARGB(255, 57, 81, 189),
                         iconSize: 35,
                         icon: const Icon(Icons.arrow_back),
                         onPressed: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => LoginPage()),
+                                  builder: (context) => const LoginPage()),
                             )),
                   ),
 
@@ -246,12 +245,11 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 20),
 
                   //Sign up button
-                  Container(
+                  SizedBox(
                     width: 250,
                     height: 36,
                     child: ElevatedButton(
                       onPressed: () {
-                        String output = 'Signup Unsuccessful';
                         validateForm();
                       },
                       style: ButtonStyle(

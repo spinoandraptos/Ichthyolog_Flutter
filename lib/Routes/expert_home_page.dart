@@ -1,16 +1,21 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../Helpers/standard_widgets.dart';
 import '../Models/user.dart';
-import '../Helpers/Helper.dart';
-import '../Helpers/Http.dart';
-import 'camerapage.dart';
-import './gallerypage.dart';
+import '../Helpers/helper.dart';
+import '../Helpers/http.dart';
+import 'camera_page.dart';
+import 'gallery_page.dart';
+import 'statistics_page.dart';
+import 'waiting_list_page.dart';
 
-class expertHomePage extends StatefulWidget {
+class ExpertHomePage extends StatefulWidget {
+  const ExpertHomePage({super.key});
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<expertHomePage> {
+class HomePageState extends State<ExpertHomePage> {
   bool _authorised = false;
   String jwt = '';
   final helpers = Helpers();
@@ -37,27 +42,18 @@ class _HomePageState extends State<expertHomePage> {
   @override
   Widget build(BuildContext context) {
     if (!_authorised) {
-      return AlertDialog(
-        title: const Text("Notice"),
-        content: const Text('Not authorised. Please sign in again'),
-        actions: [
-          TextButton(
-              child: const Text("OK"),
-              onPressed: () {
-                Navigator.pop(context);
-              })
-        ],
-      );
+      return const NoticeDialog(
+          content: 'Not authorised. Please sign in again');
     } else {
       return FutureBuilder<User>(
-          future: httpHelpers.viewUserRequest(jwt),
+          future: httpHelpers.viewOwnUserProfileRequest(jwt),
           builder: ((context, snapshot) {
             if (snapshot.hasData) {
               return Scaffold(
                 appBar: AppBar(
                   leading: const Icon(Icons.menu),
                   title: const Text('Expert Home'),
-                  backgroundColor: Color.fromARGB(255, 70, 88, 152),
+                  backgroundColor: const Color.fromARGB(255, 70, 88, 152),
                   actions: [
                     IconButton(
                       icon: const Icon(Icons.logout),
@@ -70,7 +66,7 @@ class _HomePageState extends State<expertHomePage> {
                 body: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 60),
                     CircleAvatar(
                       radius: 80,
                       backgroundColor: Colors.white,
@@ -116,9 +112,9 @@ class _HomePageState extends State<expertHomePage> {
                       'Species Count: ${snapshot.data!.speciescount}', // Replace with the actual number of species found
                       style: const TextStyle(fontSize: 16),
                     ),
-                    Text(
+                    const Text(
                       'Species with Most Posts: ', // Replace with the actual species
-                      style: const TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 16),
                     ),
                   ],
                 ),
@@ -127,21 +123,17 @@ class _HomePageState extends State<expertHomePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.person),
-                        onPressed: () {},
-                      ),
-                      IconButton(
                         icon: const Icon(Icons.add_a_photo_rounded),
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => CameraPage()),
+                                builder: (context) => const CameraPage()),
                           );
                         },
                       ),
                       IconButton(
-                        icon: const Icon(Icons.post_add),
+                        icon: const Icon(Icons.photo_library),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -150,25 +142,36 @@ class _HomePageState extends State<expertHomePage> {
                           );
                         },
                       ),
+                      IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const StatisticsPage()),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.feedback),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const WaitingListPage()),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),
               );
+            } else if (snapshot.hasError) {
+              return const NoticeDialog(
+                  content: 'User not found! Please try again');
+            } else {
+              return const LoadingScreen();
             }
-            return Container(
-              color: const Color.fromARGB(255, 236, 249, 255),
-              child: const Center(
-                child: SizedBox(
-                  height: 35.0,
-                  width: 35.0,
-                  child: CircularProgressIndicator(
-                      backgroundColor: Color.fromARGB(255, 91, 170, 255),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          Color.fromARGB(255, 184, 218, 255)),
-                      strokeWidth: 8),
-                ),
-              ),
-            );
           }));
     }
   }

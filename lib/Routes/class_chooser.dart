@@ -1,4 +1,4 @@
-import 'package:ichthyolog/Models/species.dart';
+import '../Models/species.dart';
 import 'package:selectable_list/selectable_list.dart';
 import 'package:flutter/material.dart';
 

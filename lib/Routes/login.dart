@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:ichthyolog/main.dart';
+import '../Helpers/standard_widgets.dart';
+import '../main.dart';
 import 'login_background.dart';
 import 'signup.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/Http.dart';
-import 'homepage.dart';
-import './gallerypage.dart';
+import 'gallery_page.dart';
+import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final emailUsernameController = TextEditingController();
   final passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -27,47 +28,34 @@ class _LoginPageState extends State<LoginPage> {
           .loginRequest(emailUsernameController.text,
               emailUsernameController.text, passwordController.text)
           .then((String response) async {
-        debugPrint(response);
-        Widget continueButton = TextButton(
-            child: Text("OK"),
-            onPressed: () {
-              Navigator.pop(context);
-            });
-
-        AlertDialog alert = AlertDialog(
-            title: Text("Notice"),
-            content: Text(response == 'Password Incorrect'
-                ? 'Incorrect password, please try again.'
-                : 'Username not found, please try again.'),
-            actions: [continueButton]);
-
         if (response != 'Password Incorrect' &&
             response != 'Username Not Found') {
           await storage.write(key: "jwt", value: response);
           if (context.mounted) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => regularHomePage()),
+              MaterialPageRoute(builder: (context) => const RegularHomePage()),
             );
           }
         } else {
           showDialog(
               context: context,
               builder: (BuildContext context) {
-                return alert;
+                return NoticeDialog(
+                    content: response == 'Password Incorrect'
+                        ? 'Incorrect password, please try again.'
+                        : 'Username not found, please try again.');
               });
         }
       });
     }
   }
 
-  //TODO: add futurebuilder so that this page will not load as long as jwt is
-  //still valid (user need not login again)
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(children: [
-        const BackgroundPage(),
+        const LoginBackgroundPage(),
         ListView(children: [
           Center(
             child: Form(
@@ -158,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 20),
 
                   //Login button
-                  Container(
+                  SizedBox(
                     width: 250,
                     height: 36,
                     child: ElevatedButton(
@@ -183,7 +171,8 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => SignUpPage()),
+                          MaterialPageRoute(
+                              builder: (context) => const SignUpPage()),
                         );
                       },
                       child: const Text('Sign up'),
@@ -196,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => GalleryPage()),
+                              builder: (context) => const GalleryPage()),
                         );
                       },
                       child: const Text('Use this app without an account',
