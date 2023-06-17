@@ -8,6 +8,7 @@ class Comment {
   final String content;
   final String authorPic;
   final String postedTime;
+  final int upvotes;
 
   Comment(
       {required this.commentId,
@@ -16,7 +17,8 @@ class Comment {
       required this.authorName,
       required this.authorPic,
       required this.content,
-      required this.postedTime});
+      required this.postedTime,
+      required this.upvotes});
 
   factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
@@ -27,6 +29,7 @@ class Comment {
         content: json['content'],
         authorPic: json['authorpic'],
         postedTime: DateFormat("hh:mm a, dd/MM/yyyy")
-            .format(DateTime.parse(json['postedtime'])));
+            .format(DateTime.parse(json['postedtime'])),
+        upvotes: json['upvotes']);
   }
 }

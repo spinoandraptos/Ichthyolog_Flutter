@@ -169,16 +169,6 @@ class StatisticsPageState extends State<StatisticsPage> {
           appBar: AppBar(
             title: const Text('Search Statistics'),
             backgroundColor: const Color.fromARGB(255, 70, 88, 152),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  setState(() {
-                    mux = '';
-                  });
-                },
-              ),
-            ],
           ),
           body: SingleChildScrollView(
             child: Center(
