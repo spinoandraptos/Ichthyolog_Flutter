@@ -516,7 +516,8 @@ Future<List<String>> searchClassification(
 
 Future<List<String>> searchClass(String class_, String startTime,
     String endTime, String sightinglocation) async {
-  String url = 'https://ichthyolog-nodejs.onrender.com/statistics/$class_';
+  String url =
+      'https://ichthyolog-nodejs.onrender.com/statistics/class/$class_';
   var response = await http.get(
     Uri.parse(url),
     headers: <String, String>{
@@ -537,8 +538,7 @@ Future<List<String>> searchClass(String class_, String startTime,
 
 Future<List<String>> searchOrder(String class_, String order, String startTime,
     String endTime, String sightinglocation) async {
-  String url =
-      'https://ichthyolog-nodejs.onrender.com/statistics/$class_/$order';
+  String url = 'https://ichthyolog-nodejs.onrender.com/statistics/order/$order';
   var response = await http.get(
     Uri.parse(url),
     headers: <String, String>{
@@ -560,7 +560,7 @@ Future<List<String>> searchOrder(String class_, String order, String startTime,
 Future<List<String>> searchFamily(String class_, String order, String family,
     String startTime, String endTime, String sightinglocation) async {
   String url =
-      'https://ichthyolog-nodejs.onrender.com/statistics/$class_/$order/$family';
+      'https://ichthyolog-nodejs.onrender.com/statistics/family/$family';
   var response = await http.get(
     Uri.parse(url),
     headers: <String, String>{
@@ -587,8 +587,7 @@ Future<List<String>> searchGenus(
     String startTime,
     String endTime,
     String sightinglocation) async {
-  String url =
-      'https://ichthyolog-nodejs.onrender.com/statistics/$class_/$order/$family/$genus';
+  String url = 'https://ichthyolog-nodejs.onrender.com/statistics/genus/$genus';
   var response = await http.get(
     Uri.parse(url),
     headers: <String, String>{
@@ -608,8 +607,7 @@ Future<List<String>> searchGenus(
 }
 
 Future<List<List<String>>> searchFamilyCatalogue() async {
-  String url =
-      'https://ichthyolog-nodejs.onrender.com/statistics/catalogue/family';
+  String url = 'https://ichthyolog-nodejs.onrender.com/catalogue/family';
   var response = await http.get(
     Uri.parse(url),
     headers: <String, String>{
@@ -621,12 +619,13 @@ Future<List<List<String>>> searchFamilyCatalogue() async {
     var responseData = json.decode(response.body);
     for (var everyfamily in responseData) {
       List<String> family = [];
-      family.add(everyfamily['family']);
+      family.add(everyfamily['family'].toString());
       family.add(everyfamily['species_count'].toString());
       familyList.add(family);
     }
     return familyList;
   } else {
+    print(response.body);
     throw Exception('Family not found! Error ${response.statusCode}');
   }
 }
