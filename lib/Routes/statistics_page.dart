@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../Helpers/helper.dart';
-import '../Helpers/http.dart' as httpHelpers;
+import '../Helpers/Http.dart' as httpHelpers;
 import 'date_time_picker.dart';
 import 'Stepper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'stats_result_page.dart';
 import 'search_result_page.dart';
+import 'catalogue_page.dart';
 
 class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});
@@ -119,6 +120,23 @@ class StatisticsPageState extends State<StatisticsPage> {
         fontSize: 16.0);
   }
 
+  void showFamilyCatalogue() {
+    try {
+      httpHelpers.searchFamilyCatalogue().then((value) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CataloguePage(
+              itemList: value,
+            ),
+          ),
+        );
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (mux == '') {
@@ -163,7 +181,9 @@ class StatisticsPageState extends State<StatisticsPage> {
             ),
             const SizedBox(height: 10),
             ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  showFamilyCatalogue();
+                },
                 style: ButtonStyle(
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(

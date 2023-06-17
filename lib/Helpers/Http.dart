@@ -606,3 +606,27 @@ Future<List<String>> searchGenus(
     throw Exception('Genus not found! Error ${response.statusCode}');
   }
 }
+
+Future<List<List<String>>> searchFamilyCatalogue() async {
+  String url =
+      'https://ichthyolog-nodejs.onrender.com/statistics/catalogue/family';
+  var response = await http.get(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+  );
+  if (response.statusCode == 200) {
+    List<List<String>> familyList = [];
+    var responseData = json.decode(response.body);
+    for (var everyfamily in responseData) {
+      List<String> family = [];
+      family.add(everyfamily['family']);
+      family.add(everyfamily['species_count'].toString());
+      familyList.add(family);
+    }
+    return familyList;
+  } else {
+    throw Exception('Family not found! Error ${response.statusCode}');
+  }
+}
