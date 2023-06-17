@@ -161,6 +161,15 @@ class StatisticsPageState extends State<StatisticsPage> {
               child:
                   const Text('Classificaiton', style: TextStyle(fontSize: 40)),
             ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+                onPressed: () {},
+                style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)))),
+                child: const Text('Species Catalogue',
+                    style: TextStyle(fontSize: 40))),
           ]),
         ),
       );
