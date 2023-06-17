@@ -148,27 +148,51 @@ class OwnCommentState extends State<OwnComment> {
                 InkWell(
                     customBorder: const CircleBorder(),
                     onTap: () {
-                      httpHelpers
-                          .upVoteCommentRequest(
-                              widget.comment.commentId, widget.jwt)
-                          .then((response) {
-                        if (response == 'Comment Upvoted') {
-                          widget.updateCallBack(response);
-                          Fluttertoast.showToast(
-                            msg: 'Comment Upvoted',
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                          );
-                        } else {
-                          Fluttertoast.showToast(
-                            msg: 'Comment failed to upvote :(',
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                          );
-                        }
-                      });
+                      widget.comment.upvotes == 29
+                          ? httpHelpers
+                              .upVoteCommentRequest(
+                                  widget.comment.commentId, widget.jwt)
+                              .then((response) {
+                              if (response == 'Comment Upvoted') {
+                                widget.updateCallBack(response);
+                                httpHelpers.verifyPostRequest(
+                                    widget.comment.postId, widget.jwt);
+                                Fluttertoast.showToast(
+                                  msg: 'Comment upvoted',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                );
+                              } else {
+                                Fluttertoast.showToast(
+                                  msg: 'Comment failed to upvote :(',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                );
+                              }
+                            })
+                          : httpHelpers
+                              .upVoteCommentRequest(
+                                  widget.comment.commentId, widget.jwt)
+                              .then((response) {
+                              if (response == 'Comment Upvoted') {
+                                widget.updateCallBack(response);
+                                Fluttertoast.showToast(
+                                  msg: 'Comment upvoted',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                );
+                              } else {
+                                Fluttertoast.showToast(
+                                  msg: 'Comment failed to upvote :(',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                );
+                              }
+                            });
                     },
                     child: const Padding(
                         padding: EdgeInsets.all(6),
@@ -179,27 +203,34 @@ class OwnCommentState extends State<OwnComment> {
                 InkWell(
                     customBorder: const CircleBorder(),
                     onTap: () {
-                      httpHelpers
-                          .downVoteCommentRequest(
-                              widget.comment.commentId, widget.jwt)
-                          .then((response) {
-                        if (response == 'Comment Downvoted') {
-                          widget.updateCallBack(response);
-                          Fluttertoast.showToast(
-                            msg: 'Comment Downvoted',
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                          );
-                        } else {
-                          Fluttertoast.showToast(
-                            msg: 'Comment failed to Downvote :(',
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                          );
-                        }
-                      });
+                      widget.comment.upvotes > 0
+                          ? httpHelpers
+                              .downVoteCommentRequest(
+                                  widget.comment.commentId, widget.jwt)
+                              .then((response) {
+                              if (response == 'Comment Downvoted') {
+                                widget.updateCallBack(response);
+                                Fluttertoast.showToast(
+                                  msg: 'Comment downvoted',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                );
+                              } else {
+                                Fluttertoast.showToast(
+                                  msg: 'Comment failed to downvote :(',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                );
+                              }
+                            })
+                          : Fluttertoast.showToast(
+                              msg: 'Comment can downvote no further',
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                            );
                     },
                     child: const Padding(
                         padding: EdgeInsets.all(6),
@@ -265,27 +296,51 @@ class OtherCommentState extends State<OtherComment> {
               InkWell(
                   customBorder: const CircleBorder(),
                   onTap: () {
-                    httpHelpers
-                        .upVoteCommentRequest(
-                            widget.comment.commentId, widget.jwt)
-                        .then((response) {
-                      if (response == 'Comment Upvoted') {
-                        widget.updateCallBack(response);
-                        Fluttertoast.showToast(
-                          msg: 'Comment Upvoted',
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                        );
-                      } else {
-                        Fluttertoast.showToast(
-                          msg: 'Comment failed to upvote :(',
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                        );
-                      }
-                    });
+                    widget.comment.upvotes == 29
+                        ? httpHelpers
+                            .upVoteCommentRequest(
+                                widget.comment.commentId, widget.jwt)
+                            .then((response) {
+                            if (response == 'Comment Upvoted') {
+                              widget.updateCallBack(response);
+                              httpHelpers.verifyPostRequest(
+                                  widget.comment.postId, widget.jwt);
+                              Fluttertoast.showToast(
+                                msg: 'Comment upvoted',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: 'Comment failed to upvote :(',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            }
+                          })
+                        : httpHelpers
+                            .upVoteCommentRequest(
+                                widget.comment.commentId, widget.jwt)
+                            .then((response) {
+                            if (response == 'Comment Upvoted') {
+                              widget.updateCallBack(response);
+                              Fluttertoast.showToast(
+                                msg: 'Comment upvoted',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: 'Comment failed to upvote :(',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            }
+                          });
                   },
                   child: const Padding(
                       padding: EdgeInsets.all(6),
@@ -296,27 +351,34 @@ class OtherCommentState extends State<OtherComment> {
               InkWell(
                   customBorder: const CircleBorder(),
                   onTap: () {
-                    httpHelpers
-                        .downVoteCommentRequest(
-                            widget.comment.commentId, widget.jwt)
-                        .then((response) {
-                      if (response == 'Comment Downvoted') {
-                        widget.updateCallBack(response);
-                        Fluttertoast.showToast(
-                          msg: 'Comment Downvoted',
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                        );
-                      } else {
-                        Fluttertoast.showToast(
-                          msg: 'Comment failed to Downvote :(',
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                        );
-                      }
-                    });
+                    widget.comment.upvotes > 0
+                        ? httpHelpers
+                            .downVoteCommentRequest(
+                                widget.comment.commentId, widget.jwt)
+                            .then((response) {
+                            if (response == 'Comment Downvoted') {
+                              widget.updateCallBack(response);
+                              Fluttertoast.showToast(
+                                msg: 'Comment downvoted',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: 'Comment failed to downvote :(',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            }
+                          })
+                        : Fluttertoast.showToast(
+                            msg: 'Comment can downvote no further',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                          );
                   },
                   child: const Padding(
                       padding: EdgeInsets.all(6),

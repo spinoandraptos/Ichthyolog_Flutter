@@ -430,7 +430,7 @@ class HttpHelpers {
 
   Future<String> upVoteCommentRequest(int commentid, String jwt) async {
     String url =
-        'https://ichthyolog-nodejs.onrender.com/post/$commentid/upvote';
+        'https://ichthyolog-nodejs.onrender.com/comment/$commentid/upvote';
     var response = await http.put(
       Uri.parse(url),
       headers: <String, String>{
@@ -448,7 +448,7 @@ class HttpHelpers {
 
   Future<String> downVoteCommentRequest(int commentid, String jwt) async {
     String url =
-        'https://ichthyolog-nodejs.onrender.com/post/$commentid/downvote';
+        'https://ichthyolog-nodejs.onrender.com/comment/$commentid/downvote';
     var response = await http.put(
       Uri.parse(url),
       headers: <String, String>{
