@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../Helpers/helper.dart';
-import '../Helpers/http.dart';
+import '../Helpers/http.dart' as httpHelpers;
 import 'date_time_picker.dart';
 import 'Stepper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'stats_result_page.dart';
+import 'search_result_page.dart';
 
 class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});
@@ -18,8 +20,8 @@ class StatisticsPageState extends State<StatisticsPage> {
   String jwt = '';
   String date1 = '';
   String time1 = '';
-  String date2 = '';
-  String time2 = '';
+  String date2 = DateFormat("yyyy-MM-dd").format(DateTime.now());
+  String time2 = DateFormat("hh:mm:ss").format(DateTime.now());
   String species = '';
   String sightingLocation = '';
   String class_ = '';
@@ -27,7 +29,6 @@ class StatisticsPageState extends State<StatisticsPage> {
   String family = '';
   String genus = '';
   final helpers = Helpers();
-  final httpHelpers = HttpHelpers();
   final speciesController = TextEditingController();
   final locationController = TextEditingController();
 
@@ -35,8 +36,8 @@ class StatisticsPageState extends State<StatisticsPage> {
     setState(() {
       date1 = '';
       time1 = '';
-      date2 = '';
-      time2 = '';
+      date2 = DateFormat("yyyy-MM-dd").format(DateTime.now());
+      time2 = DateFormat("hh:mm:ss").format(DateTime.now());
       species = '';
       sightingLocation = '';
       class_ = '';
@@ -62,6 +63,51 @@ class StatisticsPageState extends State<StatisticsPage> {
       String jwt) {
     // Insert HTTP search query here with given parameters
     // Return a result page with approriate contents
+    if (mux == 'species') {
+      try {
+        httpHelpers
+            .searchSpecies(
+          species,
+          '$date1 $time1',
+          '$date2 $time2',
+          location,
+        )
+            .then((value) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => StatsResultPage(
+                dataList: value,
+                species: species,
+              ),
+            ),
+          );
+        });
+      } catch (e) {
+        print(e);
+      }
+    } else {
+      try {
+        httpHelpers
+            .searchClassification(class_, order, family, genus, '$date1 $time1',
+                '$date2 $time2', location)
+            .then((value) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SearchResultPage(
+                dataList: value,
+                startTime: '$date1 $time1',
+                endTime: '$date2 $time2',
+                sightinglocation: location,
+              ),
+            ),
+          );
+        });
+      } catch (e) {
+        print(e);
+      }
+    }
 
     Fluttertoast.showToast(
         msg: "Search query sent",
