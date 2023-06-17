@@ -6,12 +6,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 class OwnComment extends StatefulWidget {
   final Comment comment;
   final String jwt;
-  final Function deleteCallBack;
+  final Function updateCallBack;
   const OwnComment(
       {Key? key,
       required this.comment,
       required this.jwt,
-      required this.deleteCallBack})
+      required this.updateCallBack})
       : super(key: key);
 
   @override
@@ -58,6 +58,56 @@ class OwnCommentState extends State<OwnComment> {
                         padding: const EdgeInsets.only(top: 4, bottom: 4),
                         child: Row(
                           children: [
+                            IconButton(
+                                onPressed: () {
+                                  httpHelpers
+                                      .upVoteCommentRequest(
+                                          widget.comment.commentId, widget.jwt)
+                                      .then((response) {
+                                    if (response == 'Comment Upvoted') {
+                                      widget.updateCallBack(response);
+                                      Fluttertoast.showToast(
+                                        msg: 'Comment Upvoted',
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        timeInSecForIosWeb: 1,
+                                      );
+                                    } else {
+                                      Fluttertoast.showToast(
+                                        msg: 'Comment failed to upvote :(',
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        timeInSecForIosWeb: 1,
+                                      );
+                                    }
+                                  });
+                                },
+                                icon: const Icon(Icons.update)),
+                            IconButton(
+                                onPressed: () {
+                                  httpHelpers
+                                      .downVoteCommentRequest(
+                                          widget.comment.commentId, widget.jwt)
+                                      .then((response) {
+                                    if (response == 'Comment Downvoted') {
+                                      widget.updateCallBack(response);
+                                      Fluttertoast.showToast(
+                                        msg: 'Comment Downvoted',
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        timeInSecForIosWeb: 1,
+                                      );
+                                    } else {
+                                      Fluttertoast.showToast(
+                                        msg: 'Comment failed to Downvote :(',
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        timeInSecForIosWeb: 1,
+                                      );
+                                    }
+                                  });
+                                },
+                                icon: const Icon(Icons.update)),
                             TextButton(
                                 style: TextButton.styleFrom(
                                     padding: const EdgeInsets.all(3),
@@ -107,7 +157,7 @@ class OwnCommentState extends State<OwnComment> {
                                                         Navigator.pop(context);
                                                         if (response ==
                                                             'Comment Deleted') {
-                                                          widget.deleteCallBack(
+                                                          widget.updateCallBack(
                                                               response);
                                                           Fluttertoast
                                                               .showToast(
@@ -169,13 +219,21 @@ class OwnCommentState extends State<OwnComment> {
 
 class OtherComment extends StatefulWidget {
   final Comment comment;
-  const OtherComment({Key? key, required this.comment}) : super(key: key);
+  final String jwt;
+  final Function updateCallBack;
+  const OtherComment(
+      {Key? key,
+      required this.comment,
+      required this.jwt,
+      required this.updateCallBack})
+      : super(key: key);
 
   @override
   OtherCommentState createState() => OtherCommentState();
 }
 
 class OtherCommentState extends State<OtherComment> {
+  final httpHelpers = HttpHelpers();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -206,6 +264,31 @@ class OtherCommentState extends State<OtherComment> {
             'Posted at ${widget.comment.postedTime}',
             style: const TextStyle(fontSize: 11),
           ),
+          trailing: IconButton(
+              iconSize: 20,
+              onPressed: () {
+                httpHelpers
+                    .upVoteCommentRequest(widget.comment.commentId, widget.jwt)
+                    .then((response) {
+                  if (response == 'Comment Upvoted') {
+                    widget.updateCallBack(response);
+                    Fluttertoast.showToast(
+                      msg: 'Comment Upvoted',
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      timeInSecForIosWeb: 1,
+                    );
+                  } else {
+                    Fluttertoast.showToast(
+                      msg: 'Comment failed to upvote :(',
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      timeInSecForIosWeb: 1,
+                    );
+                  }
+                });
+              },
+              icon: const Icon(Icons.update)),
         ));
   }
 }

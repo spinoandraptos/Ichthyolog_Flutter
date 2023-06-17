@@ -72,7 +72,10 @@ class CommentPageState extends State<CommentPage> {
                                     itemCount: snapshot.data!.length,
                                     itemBuilder: (context, index) {
                                       return OtherComment(
-                                          comment: snapshot.data![index]);
+                                          comment: snapshot.data![index],
+                                          jwt: jwt,
+                                          updateCallBack:
+                                              updateCommentCallback);
                                     },
                                   ))
                             ]))))
@@ -103,12 +106,15 @@ class CommentPageState extends State<CommentPage> {
                                           return OwnComment(
                                             comment: snapshot.data![index],
                                             jwt: jwt,
-                                            deleteCallBack:
-                                                deleteCommentCallback,
+                                            updateCallBack:
+                                                updateCommentCallback,
                                           );
                                         } else {
                                           return OtherComment(
-                                              comment: snapshot.data![index]);
+                                              comment: snapshot.data![index],
+                                              jwt: jwt,
+                                              updateCallBack:
+                                                  updateCommentCallback);
                                         }
                                       },
                                     )),
@@ -183,8 +189,10 @@ class CommentPageState extends State<CommentPage> {
         }));
   }
 
-  deleteCommentCallback(response) {
-    if (response == 'Comment Deleted') {
+  updateCommentCallback(response) {
+    if (response == 'Comment Deleted' ||
+        response == 'Comment Upvoted' ||
+        response == 'Comment Downvoted') {
       setState(() {});
     }
   }

@@ -69,8 +69,7 @@ class PostPageSingleComment extends StatefulWidget {
   final String jwt;
   final int postid;
   final Map<String, dynamic> decodedJWT;
-  final Function deleteCallBack;
-  final Function addCallBack;
+  final Function updateCallBack;
 
   const PostPageSingleComment(
       {Key? key,
@@ -78,8 +77,7 @@ class PostPageSingleComment extends StatefulWidget {
       required this.jwt,
       required this.postid,
       required this.decodedJWT,
-      required this.deleteCallBack,
-      required this.addCallBack})
+      required this.updateCallBack})
       : super(key: key);
 
   @override
@@ -100,16 +98,21 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
   @override
   Widget build(BuildContext context) {
     return widget.jwt == ''
-        ? OtherComment(comment: widget.comments[widget.comments.length - 1])
+        ? OtherComment(
+            comment: widget.comments[widget.comments.length - 1],
+            jwt: widget.jwt,
+            updateCallBack: widget.updateCallBack)
         : Column(children: [
             widget.comments[widget.comments.length - 1].authorId ==
                     widget.decodedJWT['userid']
                 ? OwnComment(
                     comment: widget.comments[widget.comments.length - 1],
                     jwt: widget.jwt,
-                    deleteCallBack: widget.deleteCallBack)
+                    updateCallBack: widget.updateCallBack)
                 : OtherComment(
-                    comment: widget.comments[widget.comments.length - 1]),
+                    comment: widget.comments[widget.comments.length - 1],
+                    jwt: widget.jwt,
+                    updateCallBack: widget.updateCallBack),
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20),
               child: TextFormField(
@@ -142,7 +145,7 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
                             widget.postid, contentText.text, widget.jwt)
                         .then((response) {
                       if (response == 'Comment Posted') {
-                        widget.addCallBack(response);
+                        widget.updateCallBack(response);
                         Fluttertoast.showToast(
                           msg: 'Comment posted successfully!',
                           toastLength: Toast.LENGTH_SHORT,
