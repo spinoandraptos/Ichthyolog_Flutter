@@ -133,13 +133,11 @@ class PostPageState extends State<PostPage> {
                                   } else if (snapshot.hasData &&
                                       snapshot.data!.length == 1) {
                                     return PostPageSingleComment(
-                                      comments: snapshot.data!,
-                                      jwt: jwt,
-                                      decodedJWT: decodedJWT,
-                                      postid: widget.postid,
-                                      deleteCallBack: changeCommentCallback,
-                                      addCallBack: changeCommentCallback,
-                                    );
+                                        comments: snapshot.data!,
+                                        jwt: jwt,
+                                        decodedJWT: decodedJWT,
+                                        postid: widget.postid,
+                                        updateCallBack: changeCommentCallback);
                                   } else {
                                     return PostPageNoComment(
                                         jwt: jwt,

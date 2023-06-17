@@ -84,7 +84,9 @@ class WaitingListPageState extends State<WaitingListPage> {
                     )),
                 CircleAvatar(
                   radius: 8,
-                  backgroundColor: const Color.fromARGB(255, 152, 72, 85),
+                  backgroundColor: post.flagged
+                      ? const Color.fromARGB(255, 152, 72, 85)
+                      : const Color.fromARGB(255, 175, 103, 51),
                   child: Icon(
                     post.flagged ? Icons.priority_high : Icons.pending,
                     size: 10,
@@ -319,7 +321,9 @@ class WaitingListPageState extends State<WaitingListPage> {
                     )),
                 CircleAvatar(
                   radius: 8,
-                  backgroundColor: const Color.fromARGB(255, 152, 72, 85),
+                  backgroundColor: post.flagged
+                      ? const Color.fromARGB(255, 152, 72, 85)
+                      : const Color.fromARGB(255, 175, 103, 51),
                   child: Icon(
                     post.flagged ? Icons.priority_high : Icons.pending,
                     size: 10,

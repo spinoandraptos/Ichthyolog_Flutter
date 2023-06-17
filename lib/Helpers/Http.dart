@@ -209,15 +209,13 @@ class HttpHelpers {
       String sightingTime,
       String imageURL,
       String jwt,
-      int level,
-      int postNumber,
       String class_,
       String order,
       String family,
       String genus) async {
-    String url1 = 'https://ichthyolog-nodejs.onrender.com/post';
-    var response1 = await http.post(
-      Uri.parse(url1),
+    String url = 'https://ichthyolog-nodejs.onrender.com/post';
+    var response = await http.post(
+      Uri.parse(url),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorisation': jwt
@@ -234,27 +232,8 @@ class HttpHelpers {
         'genus': genus
       }),
     );
-    String url2 = 'https://ichthyolog-nodejs.onrender.com/user/level';
-    var response2 = await http.put(
-      Uri.parse(url2),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': jwt
-      },
-      body: json.encode(<String, dynamic>{'level': level}),
-    );
-    String url3 = 'https://ichthyolog-nodejs.onrender.com/user/post';
-    var response3 = await http.put(
-      Uri.parse(url3),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorisation': jwt
-      },
-      body: json.encode(<String, dynamic>{'post_number': postNumber}),
-    );
-    if (response1.statusCode == 201 &&
-        response2.statusCode == 200 &&
-        response3.statusCode == 200) {
+
+    if (response.statusCode == 201) {
       return ('Post Uploaded');
     } else {
       return ('Post Upload Failed');
@@ -446,6 +425,41 @@ class HttpHelpers {
       return ('Post Unflagged');
     } else {
       return ('Post Unflagging Failed');
+    }
+  }
+
+  Future<String> upVoteCommentRequest(int commentid, String jwt) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/post/$commentid/upvote';
+    var response = await http.put(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      return ('Comment Upvoted');
+    } else {
+      print(response.statusCode);
+      return ('Comment Upvoting Failed');
+    }
+  }
+
+  Future<String> downVoteCommentRequest(int commentid, String jwt) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/post/$commentid/downvote';
+    var response = await http.put(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      return ('Comment Downvoted');
+    } else {
+      return ('Comment Downvoting Failed');
     }
   }
 }

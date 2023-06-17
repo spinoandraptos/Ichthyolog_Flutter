@@ -351,8 +351,6 @@ class CameraPageState extends State<CameraPage> {
               sightingTime,
               "https://ichthyolog175756-dev.s3.ap-southeast-1.amazonaws.com/public/$key",
               jwt,
-              1,
-              1,
               class_,
               order,
               family,
