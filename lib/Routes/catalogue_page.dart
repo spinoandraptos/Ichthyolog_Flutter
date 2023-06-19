@@ -5,14 +5,29 @@ import '../Helpers/Http.dart' as httpHelpers;
 
 class CataloguePage extends StatelessWidget {
   final List<List<dynamic>> itemList;
+  final String mux;
+  const CataloguePage({super.key, required this.itemList, required this.mux});
 
-  const CataloguePage({super.key, required this.itemList});
+  Function chooseSearch(String mux) {
+    switch (mux) {
+      case 'Family':
+        return httpHelpers.searchFamily;
+      case 'Genus':
+        return httpHelpers.searchGenus;
+      case 'Order':
+        return httpHelpers.searchOrder;
+      case 'Class':
+        return httpHelpers.searchClass;
+      default:
+        return httpHelpers.searchClass;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Family Catalogue'),
+        title: Text('$mux Catalogue'),
       ),
       body: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -27,13 +42,12 @@ class CataloguePage extends StatelessWidget {
 
           return Card(
             child: ListTile(
-                title: Text('$string1 ($string2)',
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                title: Text(
+                  '$string1 ($string2)',
+                ),
                 onTap: () {
-                  httpHelpers
-                      .searchFamily(
-                          '',
-                          '',
+                  chooseSearch(mux)
+                      .call(
                           string1,
                           "2000-01-01 00:00:00",
                           DateFormat("yyyy-MM-dd hh:mm:ss")

@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'stats_result_page.dart';
 import 'search_result_page.dart';
 import 'catalogue_page.dart';
+import 'catalogue_mux_page.dart';
 
 class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});
@@ -120,7 +121,7 @@ class StatisticsPageState extends State<StatisticsPage> {
         fontSize: 16.0);
   }
 
-  void showFamilyCatalogue() {
+  void showCatalogue(String mux) {
     try {
       httpHelpers.searchFamilyCatalogue().then((value) {
         Navigator.push(
@@ -128,6 +129,7 @@ class StatisticsPageState extends State<StatisticsPage> {
           MaterialPageRoute(
             builder: (context) => CataloguePage(
               itemList: value,
+              mux: mux,
             ),
           ),
         );
@@ -182,7 +184,12 @@ class StatisticsPageState extends State<StatisticsPage> {
             const SizedBox(height: 10),
             ElevatedButton(
                 onPressed: () {
-                  showFamilyCatalogue();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CatalogueMuxPage(),
+                    ),
+                  );
                 },
                 style: ButtonStyle(
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
