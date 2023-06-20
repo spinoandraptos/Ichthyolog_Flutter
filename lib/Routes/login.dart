@@ -4,7 +4,7 @@ import '../main.dart';
 import 'login_background.dart';
 import 'signup.dart';
 import '../Helpers/helper.dart';
-import '../Helpers/Http.dart';
+import '../Helpers/http.dart';
 import 'gallery_page.dart';
 import 'home_page.dart';
 

@@ -72,10 +72,11 @@ class CommentPageState extends State<CommentPage> {
                                     itemCount: snapshot.data!.length,
                                     itemBuilder: (context, index) {
                                       return OtherComment(
-                                          comment: snapshot.data![index],
-                                          jwt: jwt,
-                                          updateCallBack:
-                                              updateCommentCallback);
+                                        comment: snapshot.data![index],
+                                        jwt: jwt,
+                                        updateCallBack: updateCommentCallback,
+                                        userid: decodedJWT['userid'],
+                                      );
                                     },
                                   ))
                             ]))))
@@ -104,17 +105,18 @@ class CommentPageState extends State<CommentPage> {
                                         if (snapshot.data![index].authorName ==
                                             decodedJWT['username']) {
                                           return OwnComment(
-                                            comment: snapshot.data![index],
-                                            jwt: jwt,
-                                            updateCallBack:
-                                                updateCommentCallback,
-                                          );
+                                              comment: snapshot.data![index],
+                                              jwt: jwt,
+                                              updateCallBack:
+                                                  updateCommentCallback,
+                                              userid: decodedJWT['userid']);
                                         } else {
                                           return OtherComment(
                                               comment: snapshot.data![index],
                                               jwt: jwt,
                                               updateCallBack:
-                                                  updateCommentCallback);
+                                                  updateCommentCallback,
+                                              userid: decodedJWT['userid']);
                                         }
                                       },
                                     )),

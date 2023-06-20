@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../Helpers/helper.dart';
-import '../Helpers/Http.dart' as httpHelpers;
+import '../Helpers/http.dart';
 import 'date_time_picker.dart';
 import 'Stepper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -31,6 +31,7 @@ class StatisticsPageState extends State<StatisticsPage> {
   String family = '';
   String genus = '';
   final helpers = Helpers();
+  final httpHelpers = HttpHelpers();
   final speciesController = TextEditingController();
   final locationController = TextEditingController();
 
@@ -222,6 +223,7 @@ class StatisticsPageState extends State<StatisticsPage> {
                     child: const Text(
                       'Species Catalogue',
                       style: TextStyle(fontSize: 40),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ],

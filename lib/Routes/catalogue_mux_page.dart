@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../Helpers/Http.dart' as httpHelpers;
+import '../Helpers/Http.dart';
 import 'catalogue_page.dart';
 
 class CatalogueMuxPage extends StatelessWidget {
@@ -14,11 +14,11 @@ class CatalogueMuxPage extends StatelessWidget {
       body: Center(
         child: GridView.count(
           crossAxisCount: 2,
-          childAspectRatio: 0.55,
+          childAspectRatio: 0.6,
           padding: const EdgeInsets.all(16),
           mainAxisSpacing: 10,
           crossAxisSpacing: 10,
-          children: const [
+          children: [
             CustomButton(
               text: 'Class Catalogue',
             ),
@@ -40,8 +40,8 @@ class CatalogueMuxPage extends StatelessWidget {
 
 class CustomButton extends StatelessWidget {
   final String text;
-
-  const CustomButton({super.key, required this.text});
+  final httpHelpers = HttpHelpers();
+  CustomButton({super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +88,7 @@ class CustomButton extends StatelessWidget {
       child: Text(
         text,
         style: const TextStyle(
-          fontSize: 30,
+          fontSize: 25,
           fontWeight: FontWeight.bold,
         ),
         textAlign: TextAlign.center,
