@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../Helpers/Http.dart' as http;
+import '../Helpers/http.dart' as http;
 import 'stats_result_page.dart';
 
 class SearchResultPage extends StatelessWidget {

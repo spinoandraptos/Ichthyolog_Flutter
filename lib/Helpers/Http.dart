@@ -464,6 +464,44 @@ class HttpHelpers {
   }
 }
 
+Future<List<int>> getCommentUpvotesRequest(int commentid, String jwt) async {
+  String url = 'https://ichthyolog-nodejs.onrender.com/upvotes/$commentid';
+  var response = await http.get(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorisation': jwt
+    },
+  );
+  if (response.statusCode == 200) {
+    List<int> upvoterlist = [];
+    var responseData = json.decode(response.body);
+    for (var everyID in responseData) {
+      upvoterlist.add(everyID);
+    }
+    return upvoterlist;
+  } else {
+    return Future.error("Upvotes not found");
+  }
+}
+
+Future<bool> checkUpvoteStatus(int commentid, String jwt, int authorid) async {
+  String url =
+      'https://ichthyolog-nodejs.onrender.com/upvotes/$commentid/$authorid';
+  var response = await http.get(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorisation': jwt
+    },
+  );
+  if (response.statusCode == 200) {
+    return json.decode(response.body);
+  } else {
+    return Future.error("Upvotes not found");
+  }
+}
+
 // statistics request
 Future<List<String>> searchSpecies(String species, String startTime,
     String endTime, String sightinglocation) async {
@@ -487,7 +525,7 @@ Future<List<String>> searchSpecies(String species, String startTime,
     dataList.add(responseData['latest_sightinglocation'].toString());
     return dataList;
   } else {
-    throw Exception('Species not found! Error ${response.statusCode}');
+    return Future.error('Species not found! Error ${response.statusCode}');
   }
 }
 
@@ -510,7 +548,7 @@ Future<List<String>> searchClassification(
     return searchGenus(
         class_, order, family, genus, startTime, endTime, sightinglocation);
   } else {
-    throw Exception('Classification not found!');
+    return Future.error('Classification not found!');
   }
 }
 
@@ -531,7 +569,7 @@ Future<List<String>> searchClass(String class_, String startTime,
     }
     return speciesList;
   } else {
-    throw Exception('Class not found! Error ${response.statusCode}');
+    return Future.error('Class not found! Error ${response.statusCode}');
   }
 }
 
@@ -553,7 +591,7 @@ Future<List<String>> searchOrder(String class_, String order, String startTime,
     }
     return speciesList;
   } else {
-    throw Exception('Order not found! Error ${response.statusCode}');
+    return Future.error('Order not found! Error ${response.statusCode}');
   }
 }
 
@@ -575,7 +613,7 @@ Future<List<String>> searchFamily(String class_, String order, String family,
     }
     return speciesList;
   } else {
-    throw Exception('Family not found! Error ${response.statusCode}');
+    return Future.error('Family not found! Error ${response.statusCode}');
   }
 }
 
@@ -603,6 +641,6 @@ Future<List<String>> searchGenus(
     }
     return speciesList;
   } else {
-    throw Exception('Genus not found! Error ${response.statusCode}');
+    return Future.error('Genus not found! Error ${response.statusCode}');
   }
 }

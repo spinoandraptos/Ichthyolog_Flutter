@@ -67,6 +67,7 @@ class PostPageMultiComment extends StatelessWidget {
 class PostPageSingleComment extends StatefulWidget {
   final List<Comment> comments;
   final String jwt;
+
   final int postid;
   final Map<String, dynamic> decodedJWT;
   final Function updateCallBack;
@@ -101,18 +102,21 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
         ? OtherComment(
             comment: widget.comments[widget.comments.length - 1],
             jwt: widget.jwt,
-            updateCallBack: widget.updateCallBack)
+            updateCallBack: widget.updateCallBack,
+            userid: widget.decodedJWT['userid'])
         : Column(children: [
             widget.comments[widget.comments.length - 1].authorId ==
                     widget.decodedJWT['userid']
                 ? OwnComment(
                     comment: widget.comments[widget.comments.length - 1],
                     jwt: widget.jwt,
-                    updateCallBack: widget.updateCallBack)
+                    updateCallBack: widget.updateCallBack,
+                    userid: widget.decodedJWT['userid'])
                 : OtherComment(
                     comment: widget.comments[widget.comments.length - 1],
                     jwt: widget.jwt,
-                    updateCallBack: widget.updateCallBack),
+                    updateCallBack: widget.updateCallBack,
+                    userid: widget.decodedJWT['userid']),
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20),
               child: TextFormField(
