@@ -428,9 +428,10 @@ class HttpHelpers {
     }
   }
 
-  Future<String> upVoteCommentRequest(int commentid, String jwt) async {
+  Future<String> upVoteCommentRequest(
+      int commentid, int authorid, String jwt) async {
     String url =
-        'https://ichthyolog-nodejs.onrender.com/comment/$commentid/upvote';
+        'https://ichthyolog-nodejs.onrender.com/comment/$commentid/$authorid/upvote';
     var response = await http.put(
       Uri.parse(url),
       headers: <String, String>{
@@ -441,14 +442,32 @@ class HttpHelpers {
     if (response.statusCode == 200) {
       return ('Comment Upvoted');
     } else {
-      print(response.statusCode);
       return ('Comment Upvoting Failed');
     }
   }
 
-  Future<String> downVoteCommentRequest(int commentid, String jwt) async {
+  Future<String> unUpVoteCommentRequest(
+      int commentid, int authorid, String jwt) async {
     String url =
-        'https://ichthyolog-nodejs.onrender.com/comment/$commentid/downvote';
+        'https://ichthyolog-nodejs.onrender.com/comment/$commentid/$authorid/unupvote';
+    var response = await http.put(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      return ('Comment Un-upvoted');
+    } else {
+      return ('Comment Un-upvoting Failed');
+    }
+  }
+
+  Future<String> downVoteCommentRequest(
+      int commentid, int authorid, String jwt) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/comment/$commentid/$authorid/downvote';
     var response = await http.put(
       Uri.parse(url),
       headers: <String, String>{
@@ -463,9 +482,11 @@ class HttpHelpers {
     }
   }
 
-  Future<List<int>> getCommentUpvotesRequest(int commentid, String jwt) async {
-    String url = 'https://ichthyolog-nodejs.onrender.com/upvotes/$commentid';
-    var response = await http.get(
+  Future<String> unDownVoteCommentRequest(
+      int commentid, int authorid, String jwt) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/comment/$commentid/$authorid/undownvote';
+    var response = await http.put(
       Uri.parse(url),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -473,14 +494,9 @@ class HttpHelpers {
       },
     );
     if (response.statusCode == 200) {
-      List<int> upvoterlist = [];
-      var responseData = json.decode(response.body);
-      for (var everyID in responseData) {
-        upvoterlist.add(everyID);
-      }
-      return upvoterlist;
+      return ('Comment Un-downvoted');
     } else {
-      return Future.error("Upvotes not found");
+      return ('Comment Un-downvoting Failed');
     }
   }
 
@@ -496,9 +512,27 @@ class HttpHelpers {
       },
     );
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      return json.decode(response.body)[0]['exists'];
     } else {
-      return Future.error("Upvotes not found");
+      return Future.error("Server error");
+    }
+  }
+
+  Future<bool> checkDownvoteStatus(
+      int commentid, String jwt, int authorid) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/downvotes/$commentid/$authorid';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body)[0]['exists'];
+    } else {
+      return Future.error("Server error");
     }
   }
 
