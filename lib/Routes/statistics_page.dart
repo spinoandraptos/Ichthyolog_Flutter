@@ -148,57 +148,87 @@ class StatisticsPageState extends State<StatisticsPage> {
           backgroundColor: const Color.fromARGB(255, 70, 88, 152),
         ),
         body: Center(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const Text('Search by:',
-                style: TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold,
-                )),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  mux = 'species';
-                });
-              },
-              style: ButtonStyle(
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)))),
-              child: const Text('Species', style: TextStyle(fontSize: 40)),
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Search by:',
+              style: TextStyle(
+                fontSize: 50,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  mux = 'classification';
-                });
-              },
-              style: ButtonStyle(
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)))),
-              child:
-                  const Text('Classificaiton', style: TextStyle(fontSize: 40)),
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CatalogueMuxPage(),
-                    ),
-                  );
-                },
-                style: ButtonStyle(
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 1,
+                childAspectRatio: 2.2,
+                padding: const EdgeInsets.all(16),
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        mux = 'species';
+                      });
+                    },
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)))),
-                child: const Text('Species Catalogue',
-                    style: TextStyle(fontSize: 40))),
-          ]),
-        ),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                    child: const Text(
+                      'Species',
+                      style: TextStyle(fontSize: 40),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        mux = 'classification';
+                      });
+                    },
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                    child: const Text(
+                      'Classification',
+                      style: TextStyle(fontSize: 40),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CatalogueMuxPage(),
+                        ),
+                      );
+                    },
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                    child: const Text(
+                      'Species Catalogue',
+                      style: TextStyle(fontSize: 40),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        )),
       );
     } else {
       return Scaffold(
@@ -356,7 +386,7 @@ class StatisticsPageState extends State<StatisticsPage> {
                           backgroundColor:
                               const Color.fromARGB(255, 80, 170, 121)),
                       child:
-                          const Text('Search', style: TextStyle(fontSize: 16)),
+                          const Text('Search', style: TextStyle(fontSize: 30)),
                     ),
                     const SizedBox(width: 10),
                     ElevatedButton(
@@ -367,7 +397,7 @@ class StatisticsPageState extends State<StatisticsPage> {
                           backgroundColor:
                               const Color.fromARGB(255, 170, 80, 80)),
                       child:
-                          const Text('Clear', style: TextStyle(fontSize: 16)),
+                          const Text('Clear', style: TextStyle(fontSize: 30)),
                     )
                   ],
                 ),

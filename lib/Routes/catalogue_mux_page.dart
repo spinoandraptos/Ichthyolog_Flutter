@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../Helpers/Http.dart' as httpHelpers;
 import 'catalogue_page.dart';
 
@@ -10,29 +9,24 @@ class CatalogueMuxPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Button Column'),
+        title: const Text('Select a Catalogue'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: GridView.count(
+          crossAxisCount: 2,
+          childAspectRatio: 0.55,
+          padding: const EdgeInsets.all(16),
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
           children: const [
             CustomButton(
               text: 'Class Catalogue',
             ),
-            SizedBox(
-              height: 10,
-            ),
             CustomButton(
               text: 'Order Catalogue',
             ),
-            SizedBox(
-              height: 10,
-            ),
             CustomButton(
               text: 'Family Catalogue',
-            ),
-            SizedBox(
-              height: 10,
             ),
             CustomButton(
               text: 'Genus Catalogue',
@@ -97,6 +91,7 @@ class CustomButton extends StatelessWidget {
           fontSize: 30,
           fontWeight: FontWeight.bold,
         ),
+        textAlign: TextAlign.center,
       ),
     );
   }
