@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../Helpers/helper.dart';
-import '../Helpers/http.dart' as httpHelpers;
+import '../Helpers/Http.dart' as httpHelpers;
 import 'date_time_picker.dart';
 import 'Stepper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'stats_result_page.dart';
 import 'search_result_page.dart';
+import 'catalogue_page.dart';
+import 'catalogue_mux_page.dart';
 
 class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});
@@ -119,6 +121,24 @@ class StatisticsPageState extends State<StatisticsPage> {
         fontSize: 16.0);
   }
 
+  void showCatalogue(String mux) {
+    try {
+      httpHelpers.searchFamilyCatalogue().then((value) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CataloguePage(
+              itemList: value,
+              mux: mux,
+            ),
+          ),
+        );
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (mux == '') {
@@ -161,6 +181,22 @@ class StatisticsPageState extends State<StatisticsPage> {
               child:
                   const Text('Classificaiton', style: TextStyle(fontSize: 40)),
             ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CatalogueMuxPage(),
+                    ),
+                  );
+                },
+                style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)))),
+                child: const Text('Species Catalogue',
+                    style: TextStyle(fontSize: 40))),
           ]),
         ),
       );
