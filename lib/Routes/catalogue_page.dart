@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'search_result_page.dart';
-import '../Helpers/Http.dart' as httpHelpers;
+import '../Helpers/http.dart';
 
 class CataloguePage extends StatelessWidget {
   final List<List<dynamic>> itemList;
   final String mux;
-  const CataloguePage({super.key, required this.itemList, required this.mux});
+  final httpHelpers = HttpHelpers();
+  CataloguePage({super.key, required this.itemList, required this.mux});
 
   Function chooseSearch(String mux) {
     switch (mux) {

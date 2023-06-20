@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import '../Helpers/Http.dart' as httpHelpers;
+import '../Helpers/http.dart';
 import 'catalogue_page.dart';
 
 class CatalogueMuxPage extends StatelessWidget {
@@ -15,23 +14,23 @@ class CatalogueMuxPage extends StatelessWidget {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             CustomButton(
               text: 'Class Catalogue',
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             CustomButton(
               text: 'Order Catalogue',
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             CustomButton(
               text: 'Family Catalogue',
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             CustomButton(
@@ -46,8 +45,8 @@ class CatalogueMuxPage extends StatelessWidget {
 
 class CustomButton extends StatelessWidget {
   final String text;
-
-  const CustomButton({super.key, required this.text});
+  final httpHelpers = HttpHelpers();
+  CustomButton({super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../Models/comment.dart';
 import '../Helpers/http.dart';
+import '../Helpers/standard_widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class OwnComment extends StatefulWidget {
@@ -277,153 +278,165 @@ class OtherCommentState extends State<OtherComment> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: Future.wait(httpHelpers.checkUpvoteStatus(
-            widget.comment.commentId, widget.jwt, widget.comment.authorId)),
+        future: httpHelpers.checkUpvoteStatus(
+            widget.comment.commentId, widget.jwt, widget.comment.authorId),
         builder: ((context, snapshot) {
-          return Container(
-              padding: const EdgeInsets.only(left: 5, right: 5),
-              child: ListTile(
-                horizontalTitleGap: 10,
-                contentPadding: const EdgeInsets.only(left: 20, right: 20),
-                leading: CircleAvatar(
-                    radius: 18,
-                    backgroundImage: NetworkImage(widget.comment.authorPic)),
-                title: Padding(
-                    padding: const EdgeInsets.only(bottom: 3),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                              padding: const EdgeInsets.only(bottom: 2),
-                              child: Text(
-                                widget.comment.authorName,
-                                style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color.fromARGB(255, 51, 64, 113)),
-                              )),
-                          Text(widget.comment.content)
-                        ])),
-                subtitle: Text(
-                  'Posted at ${widget.comment.postedTime}',
-                  style: const TextStyle(fontSize: 11),
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('${widget.comment.upvotes}'),
-                    InkWell(
-                        customBorder: const CircleBorder(),
-                        onTap: () {
-                          widget.jwt == ''
-                              ? Fluttertoast.showToast(
-                                  msg: 'Please login to upvote',
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIosWeb: 1,
-                                )
-                              : snapshot.!data? Fluttertoast.showToast(
-                                  msg: 'Already upvoted',
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIosWeb: 1,
-                                ) :
-                              
-                              widget.comment.upvotes == 29
-                                  ? httpHelpers
-                                      .upVoteCommentRequest(
-                                          widget.comment.commentId, widget.jwt)
-                                      .then((response) {
-                                      if (response == 'Comment Upvoted') {
-                                        widget.updateCallBack(response);
-                                        httpHelpers.verifyPostRequest(
-                                            widget.comment.postId, widget.jwt);
-                                        Fluttertoast.showToast(
-                                          msg: 'Comment upvoted',
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.BOTTOM,
-                                          timeInSecForIosWeb: 1,
-                                        );
-                                      } else {
-                                        Fluttertoast.showToast(
-                                          msg: 'Comment failed to upvote :(',
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.BOTTOM,
-                                          timeInSecForIosWeb: 1,
-                                        );
-                                      }
-                                    })
-                                  : httpHelpers
-                                      .upVoteCommentRequest(
-                                          widget.comment.commentId, widget.jwt)
-                                      .then((response) {
-                                      if (response == 'Comment Upvoted') {
-                                        widget.updateCallBack(response);
-                                        Fluttertoast.showToast(
-                                          msg: 'Comment upvoted',
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.BOTTOM,
-                                          timeInSecForIosWeb: 1,
-                                        );
-                                      } else {
-                                        Fluttertoast.showToast(
-                                          msg: 'Comment failed to upvote :(',
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.BOTTOM,
-                                          timeInSecForIosWeb: 1,
-                                        );
-                                      }
-                                    });
-                        },
-                        child: const Padding(
-                            padding: EdgeInsets.all(6),
-                            child: snapshot.!data? Icon(
-                              Icons.arrow_upward,
-                              size: 20,
-                              weight: 5,
-                            ):  Icon(
-                              Icons.arrow_upward,
-                              size: 20,
-                              weight: 3,
-                            ))),
-                    InkWell(
-                        customBorder: const CircleBorder(),
-                        onTap: () {
-                          widget.jwt == ''
-                              ? Fluttertoast.showToast(
-                                  msg: 'Please login to downvote',
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIosWeb: 1,
-                                )
-                              : httpHelpers
-                                  .downVoteCommentRequest(
-                                      widget.comment.commentId, widget.jwt)
-                                  .then((response) {
-                                  if (response == 'Comment Downvoted') {
-                                    widget.updateCallBack(response);
-                                    Fluttertoast.showToast(
-                                      msg: 'Comment downvoted',
-                                      toastLength: Toast.LENGTH_SHORT,
-                                      gravity: ToastGravity.BOTTOM,
-                                      timeInSecForIosWeb: 1,
-                                    );
-                                  } else {
-                                    Fluttertoast.showToast(
-                                      msg: 'Comment failed to downvote :(',
-                                      toastLength: Toast.LENGTH_SHORT,
-                                      gravity: ToastGravity.BOTTOM,
-                                      timeInSecForIosWeb: 1,
-                                    );
-                                  }
-                                });
-                        },
-                        child: const Padding(
-                            padding: EdgeInsets.all(6),
-                            child: Icon(Icons.arrow_downward, size: 20))),
-                  ],
-                ),
-              ));
+          if (snapshot.hasData) {
+            return Container(
+                padding: const EdgeInsets.only(left: 5, right: 5),
+                child: ListTile(
+                  horizontalTitleGap: 10,
+                  contentPadding: const EdgeInsets.only(left: 20, right: 20),
+                  leading: CircleAvatar(
+                      radius: 18,
+                      backgroundImage: NetworkImage(widget.comment.authorPic)),
+                  title: Padding(
+                      padding: const EdgeInsets.only(bottom: 3),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                                padding: const EdgeInsets.only(bottom: 2),
+                                child: Text(
+                                  widget.comment.authorName,
+                                  style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: Color.fromARGB(255, 51, 64, 113)),
+                                )),
+                            Text(widget.comment.content)
+                          ])),
+                  subtitle: Text(
+                    'Posted at ${widget.comment.postedTime}',
+                    style: const TextStyle(fontSize: 11),
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('${widget.comment.upvotes}'),
+                      InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: () {
+                            widget.jwt == ''
+                                ? Fluttertoast.showToast(
+                                    msg: 'Please login to upvote',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    timeInSecForIosWeb: 1,
+                                  )
+                                : snapshot.data!
+                                    ? Fluttertoast.showToast(
+                                        msg: 'Already upvoted',
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        timeInSecForIosWeb: 1,
+                                      )
+                                    : widget.comment.upvotes == 29
+                                        ? httpHelpers
+                                            .upVoteCommentRequest(
+                                                widget.comment.commentId,
+                                                widget.jwt)
+                                            .then((response) {
+                                            if (response == 'Comment Upvoted') {
+                                              widget.updateCallBack(response);
+                                              httpHelpers.verifyPostRequest(
+                                                  widget.comment.postId,
+                                                  widget.jwt);
+                                              Fluttertoast.showToast(
+                                                msg: 'Comment upvoted',
+                                                toastLength: Toast.LENGTH_SHORT,
+                                                gravity: ToastGravity.BOTTOM,
+                                                timeInSecForIosWeb: 1,
+                                              );
+                                            } else {
+                                              Fluttertoast.showToast(
+                                                msg:
+                                                    'Comment failed to upvote :(',
+                                                toastLength: Toast.LENGTH_SHORT,
+                                                gravity: ToastGravity.BOTTOM,
+                                                timeInSecForIosWeb: 1,
+                                              );
+                                            }
+                                          })
+                                        : httpHelpers
+                                            .upVoteCommentRequest(
+                                                widget.comment.commentId,
+                                                widget.jwt)
+                                            .then((response) {
+                                            if (response == 'Comment Upvoted') {
+                                              widget.updateCallBack(response);
+                                              Fluttertoast.showToast(
+                                                msg: 'Comment upvoted',
+                                                toastLength: Toast.LENGTH_SHORT,
+                                                gravity: ToastGravity.BOTTOM,
+                                                timeInSecForIosWeb: 1,
+                                              );
+                                            } else {
+                                              Fluttertoast.showToast(
+                                                msg:
+                                                    'Comment failed to upvote :(',
+                                                toastLength: Toast.LENGTH_SHORT,
+                                                gravity: ToastGravity.BOTTOM,
+                                                timeInSecForIosWeb: 1,
+                                              );
+                                            }
+                                          });
+                          },
+                          child: Padding(
+                              padding: const EdgeInsets.all(6),
+                              child: snapshot.data!
+                                  ? const Icon(
+                                      Icons.arrow_upward,
+                                      size: 20,
+                                      weight: 5,
+                                      color: Color.fromARGB(255, 73, 155, 109),
+                                    )
+                                  : const Icon(
+                                      Icons.arrow_upward,
+                                      size: 20,
+                                      weight: 3,
+                                    ))),
+                      InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: () {
+                            widget.jwt == ''
+                                ? Fluttertoast.showToast(
+                                    msg: 'Please login to downvote',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    timeInSecForIosWeb: 1,
+                                  )
+                                : httpHelpers
+                                    .downVoteCommentRequest(
+                                        widget.comment.commentId, widget.jwt)
+                                    .then((response) {
+                                    if (response == 'Comment Downvoted') {
+                                      widget.updateCallBack(response);
+                                      Fluttertoast.showToast(
+                                        msg: 'Comment downvoted',
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        timeInSecForIosWeb: 1,
+                                      );
+                                    } else {
+                                      Fluttertoast.showToast(
+                                        msg: 'Comment failed to downvote :(',
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        timeInSecForIosWeb: 1,
+                                      );
+                                    }
+                                  });
+                          },
+                          child: const Padding(
+                              padding: EdgeInsets.all(6),
+                              child: Icon(Icons.arrow_downward, size: 20))),
+                    ],
+                  ),
+                ));
+          } else {
+            return const LoadingScreen();
+          }
         }));
   }
 }

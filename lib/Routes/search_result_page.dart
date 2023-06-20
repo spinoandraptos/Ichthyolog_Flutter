@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../Helpers/http.dart' as http;
+import '../Helpers/http.dart';
 import 'stats_result_page.dart';
 
 class SearchResultPage extends StatelessWidget {
@@ -7,8 +7,9 @@ class SearchResultPage extends StatelessWidget {
   final String startTime;
   final String endTime;
   final String sightinglocation;
+  final httpHelpers = HttpHelpers();
 
-  const SearchResultPage({
+  SearchResultPage({
     Key? key,
     required this.dataList,
     required this.startTime,
@@ -18,7 +19,7 @@ class SearchResultPage extends StatelessWidget {
 
   void showSpeciesResult(BuildContext context, String species) {
     try {
-      http
+      httpHelpers
           .searchSpecies(species, startTime, endTime, sightinglocation)
           .then((value) {
         Navigator.push(

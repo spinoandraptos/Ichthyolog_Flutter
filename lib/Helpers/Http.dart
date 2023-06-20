@@ -462,272 +462,275 @@ class HttpHelpers {
       return ('Comment Downvoting Failed');
     }
   }
-}
 
-Future<List<int>> getCommentUpvotesRequest(int commentid, String jwt) async {
-  String url = 'https://ichthyolog-nodejs.onrender.com/upvotes/$commentid';
-  var response = await http.get(
-    Uri.parse(url),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'Authorisation': jwt
-    },
-  );
-  if (response.statusCode == 200) {
-    List<int> upvoterlist = [];
-    var responseData = json.decode(response.body);
-    for (var everyID in responseData) {
-      upvoterlist.add(everyID);
+  Future<List<int>> getCommentUpvotesRequest(int commentid, String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/upvotes/$commentid';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      List<int> upvoterlist = [];
+      var responseData = json.decode(response.body);
+      for (var everyID in responseData) {
+        upvoterlist.add(everyID);
+      }
+      return upvoterlist;
+    } else {
+      return Future.error("Upvotes not found");
     }
-    return upvoterlist;
-  } else {
-    return Future.error("Upvotes not found");
   }
-}
 
-Future<bool> checkUpvoteStatus(int commentid, String jwt, int authorid) async {
-  String url =
-      'https://ichthyolog-nodejs.onrender.com/upvotes/$commentid/$authorid';
-  var response = await http.get(
-    Uri.parse(url),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'Authorisation': jwt
-    },
-  );
-  if (response.statusCode == 200) {
-    return json.decode(response.body);
-  } else {
-    return Future.error("Upvotes not found");
+  Future<bool> checkUpvoteStatus(
+      int commentid, String jwt, int authorid) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/upvotes/$commentid/$authorid';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      return Future.error("Upvotes not found");
+    }
   }
-}
 
 // statistics request
-Future<List<String>> searchSpecies(String species, String startTime,
-    String endTime, String sightinglocation) async {
-  var uri = Uri.https(
-      'ichthyolog-nodejs.onrender.com', '/statistics/species/$species', {
-    'species': species,
-    'startTime': startTime,
-    'endTime': endTime,
-    'sightingLocation': sightinglocation,
-  });
+  Future<List<String>> searchSpecies(String species, String startTime,
+      String endTime, String sightinglocation) async {
+    var uri = Uri.https(
+        'ichthyolog-nodejs.onrender.com', '/statistics/species/$species', {
+      'species': species,
+      'startTime': startTime,
+      'endTime': endTime,
+      'sightingLocation': sightinglocation,
+    });
 
-  var response = await http.get(uri, headers: <String, String>{
-    'Content-Type': 'application/json; charset=UTF-8',
-  });
-
-  if (response.statusCode == 200) {
-    List<String> dataList = [];
-    var responseData = json.decode(response.body);
-    dataList.add(responseData['count'].toString());
-    dataList.add(responseData['latest_sightingtime'].toString());
-    dataList.add(responseData['latest_sightinglocation'].toString());
-    return dataList;
-  } else {
-    return Future.error('Species not found! Error ${response.statusCode}');
-  }
-}
-
-Future<List<String>> searchClassification(
-    String class_,
-    String order,
-    String family,
-    String genus,
-    String startTime,
-    String endTime,
-    String sightinglocation) async {
-  if (class_ != '' && order == '' && family == '' && genus == '') {
-    return searchClass(class_, startTime, endTime, sightinglocation);
-  } else if (class_ != '' && order != '' && family == '' && genus == '') {
-    return searchOrder(order, startTime, endTime, sightinglocation);
-  } else if (class_ != '' && order != '' && family != '' && genus == '') {
-    return searchFamily(family, startTime, endTime, sightinglocation);
-  } else if (class_ != '' && order != '' && family != '' && genus != '') {
-    return searchGenus(genus, startTime, endTime, sightinglocation);
-  } else {
-    return Future.error('Classification not found!');
-  }
-}
-
-Future<List<String>> searchClass(String class_, String startTime,
-    String endTime, String sightinglocation) async {
-  String url =
-      'https://ichthyolog-nodejs.onrender.com/statistics/class/$class_';
-  var response = await http.get(
-    Uri.parse(url),
-    headers: <String, String>{
+    var response = await http.get(uri, headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-    },
-  );
-  if (response.statusCode == 200) {
-    List<String> speciesList = [];
-    var responseData = json.decode(response.body);
-    for (var everyspecies in responseData) {
-      speciesList.add(everyspecies['title']);
-    }
-    return speciesList;
-  } else {
-    return Future.error('Class not found! Error ${response.statusCode}');
-  }
-}
+    });
 
-Future<List<String>> searchOrder(String order, String startTime, String endTime,
-    String sightinglocation) async {
-  String url = 'https://ichthyolog-nodejs.onrender.com/statistics/order/$order';
-  var response = await http.get(
-    Uri.parse(url),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-  );
-  if (response.statusCode == 200) {
-    List<String> speciesList = [];
-    var responseData = json.decode(response.body);
-    for (var everyspecies in responseData) {
-      speciesList.add(everyspecies['title']);
+    if (response.statusCode == 200) {
+      List<String> dataList = [];
+      var responseData = json.decode(response.body);
+      dataList.add(responseData['count'].toString());
+      dataList.add(responseData['latest_sightingtime'].toString());
+      dataList.add(responseData['latest_sightinglocation'].toString());
+      return dataList;
+    } else {
+      return Future.error('Species not found! Error ${response.statusCode}');
     }
-    return speciesList;
-  } else {
-    return Future.error('Order not found! Error ${response.statusCode}');
   }
-}
 
-Future<List<String>> searchFamily(String family, String startTime,
-    String endTime, String sightinglocation) async {
-  String url =
-      'https://ichthyolog-nodejs.onrender.com/statistics/family/$family';
-  var response = await http.get(
-    Uri.parse(url),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-  );
-  if (response.statusCode == 200) {
-    List<String> speciesList = [];
-    var responseData = json.decode(response.body);
-    for (var everyspecies in responseData) {
-      speciesList.add(everyspecies['title']);
+  Future<List<String>> searchClassification(
+      String class_,
+      String order,
+      String family,
+      String genus,
+      String startTime,
+      String endTime,
+      String sightinglocation) async {
+    if (class_ != '' && order == '' && family == '' && genus == '') {
+      return searchClass(class_, startTime, endTime, sightinglocation);
+    } else if (class_ != '' && order != '' && family == '' && genus == '') {
+      return searchOrder(order, startTime, endTime, sightinglocation);
+    } else if (class_ != '' && order != '' && family != '' && genus == '') {
+      return searchFamily(family, startTime, endTime, sightinglocation);
+    } else if (class_ != '' && order != '' && family != '' && genus != '') {
+      return searchGenus(genus, startTime, endTime, sightinglocation);
+    } else {
+      return Future.error('Classification not found!');
     }
-    return speciesList;
-  } else {
-    return Future.error('Family not found! Error ${response.statusCode}');
   }
-}
 
-Future<List<String>> searchGenus(String genus, String startTime, String endTime,
-    String sightinglocation) async {
-  String url = 'https://ichthyolog-nodejs.onrender.com/statistics/genus/$genus';
-  var response = await http.get(
-    Uri.parse(url),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-  );
-  if (response.statusCode == 200) {
-    List<String> speciesList = [];
-    var responseData = json.decode(response.body);
-    for (var everyspecies in responseData) {
-      speciesList.add(everyspecies['title']);
+  Future<List<String>> searchClass(String class_, String startTime,
+      String endTime, String sightinglocation) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/statistics/class/$class_';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<String> speciesList = [];
+      var responseData = json.decode(response.body);
+      for (var everyspecies in responseData) {
+        speciesList.add(everyspecies['title']);
+      }
+      return speciesList;
+    } else {
+      return Future.error('Class not found! Error ${response.statusCode}');
     }
-    return speciesList;
-  } else {
-    return Future.error('Genus not found! Error ${response.statusCode}');
   }
-}
 
-Future<List<List<String>>> searchFamilyCatalogue() async {
-  String url = 'https://ichthyolog-nodejs.onrender.com/catalogue/family';
-  var response = await http.get(
-    Uri.parse(url),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-  );
-  if (response.statusCode == 200) {
-    List<List<String>> familyList = [];
-    var responseData = json.decode(response.body);
-    for (var everyfamily in responseData) {
-      List<String> family = [];
-      family.add(everyfamily['family'].toString());
-      family.add(everyfamily['species_count'].toString());
-      familyList.add(family);
+  Future<List<String>> searchOrder(String order, String startTime,
+      String endTime, String sightinglocation) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/statistics/order/$order';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<String> speciesList = [];
+      var responseData = json.decode(response.body);
+      for (var everyspecies in responseData) {
+        speciesList.add(everyspecies['title']);
+      }
+      return speciesList;
+    } else {
+      return Future.error('Order not found! Error ${response.statusCode}');
     }
-    return familyList;
-  } else {
-    print(response.body);
-    throw Exception('Family not found! Error ${response.statusCode}');
   }
-}
 
-Future<List<List<String>>> searchGenusCatalogue() async {
-  String url = 'https://ichthyolog-nodejs.onrender.com/catalogue/genus';
-  var response = await http.get(
-    Uri.parse(url),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-  );
-  if (response.statusCode == 200) {
-    List<List<String>> genusList = [];
-    var responseData = json.decode(response.body);
-    for (var everygenus in responseData) {
-      List<String> genus = [];
-      genus.add(everygenus['genus'].toString());
-      genus.add(everygenus['species_count'].toString());
-      genusList.add(genus);
+  Future<List<String>> searchFamily(String family, String startTime,
+      String endTime, String sightinglocation) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/statistics/family/$family';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<String> speciesList = [];
+      var responseData = json.decode(response.body);
+      for (var everyspecies in responseData) {
+        speciesList.add(everyspecies['title']);
+      }
+      return speciesList;
+    } else {
+      return Future.error('Family not found! Error ${response.statusCode}');
     }
-    return genusList;
-  } else {
-    print(response.body);
-    throw Exception('Genus not found! Error ${response.statusCode}');
   }
-}
 
-Future<List<List<String>>> searchOrderCatalogue() async {
-  String url = 'https://ichthyolog-nodejs.onrender.com/catalogue/order';
-  var response = await http.get(
-    Uri.parse(url),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-  );
-  if (response.statusCode == 200) {
-    List<List<String>> orderList = [];
-    var responseData = json.decode(response.body);
-    for (var everyorder in responseData) {
-      List<String> order = [];
-      order.add(everyorder['_order'].toString());
-      order.add(everyorder['species_count'].toString());
-      orderList.add(order);
+  Future<List<String>> searchGenus(String genus, String startTime,
+      String endTime, String sightinglocation) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/statistics/genus/$genus';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<String> speciesList = [];
+      var responseData = json.decode(response.body);
+      for (var everyspecies in responseData) {
+        speciesList.add(everyspecies['title']);
+      }
+      return speciesList;
+    } else {
+      return Future.error('Genus not found! Error ${response.statusCode}');
     }
-    return orderList;
-  } else {
-    print(response.body);
-    throw Exception('Order not found! Error ${response.statusCode}');
   }
-}
 
-Future<List<List<String>>> searchClassCatalogue() async {
-  String url = 'https://ichthyolog-nodejs.onrender.com/catalogue/class';
-  var response = await http.get(
-    Uri.parse(url),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-  );
-  if (response.statusCode == 200) {
-    List<List<String>> classList = [];
-    var responseData = json.decode(response.body);
-    for (var everyclass in responseData) {
-      List<String> class_ = [];
-      class_.add(everyclass['class'].toString());
-      class_.add(everyclass['species_count'].toString());
-      classList.add(class_);
+  Future<List<List<String>>> searchFamilyCatalogue() async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/catalogue/family';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<List<String>> familyList = [];
+      var responseData = json.decode(response.body);
+      for (var everyfamily in responseData) {
+        List<String> family = [];
+        family.add(everyfamily['family'].toString());
+        family.add(everyfamily['species_count'].toString());
+        familyList.add(family);
+      }
+      return familyList;
+    } else {
+      print(response.body);
+      throw Exception('Family not found! Error ${response.statusCode}');
     }
-    return classList;
-  } else {
-    print(response.body);
-    throw Exception('Class not found! Error ${response.statusCode}');
+  }
+
+  Future<List<List<String>>> searchGenusCatalogue() async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/catalogue/genus';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<List<String>> genusList = [];
+      var responseData = json.decode(response.body);
+      for (var everygenus in responseData) {
+        List<String> genus = [];
+        genus.add(everygenus['genus'].toString());
+        genus.add(everygenus['species_count'].toString());
+        genusList.add(genus);
+      }
+      return genusList;
+    } else {
+      print(response.body);
+      throw Exception('Genus not found! Error ${response.statusCode}');
+    }
+  }
+
+  Future<List<List<String>>> searchOrderCatalogue() async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/catalogue/order';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<List<String>> orderList = [];
+      var responseData = json.decode(response.body);
+      for (var everyorder in responseData) {
+        List<String> order = [];
+        order.add(everyorder['_order'].toString());
+        order.add(everyorder['species_count'].toString());
+        orderList.add(order);
+      }
+      return orderList;
+    } else {
+      print(response.body);
+      throw Exception('Order not found! Error ${response.statusCode}');
+    }
+  }
+
+  Future<List<List<String>>> searchClassCatalogue() async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/catalogue/class';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<List<String>> classList = [];
+      var responseData = json.decode(response.body);
+      for (var everyclass in responseData) {
+        List<String> class_ = [];
+        class_.add(everyclass['class'].toString());
+        class_.add(everyclass['species_count'].toString());
+        classList.add(class_);
+      }
+      return classList;
+    } else {
+      print(response.body);
+      throw Exception('Class not found! Error ${response.statusCode}');
+    }
   }
 }
