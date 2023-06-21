@@ -65,18 +65,21 @@ class CommentPageState extends State<CommentPage> {
                               const SizedBox(
                                 height: 8,
                               ),
-                              SizedBox(
-                                  height: MediaQuery.of(context).size.height,
-                                  width: MediaQuery.of(context).size.width,
+                              Container(
+                                  padding: const EdgeInsets.only(top: 6),
+                                  constraints: BoxConstraints(
+                                    maxHeight:
+                                        MediaQuery.of(context).size.height -
+                                            125,
+                                  ),
                                   child: ListView.builder(
                                     itemCount: snapshot.data!.length,
                                     itemBuilder: (context, index) {
                                       return OtherComment(
-                                        comment: snapshot.data![index],
-                                        jwt: jwt,
-                                        updateCallBack: updateCommentCallback,
-                                        userid: decodedJWT['userid'],
-                                      );
+                                          comment: snapshot.data![index],
+                                          jwt: jwt,
+                                          updateCallBack: updateCommentCallback,
+                                          userid: decodedJWT['userid'] ?? -1);
                                     },
                                   ))
                             ]))))

@@ -29,7 +29,8 @@ class LoginPageState extends State<LoginPage> {
               emailUsernameController.text, passwordController.text)
           .then((String response) async {
         if (response != 'Password Incorrect' &&
-            response != 'Username Not Found') {
+            response != 'User Not Found' &&
+            response != 'Error') {
           await storage.write(key: "jwt", value: response);
           if (context.mounted) {
             Navigator.push(
@@ -42,9 +43,11 @@ class LoginPageState extends State<LoginPage> {
               context: context,
               builder: (BuildContext context) {
                 return NoticeDialog(
-                    content: response == 'Password Incorrect'
-                        ? 'Incorrect password, please try again.'
-                        : 'Username not found, please try again.');
+                    content: response == 'Error'
+                        ? 'Error. Please try again.'
+                        : response == 'Password Incorrect'
+                            ? 'Incorrect password. Please try again.'
+                            : 'User not found. Please try again.');
               });
         }
       });

@@ -37,7 +37,11 @@ class SignUpPageState extends State<SignUpPage> {
               title: const Text("Notice"),
               content: Text(response == 'Signup Successful'
                   ? 'Signup Successful! Please login.'
-                  : 'Signup Failed. Please try again.'),
+                  : response == 'Email Already Exists'
+                      ? 'Email already in use. Please try again.'
+                      : response == 'Username Already Exists'
+                          ? 'Username already in use. Please try again.'
+                          : 'Signup Failed. Please try again.'),
               actions: [
                 TextButton(
                     child: const Text("OK"),
