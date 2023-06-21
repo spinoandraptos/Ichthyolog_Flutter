@@ -32,8 +32,8 @@ class CataloguePage extends StatelessWidget {
       ),
       body: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          childAspectRatio: 2, // Adjust the aspect ratio as desired
+          crossAxisCount: 2,
+          childAspectRatio: 3, // Adjust the aspect ratio as desired
         ),
         itemCount: itemList.length,
         itemBuilder: (context, index) {
@@ -43,9 +43,9 @@ class CataloguePage extends StatelessWidget {
 
           return Card(
             child: ListTile(
-                title: Text(
-                  '$string1 ($string2)',
-                ),
+                title: Text('$string1 ($string2)',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
                 onTap: () {
                   chooseSearch(mux)
                       .call(
