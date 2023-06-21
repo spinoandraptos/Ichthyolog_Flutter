@@ -23,9 +23,9 @@ class HttpHelpers {
       }),
     );
     if (response.statusCode == 201) {
-      return ('Signup Successful');
+      return 'Signup Successful';
     } else {
-      return 'Signup failed with status: ${response.statusCode}.';
+      return 'Signup Failed';
     }
   }
 
