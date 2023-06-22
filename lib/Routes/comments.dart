@@ -310,7 +310,6 @@ class OwnCommentState extends State<OwnComment> {
                                               widget.userid,
                                               widget.jwt)
                                           .then((response) {
-                                          print(response);
                                           if (response ==
                                               'Comment Un-downvoted') {
                                             widget.updateCallBack(response);
