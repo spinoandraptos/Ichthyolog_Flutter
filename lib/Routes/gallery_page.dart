@@ -54,7 +54,7 @@ class GalleryPageState extends State<GalleryPage> {
         onPressed: () {},
         child: const Text('Edit Post',
             style: TextStyle(
-                fontSize: 7, color: Color.fromARGB(255, 33, 53, 88))));
+                fontSize: 10, color: Color.fromARGB(255, 33, 53, 88))));
   }
 
   Widget deletePostButton(Post post) {
@@ -115,68 +115,24 @@ class GalleryPageState extends State<GalleryPage> {
         },
         child: const Text('Delete Post',
             style: TextStyle(
-                fontSize: 7, color: Color.fromARGB(255, 33, 53, 88))));
+                fontSize: 10, color: Color.fromARGB(255, 33, 53, 88))));
   }
 
   Widget clickableImage(Post post) {
-    return TextButton(
-        style: TextButton.styleFrom(
-            padding: const EdgeInsets.all(3),
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-        onPressed: () {
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                    title: const Text("Warning"),
-                    content: const Text(
-                        'Are you sure? This action is irreversible!'),
-                    actions: [
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromARGB(255, 80, 170, 121)),
-                          child: const Text("Yes"),
-                          onPressed: () {
-                            httpHelpers
-                                .deletePostRequest(post.postid, jwt)
-                                .then(
-                              (response) {
-                                Navigator.pop(context);
-                                if (response == 'Post Deleted') {
-                                  setState(() {});
-                                  Fluttertoast.showToast(
-                                    msg: 'Post deleted',
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                } else {
-                                  Fluttertoast.showToast(
-                                    msg: 'Post failed to delete :(',
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                }
-                              },
-                            );
-                          }),
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromARGB(255, 170, 80, 80)),
-                          child: const Text("Cancel"),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          })
-                    ]);
-              });
-        },
-        child: const Text('Delete Post',
-            style: TextStyle(
-                fontSize: 7, color: Color.fromARGB(255, 33, 53, 88))));
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(6),
+        child: InkWell(
+            child: Ink.image(image: NetworkImage(post.pic), fit: BoxFit.cover),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PostPage(postid: post.postid)),
+              );
+            }),
+      ),
+    );
   }
 
   Widget galleryLegend() {
@@ -245,12 +201,15 @@ class GalleryPageState extends State<GalleryPage> {
   }
 
   Widget galleryScreen(BuildContext context, List<Post> posts) {
-    return Column(children: [
+    return SingleChildScrollView(
+        child: SizedBox(
+            child: Column(children: [
       galleryLegend(),
       GridView.builder(
           itemCount: posts.length,
+          physics: ScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
+            crossAxisCount: 2,
             crossAxisSpacing: 5.0,
             mainAxisSpacing: 7.0,
             childAspectRatio: 0.85,
@@ -264,7 +223,7 @@ class GalleryPageState extends State<GalleryPage> {
           },
           shrinkWrap: true,
           padding: const EdgeInsets.all(12.0))
-    ]);
+    ])));
   }
 
   Widget ownPostCard(Post post) {
@@ -284,16 +243,16 @@ class GalleryPageState extends State<GalleryPage> {
                   child: Row(children: [
                     Container(
                         padding: const EdgeInsets.only(right: 4),
-                        width: 77,
+                        width: MediaQuery.of(context).size.width * 1 / 2.85,
                         child: Text(
                           post.title,
                           style: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 8,
+                              fontSize: 12,
                               color: Color.fromARGB(255, 33, 53, 88)),
                         )),
                     CircleAvatar(
-                      radius: 8,
+                      radius: 9,
                       backgroundColor: post.verified
                           ? const Color.fromARGB(255, 73, 155, 109)
                           : post.flagged
@@ -330,7 +289,7 @@ class GalleryPageState extends State<GalleryPage> {
                   child: Text('Sighted at ${post.sightingLocation}',
                       textAlign: TextAlign.right,
                       style: const TextStyle(
-                          fontSize: 7,
+                          fontSize: 9,
                           color: Color.fromARGB(255, 33, 53, 88)))),
             ]));
   }
@@ -352,16 +311,16 @@ class GalleryPageState extends State<GalleryPage> {
                   child: Row(children: [
                     Container(
                         padding: const EdgeInsets.only(right: 5),
-                        width: 77,
+                        width: MediaQuery.of(context).size.width * 1 / 2.85,
                         child: Text(
                           post.title,
                           style: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 8,
+                              fontSize: 12,
                               color: Color.fromARGB(255, 33, 53, 88)),
                         )),
                     CircleAvatar(
-                      radius: 8,
+                      radius: 9,
                       backgroundColor: post.verified
                           ? const Color.fromARGB(255, 73, 155, 109)
                           : post.flagged
@@ -378,28 +337,13 @@ class GalleryPageState extends State<GalleryPage> {
                       ),
                     )
                   ])),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(6),
-                  child: InkWell(
-                      child: Ink.image(
-                          image: NetworkImage(post.pic), fit: BoxFit.cover),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  PostPage(postid: post.postid)),
-                        );
-                      }),
-                ),
-              ),
+              clickableImage(post),
               Container(
                   padding: const EdgeInsets.only(left: 6, bottom: 5, right: 8),
                   child: Text('Sighted at ${post.sightingLocation}',
                       textAlign: TextAlign.right,
                       style: const TextStyle(
-                          fontSize: 7,
+                          fontSize: 9,
                           color: Color.fromARGB(255, 33, 53, 88)))),
             ]));
   }
