@@ -180,9 +180,9 @@ class GalleryPageState extends State<GalleryPage> {
   }
 
   Widget galleryLegend() {
-    return Padding(
-        padding: const EdgeInsets.only(left: 18, top: 10, right: 9),
-        child: Row(children: const [
+    return const Padding(
+        padding: EdgeInsets.only(left: 18, top: 10, right: 9),
+        child: Row(children: [
           Text(
             "Key:",
             style: TextStyle(
