@@ -66,241 +66,232 @@ class WaitingListPageState extends State<WaitingListPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(3),
         ),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Padding(
-                  padding: const EdgeInsets.only(left: 9, top: 5, right: 9),
-                  child: Row(children: [
-                    Container(
-                        padding: const EdgeInsets.only(right: 4),
-                        width: 77,
-                        child: Text(
-                          post.title,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 8,
-                              color: Color.fromARGB(255, 33, 53, 88)),
-                        )),
-                    CircleAvatar(
-                      radius: 8,
-                      backgroundColor: post.flagged
-                          ? const Color.fromARGB(255, 152, 72, 85)
-                          : const Color.fromARGB(255, 175, 103, 51),
-                      child: Icon(
-                        post.flagged ? Icons.priority_high : Icons.pending,
-                        size: 10,
-                        color: Colors.white,
-                      ),
-                    )
-                  ])),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(6),
-                  child: InkWell(
-                      child: Ink.image(
-                          image: NetworkImage(post.pic), fit: BoxFit.cover),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  PostPage(postid: post.postid)),
-                        );
-                      }),
-                ),
-              ),
-              Container(
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 4, bottom: 2),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                          style: TextButton.styleFrom(
-                              padding: const EdgeInsets.all(3),
-                              minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                          onPressed: () {},
-                          child: const Text('Edit Post',
-                              style: TextStyle(
-                                  fontSize: 7,
-                                  color: Color.fromARGB(255, 33, 53, 88)))),
-                      TextButton(
-                          style: TextButton.styleFrom(
-                              padding: const EdgeInsets.all(3),
-                              minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                      title: const Text("Warning"),
-                                      content: const Text(
-                                          'Are you sure? This action is irreversible!'),
-                                      actions: [
-                                        ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                                backgroundColor:
-                                                    const Color.fromARGB(
-                                                        255, 80, 170, 121)),
-                                            child: const Text("Yes"),
-                                            onPressed: () {
-                                              httpHelpers
-                                                  .deletePostRequest(
-                                                      post.postid, jwt)
-                                                  .then(
-                                                (response) {
-                                                  Navigator.pop(context);
-                                                  if (response ==
-                                                      'Post Deleted') {
-                                                    setState(() {});
-                                                    Fluttertoast.showToast(
-                                                      msg: 'Post deleted',
-                                                      toastLength:
-                                                          Toast.LENGTH_SHORT,
-                                                      gravity:
-                                                          ToastGravity.BOTTOM,
-                                                      timeInSecForIosWeb: 1,
-                                                    );
-                                                  } else {
-                                                    Fluttertoast.showToast(
-                                                      msg:
-                                                          'Post failed to delete :(',
-                                                      toastLength:
-                                                          Toast.LENGTH_SHORT,
-                                                      gravity:
-                                                          ToastGravity.BOTTOM,
-                                                      timeInSecForIosWeb: 1,
-                                                    );
-                                                  }
-                                                },
-                                              );
-                                            }),
-                                        ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                                backgroundColor:
-                                                    const Color.fromARGB(
-                                                        255, 170, 80, 80)),
-                                            child: const Text("Cancel"),
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            })
-                                      ]);
-                                });
-                          },
-                          child: const Text('Delete Post',
-                              style: TextStyle(
-                                  fontSize: 7,
-                                  color: Color.fromARGB(255, 33, 53, 88)))),
-                    ],
-                  )),
-              Padding(
-                  padding: const EdgeInsets.only(right: 5, bottom: 6),
-                  child:
-                      Wrap(spacing: 4, alignment: WrapAlignment.end, children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        post.flagged
-                            ? httpHelpers
-                                .unFlagPostRequest(post.postid, jwt)
-                                .then((response) {
-                                if (response == 'Post Unflagged') {
-                                  setState(() {});
-                                  Fluttertoast.showToast(
-                                    msg: 'Post Unflagged',
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                } else {
-                                  Fluttertoast.showToast(
-                                    msg: 'Post Unflagging Failed',
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                }
-                              })
-                            : httpHelpers
-                                .flagPostRequest(post.postid, jwt)
-                                .then((response) {
-                                if (response == 'Post Flagged') {
-                                  setState(() {});
-                                  Fluttertoast.showToast(
-                                    msg: 'Post Flagged',
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                } else {
-                                  Fluttertoast.showToast(
-                                    msg: 'Post Flagging Failed',
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                }
-                              });
-                      },
-                      style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.only(
-                              left: 5, top: 3, bottom: 3, right: 5),
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <
+                Widget>[
+          Padding(
+              padding: const EdgeInsets.only(left: 9, top: 5, right: 9),
+              child: Row(children: [
+                Container(
+                    padding: const EdgeInsets.only(right: 4),
+                    width: 77,
+                    child: Text(
+                      post.title,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 8,
+                          color: Color.fromARGB(255, 33, 53, 88)),
+                    )),
+                CircleAvatar(
+                  radius: 8,
+                  backgroundColor: post.flagged
+                      ? const Color.fromARGB(255, 152, 72, 85)
+                      : const Color.fromARGB(255, 175, 103, 51),
+                  child: Icon(
+                    post.flagged ? Icons.priority_high : Icons.pending,
+                    size: 10,
+                    color: Colors.white,
+                  ),
+                )
+              ])),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(6),
+              child: InkWell(
+                  child: Ink.image(
+                      image: NetworkImage(post.pic), fit: BoxFit.cover),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PostPage(postid: post.postid)),
+                    );
+                  }),
+            ),
+          ),
+          Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 4, bottom: 2),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                      style: TextButton.styleFrom(
+                          padding: const EdgeInsets.all(3),
                           minimumSize: Size.zero,
-                          backgroundColor:
-                              const Color.fromARGB(255, 170, 80, 80),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                      child: post.flagged
-                          ? const Text('Unflag', style: TextStyle(fontSize: 7))
-                          : const Text('Flag', style: TextStyle(fontSize: 7)),
-                    ),
-                    ElevatedButton(
                       onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.only(
-                              left: 5, top: 3, bottom: 3, right: 5),
+                      child: const Text('Edit Post',
+                          style: TextStyle(
+                              fontSize: 7,
+                              color: Color.fromARGB(255, 33, 53, 88)))),
+                  TextButton(
+                      style: TextButton.styleFrom(
+                          padding: const EdgeInsets.all(3),
                           minimumSize: Size.zero,
-                          backgroundColor:
-                              const Color.fromARGB(255, 80, 106, 170),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                      child: const Text('Edit', style: TextStyle(fontSize: 7)),
-                    ),
-                    ElevatedButton(
                       onPressed: () {
-                        httpHelpers
-                            .verifyPostRequest(post.postid, jwt)
-                            .then((response) {
-                          if (response == 'Post Verified') {
-                            setState(() {});
-                            Fluttertoast.showToast(
-                              msg: 'Post Verified',
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                            );
-                          } else {
-                            Fluttertoast.showToast(
-                              msg: 'Post Verification Failed',
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                            );
-                          }
-                        });
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                  title: const Text("Warning"),
+                                  content: const Text(
+                                      'Are you sure? This action is irreversible!'),
+                                  actions: [
+                                    ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                const Color.fromARGB(
+                                                    255, 80, 170, 121)),
+                                        child: const Text("Yes"),
+                                        onPressed: () {
+                                          httpHelpers
+                                              .deletePostRequest(
+                                                  post.postid, jwt)
+                                              .then(
+                                            (response) {
+                                              Navigator.pop(context);
+                                              if (response == 'Post Deleted') {
+                                                setState(() {});
+                                                Fluttertoast.showToast(
+                                                  msg: 'Post deleted',
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  timeInSecForIosWeb: 1,
+                                                );
+                                              } else {
+                                                Fluttertoast.showToast(
+                                                  msg:
+                                                      'Post failed to delete :(',
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  timeInSecForIosWeb: 1,
+                                                );
+                                              }
+                                            },
+                                          );
+                                        }),
+                                    ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                const Color.fromARGB(
+                                                    255, 170, 80, 80)),
+                                        child: const Text("Cancel"),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        })
+                                  ]);
+                            });
                       },
-                      style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.only(
-                              left: 5, top: 3, bottom: 3, right: 5),
-                          minimumSize: Size.zero,
-                          backgroundColor:
-                              const Color.fromARGB(255, 170, 80, 80),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                      child:
-                          const Text('Verify', style: TextStyle(fontSize: 7)),
-                    )
-                  ])),
-            ]));
+                      child: const Text('Delete Post',
+                          style: TextStyle(
+                              fontSize: 7,
+                              color: Color.fromARGB(255, 33, 53, 88)))),
+                ],
+              )),
+          Padding(
+              padding: const EdgeInsets.only(right: 5, bottom: 6),
+              child: Wrap(spacing: 4, alignment: WrapAlignment.end, children: [
+                ElevatedButton(
+                  onPressed: () {
+                    post.flagged
+                        ? httpHelpers
+                            .unFlagPostRequest(post.postid, jwt)
+                            .then((response) {
+                            if (response == 'Post Unflagged') {
+                              setState(() {});
+                              Fluttertoast.showToast(
+                                msg: 'Post Unflagged',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: 'Post Unflagging Failed',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            }
+                          })
+                        : httpHelpers
+                            .flagPostRequest(post.postid, jwt)
+                            .then((response) {
+                            if (response == 'Post Flagged') {
+                              setState(() {});
+                              Fluttertoast.showToast(
+                                msg: 'Post Flagged',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: 'Post Flagging Failed',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            }
+                          });
+                  },
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.only(
+                          left: 5, top: 3, bottom: 3, right: 5),
+                      minimumSize: Size.zero,
+                      backgroundColor: const Color.fromARGB(255, 170, 80, 80),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                  child: post.flagged
+                      ? const Text('Unflag', style: TextStyle(fontSize: 7))
+                      : const Text('Flag', style: TextStyle(fontSize: 7)),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.only(
+                          left: 5, top: 3, bottom: 3, right: 5),
+                      minimumSize: Size.zero,
+                      backgroundColor: const Color.fromARGB(255, 80, 106, 170),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                  child: const Text('Edit', style: TextStyle(fontSize: 7)),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    httpHelpers
+                        .verifyPostRequest(post.postid, jwt)
+                        .then((response) {
+                      if (response == 'Post Verified') {
+                        setState(() {});
+                        Fluttertoast.showToast(
+                          msg: 'Post Verified',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                        );
+                      } else {
+                        Fluttertoast.showToast(
+                          msg: 'Post Verification Failed',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                        );
+                      }
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.only(
+                          left: 5, top: 3, bottom: 3, right: 5),
+                      minimumSize: Size.zero,
+                      backgroundColor: const Color.fromARGB(255, 170, 80, 80),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                  child: const Text('Verify', style: TextStyle(fontSize: 7)),
+                )
+              ])),
+        ]));
   }
 
   Widget otherPostCard(Post post) {
@@ -312,155 +303,149 @@ class WaitingListPageState extends State<WaitingListPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(3),
         ),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Padding(
-                  padding: const EdgeInsets.only(left: 9, top: 5, right: 9),
-                  child: Row(children: [
-                    Container(
-                        padding: const EdgeInsets.only(right: 5),
-                        width: 77,
-                        child: Text(
-                          post.title,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 8,
-                              color: Color.fromARGB(255, 33, 53, 88)),
-                        )),
-                    CircleAvatar(
-                      radius: 8,
-                      backgroundColor: post.flagged
-                          ? const Color.fromARGB(255, 152, 72, 85)
-                          : const Color.fromARGB(255, 175, 103, 51),
-                      child: Icon(
-                        post.flagged ? Icons.priority_high : Icons.pending,
-                        size: 10,
-                        color: Colors.white,
-                      ),
-                    )
-                  ])),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(6),
-                  child: InkWell(
-                      child: Ink.image(
-                          image: NetworkImage(post.pic), fit: BoxFit.cover),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  PostPage(postid: post.postid)),
-                        );
-                      }),
-                ),
-              ),
-              Padding(
-                  padding: const EdgeInsets.only(right: 5, bottom: 6),
-                  child:
-                      Wrap(spacing: 4, alignment: WrapAlignment.end, children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        post.flagged
-                            ? httpHelpers
-                                .unFlagPostRequest(post.postid, jwt)
-                                .then((response) {
-                                if (response == 'Post Unflagged') {
-                                  setState(() {});
-                                  Fluttertoast.showToast(
-                                    msg: 'Post Unflagged',
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                } else {
-                                  Fluttertoast.showToast(
-                                    msg: 'Post Unflagging Failed',
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                }
-                              })
-                            : httpHelpers
-                                .flagPostRequest(post.postid, jwt)
-                                .then((response) {
-                                if (response == 'Post Flagged') {
-                                  setState(() {});
-                                  Fluttertoast.showToast(
-                                    msg: 'Post Flagged',
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                } else {
-                                  Fluttertoast.showToast(
-                                    msg: 'Post Flagging Failed',
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                }
-                              });
-                      },
-                      style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.only(
-                              left: 5, top: 3, bottom: 3, right: 5),
-                          minimumSize: Size.zero,
-                          backgroundColor:
-                              const Color.fromARGB(255, 170, 80, 80),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                      child: post.flagged
-                          ? const Text('Unflag', style: TextStyle(fontSize: 7))
-                          : const Text('Flag', style: TextStyle(fontSize: 7)),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.only(
-                              left: 5, top: 3, bottom: 3, right: 5),
-                          minimumSize: Size.zero,
-                          backgroundColor:
-                              const Color.fromARGB(255, 80, 106, 170),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                      child: const Text('Edit', style: TextStyle(fontSize: 7)),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        httpHelpers
-                            .verifyPostRequest(post.postid, jwt)
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <
+                Widget>[
+          Padding(
+              padding: const EdgeInsets.only(left: 9, top: 5, right: 9),
+              child: Row(children: [
+                Container(
+                    padding: const EdgeInsets.only(right: 5),
+                    width: 77,
+                    child: Text(
+                      post.title,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 8,
+                          color: Color.fromARGB(255, 33, 53, 88)),
+                    )),
+                CircleAvatar(
+                  radius: 8,
+                  backgroundColor: post.flagged
+                      ? const Color.fromARGB(255, 152, 72, 85)
+                      : const Color.fromARGB(255, 175, 103, 51),
+                  child: Icon(
+                    post.flagged ? Icons.priority_high : Icons.pending,
+                    size: 10,
+                    color: Colors.white,
+                  ),
+                )
+              ])),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(6),
+              child: InkWell(
+                  child: Ink.image(
+                      image: NetworkImage(post.pic), fit: BoxFit.cover),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PostPage(postid: post.postid)),
+                    );
+                  }),
+            ),
+          ),
+          Padding(
+              padding: const EdgeInsets.only(right: 5, bottom: 6),
+              child: Wrap(spacing: 4, alignment: WrapAlignment.end, children: [
+                ElevatedButton(
+                  onPressed: () {
+                    post.flagged
+                        ? httpHelpers
+                            .unFlagPostRequest(post.postid, jwt)
                             .then((response) {
-                          if (response == 'Post Verified') {
-                            setState(() {});
-                            Fluttertoast.showToast(
-                              msg: 'Post Verified',
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                            );
-                          } else {
-                            Fluttertoast.showToast(
-                              msg: 'Post Verification Failed',
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                            );
-                          }
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.only(
-                              left: 5, top: 3, bottom: 3, right: 5),
-                          minimumSize: Size.zero,
-                          backgroundColor:
-                              const Color.fromARGB(255, 170, 80, 80),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                      child:
-                          const Text('Verify', style: TextStyle(fontSize: 7)),
-                    )
-                  ]))
-            ]));
+                            if (response == 'Post Unflagged') {
+                              setState(() {});
+                              Fluttertoast.showToast(
+                                msg: 'Post Unflagged',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: 'Post Unflagging Failed',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            }
+                          })
+                        : httpHelpers
+                            .flagPostRequest(post.postid, jwt)
+                            .then((response) {
+                            if (response == 'Post Flagged') {
+                              setState(() {});
+                              Fluttertoast.showToast(
+                                msg: 'Post Flagged',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: 'Post Flagging Failed',
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            }
+                          });
+                  },
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.only(
+                          left: 5, top: 3, bottom: 3, right: 5),
+                      minimumSize: Size.zero,
+                      backgroundColor: const Color.fromARGB(255, 170, 80, 80),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                  child: post.flagged
+                      ? const Text('Unflag', style: TextStyle(fontSize: 7))
+                      : const Text('Flag', style: TextStyle(fontSize: 7)),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.only(
+                          left: 5, top: 3, bottom: 3, right: 5),
+                      minimumSize: Size.zero,
+                      backgroundColor: const Color.fromARGB(255, 80, 106, 170),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                  child: const Text('Edit', style: TextStyle(fontSize: 7)),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    httpHelpers
+                        .verifyPostRequest(post.postid, jwt)
+                        .then((response) {
+                      if (response == 'Post Verified') {
+                        setState(() {});
+                        Fluttertoast.showToast(
+                          msg: 'Post Verified',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                        );
+                      } else {
+                        Fluttertoast.showToast(
+                          msg: 'Post Verification Failed',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                        );
+                      }
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.only(
+                          left: 5, top: 3, bottom: 3, right: 5),
+                      minimumSize: Size.zero,
+                      backgroundColor: const Color.fromARGB(255, 170, 80, 80),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                  child: const Text('Verify', style: TextStyle(fontSize: 7)),
+                )
+              ]))
+        ]));
   }
 
   @override

@@ -1,24 +1,19 @@
 import 'dart:math';
+import 'package:ichthyolog/Helpers/Http.dart';
 import 'package:test/test.dart';
-import '../../Helpers/http.dart';
 import 'package:intl/intl.dart';
 
 void main() {
   final httpHelpers = HttpHelpers();
 
-  test('Test whether search by species shows correct species stats', () {
+  test('Test whether search by species shows correct species stats', () async {
     String testerSpecies = Random().nextInt(10000000).toString();
     String testerLocation = Random().nextInt(10000000).toString();
     String testerDate =
         DateFormat("yyyy-MM-dd hh:mm:ss").format(DateTime.now());
     late String jwt;
-    httpHelpers
-        .loginRequest('testgx@gmail.com', 'TestuserGX', 'Gx1887485857!')
-        .then(
-      (response) {
-        jwt = response;
-      },
-    );
+    jwt = await httpHelpers.loginRequest(
+        'testgx@gmail.com', 'TestuserGX', 'Gx1887485857!');
 
     Future testUpload = httpHelpers.uploadPostRequest(
         testerSpecies, '', testerLocation, testerDate, '', jwt, '', '', '', '');
@@ -27,7 +22,16 @@ void main() {
         expect(response, 'Post Uploaded');
       },
     );
-    expect(testUpload, completes);
+
+    late int testid;
+    testid = await httpHelpers.viewPostIdByTitleRequest(testerSpecies);
+
+    Future testVerify = httpHelpers.verifyPostRequest(testid, jwt);
+    testVerify.then(
+      (response) {
+        expect(response, 'Post Verified');
+      },
+    );
 
     Future testSearch = httpHelpers.searchSpecies(
         testerSpecies, "2000-01-01 00:00:00", testerDate, "");
@@ -36,6 +40,12 @@ void main() {
         expect(response, ['1', testerDate, testerLocation]);
       },
     );
-    expect(testSearch, completes);
+
+    Future testDelete = httpHelpers.deletePostRequest(testid, jwt);
+    testDelete.then(
+      (response) {
+        expect(response, 'Post Deleted');
+      },
+    );
   });
 }

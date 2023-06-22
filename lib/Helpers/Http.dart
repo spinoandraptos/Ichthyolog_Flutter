@@ -219,6 +219,21 @@ class HttpHelpers {
     }
   }
 
+  Future<int> viewPostIdByTitleRequest(String title) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/postid/$title';
+    var response = await http.get(Uri.parse(url), headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    });
+    if (response.body == 'Post not found') {
+      return Future.error("Post Not Found");
+    } else if (response.statusCode != 200) {
+      return Future.error("Error");
+    } else {
+      print(json.decode(response.body)[0]['postid']);
+      return json.decode(response.body)[0]['postid'];
+    }
+  }
+
   Future<String> uploadPostRequest(
       String title,
       String description,

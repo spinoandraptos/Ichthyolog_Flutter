@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import '../../Helpers/http.dart';
+import 'package:ichthyolog/Helpers/Http.dart';
 
 void main() {
   final httpHelpers = HttpHelpers();

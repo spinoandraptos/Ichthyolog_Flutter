@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../../Helpers/http.dart';
+import 'package:ichthyolog/Helpers/Http.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 void main() {
