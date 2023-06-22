@@ -708,7 +708,11 @@ class HttpHelpers {
       var responseData = json.decode(response.body);
       for (var everyfamily in responseData) {
         List<String> family = [];
-        family.add(everyfamily['family'].toString());
+        if (everyfamily['family'] == '') {
+          family.add('Unknown');
+        } else {
+          family.add(everyfamily['family'].toString());
+        }
         family.add(everyfamily['species_count'].toString());
         familyList.add(family);
       }
@@ -732,7 +736,11 @@ class HttpHelpers {
       var responseData = json.decode(response.body);
       for (var everygenus in responseData) {
         List<String> genus = [];
-        genus.add(everygenus['genus'].toString());
+        if (everygenus['genus'] == '') {
+          genus.add('Unknown');
+        } else {
+          genus.add(everygenus['genus'].toString());
+        }
         genus.add(everygenus['species_count'].toString());
         genusList.add(genus);
       }
@@ -756,7 +764,11 @@ class HttpHelpers {
       var responseData = json.decode(response.body);
       for (var everyorder in responseData) {
         List<String> order = [];
-        order.add(everyorder['_order'].toString());
+        if (everyorder['_order'] == '') {
+          order.add('Unknown');
+        } else {
+          order.add(everyorder['_order'].toString());
+        }
         order.add(everyorder['species_count'].toString());
         orderList.add(order);
       }
@@ -780,7 +792,11 @@ class HttpHelpers {
       var responseData = json.decode(response.body);
       for (var everyclass in responseData) {
         List<String> class_ = [];
-        class_.add(everyclass['class'].toString());
+        if (everyclass['class'] == '') {
+          class_.add('Unknown');
+        } else {
+          class_.add(everyclass['class'].toString());
+        }
         class_.add(everyclass['species_count'].toString());
         classList.add(class_);
       }
