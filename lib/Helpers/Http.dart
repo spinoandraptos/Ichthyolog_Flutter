@@ -23,9 +23,15 @@ class HttpHelpers {
       }),
     );
     if (response.statusCode == 201) {
-      return ('Signup Successful');
+      return 'Signup Successful';
+    } else if (response.body ==
+        'duplicate key value violates unique constraint "users_email_key"') {
+      return 'Email Already Exists';
+    } else if (response.body ==
+        'duplicate key value violates unique constraint "users_username_key"') {
+      return ('Username Already Exists');
     } else {
-      return 'Signup failed with status: ${response.statusCode}.';
+      return ('Signup Failed');
     }
   }
 
@@ -43,15 +49,14 @@ class HttpHelpers {
         'password': password
       }),
     );
-
-    if (response.statusCode == 200) {
-      return response.body;
-    } else if (response.statusCode == 404) {
+    if (response.body == 'Password incorrect') {
       return ('Password Incorrect');
+    } else if (response.body == 'User not found') {
+      return ('User Not Found');
+    } else if (response.statusCode != 200) {
+      return ('Error');
     } else {
-      print(response.headers);
-      print(response.statusCode);
-      return ('Username Not Found');
+      return response.body;
     }
   }
 
@@ -61,7 +66,7 @@ class HttpHelpers {
       'Content-type': 'application/json; charset=UTF-8',
       'Authorisation': jwt
     });
-    if (response.statusCode == 200) {
+    if (response.body == 'Valid token') {
       return ('Logged out');
     } else {
       return ('Logout failed}');
@@ -77,10 +82,12 @@ class HttpHelpers {
         'Authorisation': jwt
       },
     );
-    if (response.statusCode == 200) {
-      return User.fromJson(json.decode(response.body)[0]);
-    } else {
+    if (response.body == 'User not found') {
       return Future.error("User Not Found");
+    } else if (response.statusCode != 200) {
+      return Future.error("Error");
+    } else {
+      return User.fromJson(json.decode(response.body)[0]);
     }
   }
 
@@ -92,10 +99,12 @@ class HttpHelpers {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-    if (response.statusCode == 200) {
-      return User.fromJson(json.decode(response.body)[0]);
-    } else {
+    if (response.body == 'User not found') {
       return Future.error("User Not Found");
+    } else if (response.statusCode != 200) {
+      return Future.error("Error");
+    } else {
+      return User.fromJson(json.decode(response.body)[0]);
     }
   }
 
@@ -132,7 +141,11 @@ class HttpHelpers {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-    if (response.statusCode == 200) {
+    if (response.body == 'Posts not found') {
+      return Future.error("Posts Not Found");
+    } else if (response.statusCode != 200) {
+      return Future.error("Error");
+    } else {
       List<Post> postlist = [];
       var responseData = json.decode(response.body);
       for (var everypost in responseData) {
@@ -140,8 +153,6 @@ class HttpHelpers {
         postlist.add(post);
       }
       return postlist;
-    } else {
-      return Future.error("Posts Not Found");
     }
   }
 
@@ -153,7 +164,11 @@ class HttpHelpers {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-    if (response.statusCode == 200) {
+    if (response.body == 'Posts not found') {
+      return Future.error("Posts Not Found");
+    } else if (response.statusCode != 200) {
+      return Future.error("Error");
+    } else {
       List<Post> postlist = [];
       var responseData = json.decode(response.body);
       for (var everypost in responseData) {
@@ -161,8 +176,6 @@ class HttpHelpers {
         postlist.add(post);
       }
       return postlist;
-    } else {
-      return Future.error("Posts Not Found");
     }
   }
 
@@ -174,7 +187,11 @@ class HttpHelpers {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-    if (response.statusCode == 200) {
+    if (response.body == 'Posts not found') {
+      return Future.error("Posts Not Found");
+    } else if (response.statusCode != 200) {
+      return Future.error("Error");
+    } else {
       List<Post> postlist = [];
       var responseData = json.decode(response.body);
       for (var everypost in responseData) {
@@ -182,8 +199,6 @@ class HttpHelpers {
         postlist.add(post);
       }
       return postlist;
-    } else {
-      return Future.error("Posts Not Found");
     }
   }
 
@@ -195,10 +210,12 @@ class HttpHelpers {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-    if (response.statusCode == 200) {
-      return Post.fromJson(json.decode(response.body)[0]);
-    } else {
+    if (response.body == 'Post not found') {
       return Future.error("Post Not Found");
+    } else if (response.statusCode != 200) {
+      return Future.error("Error");
+    } else {
+      return Post.fromJson(json.decode(response.body)[0]);
     }
   }
 
@@ -248,7 +265,11 @@ class HttpHelpers {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-    if (response.statusCode == 200) {
+    if (response.body == 'Comments not found') {
+      return Future.error("Comments Not Found");
+    } else if (response.statusCode != 200) {
+      return Future.error("Error");
+    } else {
       List<Comment> comments = [];
       var responseData = json.decode(response.body);
       for (var everycomment in responseData) {
@@ -256,23 +277,6 @@ class HttpHelpers {
         comments.add(comment);
       }
       return comments;
-    } else {
-      return Future.error("Comments Not Found");
-    }
-  }
-
-  Future<Comment> viewLatestPostCommentRequest(int postid) async {
-    String url = 'https://ichthyolog-nodejs.onrender.com/comment/$postid';
-    var response = await http.get(
-      Uri.parse(url),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
-    if (response.statusCode == 200) {
-      return Comment.fromJson(json.decode(response.body)[0]);
-    } else {
-      return Future.error("Comment Not Found");
     }
   }
 
@@ -285,7 +289,11 @@ class HttpHelpers {
         'Authorisation': jwt
       },
     );
-    if (response.statusCode == 200) {
+    if (response.body == 'Comments not found') {
+      return Future.error("Comments Not Found");
+    } else if (response.statusCode != 200) {
+      return Future.error("Error");
+    } else {
       List<Comment> comments = [];
       var responseData = json.decode(response.body);
       for (var everycomment in responseData) {
@@ -293,8 +301,6 @@ class HttpHelpers {
         comments.add(comment);
       }
       return comments;
-    } else {
-      return Future.error("Comments Not Found");
     }
   }
 
@@ -306,10 +312,12 @@ class HttpHelpers {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-    if (response.statusCode == 200) {
-      return Comment.fromJson(json.decode(response.body)[0]);
-    } else {
+    if (response.body == 'Comment not found') {
       return Future.error("Comment Not Found");
+    } else if (response.statusCode != 200) {
+      return Future.error("Error");
+    } else {
+      return Comment.fromJson(json.decode(response.body)[0]);
     }
   }
 

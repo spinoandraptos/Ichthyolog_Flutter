@@ -99,11 +99,13 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
   @override
   Widget build(BuildContext context) {
     return widget.jwt == ''
-        ? OtherComment(
-            comment: widget.comments[widget.comments.length - 1],
-            jwt: widget.jwt,
-            updateCallBack: widget.updateCallBack,
-            userid: widget.decodedJWT['userid'])
+        ? Padding(
+            padding: const EdgeInsets.only(bottom: 25),
+            child: OtherComment(
+                comment: widget.comments[widget.comments.length - 1],
+                jwt: widget.jwt,
+                updateCallBack: widget.updateCallBack,
+                userid: widget.decodedJWT['userid'] ?? -1))
         : Column(children: [
             widget.comments[widget.comments.length - 1].authorId ==
                     widget.decodedJWT['userid']

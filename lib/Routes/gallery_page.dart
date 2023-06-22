@@ -36,6 +36,214 @@ class GalleryPageState extends State<GalleryPage> {
     });
   }
 
+  Widget logoutButton() {
+    return IconButton(
+      icon: const Icon(Icons.logout),
+      onPressed: () {
+        helpers.logout(jwt, context);
+      },
+    );
+  }
+
+  Widget editPostButton() {
+    return TextButton(
+        style: TextButton.styleFrom(
+            padding: const EdgeInsets.all(3),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+        onPressed: () {},
+        child: const Text('Edit Post',
+            style: TextStyle(
+                fontSize: 7, color: Color.fromARGB(255, 33, 53, 88))));
+  }
+
+  Widget deletePostButton(Post post) {
+    return TextButton(
+        style: TextButton.styleFrom(
+            padding: const EdgeInsets.all(3),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                    title: const Text("Warning"),
+                    content: const Text(
+                        'Are you sure? This action is irreversible!'),
+                    actions: [
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 80, 170, 121)),
+                          child: const Text("Yes"),
+                          onPressed: () {
+                            httpHelpers
+                                .deletePostRequest(post.postid, jwt)
+                                .then(
+                              (response) {
+                                Navigator.pop(context);
+                                if (response == 'Post Deleted') {
+                                  setState(() {});
+                                  Fluttertoast.showToast(
+                                    msg: 'Post deleted',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    timeInSecForIosWeb: 1,
+                                  );
+                                } else {
+                                  Fluttertoast.showToast(
+                                    msg: 'Post failed to delete :(',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    timeInSecForIosWeb: 1,
+                                  );
+                                }
+                              },
+                            );
+                          }),
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 170, 80, 80)),
+                          child: const Text("Cancel"),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          })
+                    ]);
+              });
+        },
+        child: const Text('Delete Post',
+            style: TextStyle(
+                fontSize: 7, color: Color.fromARGB(255, 33, 53, 88))));
+  }
+
+  Widget clickableImage(Post post) {
+    return TextButton(
+        style: TextButton.styleFrom(
+            padding: const EdgeInsets.all(3),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                    title: const Text("Warning"),
+                    content: const Text(
+                        'Are you sure? This action is irreversible!'),
+                    actions: [
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 80, 170, 121)),
+                          child: const Text("Yes"),
+                          onPressed: () {
+                            httpHelpers
+                                .deletePostRequest(post.postid, jwt)
+                                .then(
+                              (response) {
+                                Navigator.pop(context);
+                                if (response == 'Post Deleted') {
+                                  setState(() {});
+                                  Fluttertoast.showToast(
+                                    msg: 'Post deleted',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    timeInSecForIosWeb: 1,
+                                  );
+                                } else {
+                                  Fluttertoast.showToast(
+                                    msg: 'Post failed to delete :(',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    timeInSecForIosWeb: 1,
+                                  );
+                                }
+                              },
+                            );
+                          }),
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 170, 80, 80)),
+                          child: const Text("Cancel"),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          })
+                    ]);
+              });
+        },
+        child: const Text('Delete Post',
+            style: TextStyle(
+                fontSize: 7, color: Color.fromARGB(255, 33, 53, 88))));
+  }
+
+  Widget galleryLegend() {
+    return const Padding(
+        padding: EdgeInsets.only(left: 18, top: 10, right: 9),
+        child: Row(children: [
+          Text(
+            "Key:",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Color.fromARGB(255, 60, 89, 139)),
+          ),
+          SizedBox(width: 8),
+          CircleAvatar(
+              radius: 7,
+              backgroundColor: Color.fromARGB(255, 73, 155, 109),
+              child: Icon(
+                Icons.verified,
+                size: 10,
+                color: Colors.white,
+              )),
+          SizedBox(width: 4),
+          Text(
+            "[ ID Verified ]",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
+                color: Color.fromARGB(255, 73, 155, 109)),
+          ),
+          SizedBox(width: 14),
+          CircleAvatar(
+              radius: 7,
+              backgroundColor: Color.fromARGB(255, 175, 103, 51),
+              child: Icon(
+                Icons.pending,
+                size: 10,
+                color: Colors.white,
+              )),
+          SizedBox(width: 4),
+          Text(
+            "[ Pending Verification ]",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
+                color: Color.fromARGB(255, 175, 103, 51)),
+          ),
+          SizedBox(width: 14),
+          CircleAvatar(
+              radius: 7,
+              backgroundColor: Color.fromARGB(255, 152, 72, 85),
+              child: Icon(
+                Icons.priority_high,
+                size: 10,
+                color: Colors.white,
+              )),
+          SizedBox(width: 4),
+          Text(
+            "[ Flagged ]",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
+                color: Color.fromARGB(255, 152, 72, 85)),
+          ),
+        ]));
+  }
+
   Widget galleryScreen(BuildContext context, List<Post> posts) {
     return Column(children: [
       galleryLegend(),
@@ -68,145 +276,63 @@ class GalleryPageState extends State<GalleryPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(3),
         ),
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <
-                Widget>[
-          Padding(
-              padding: const EdgeInsets.only(left: 9, top: 5, right: 9),
-              child: Row(children: [
-                Container(
-                    padding: const EdgeInsets.only(right: 4),
-                    width: 77,
-                    child: Text(
-                      post.title,
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Padding(
+                  padding: const EdgeInsets.only(left: 9, top: 5, right: 9),
+                  child: Row(children: [
+                    Container(
+                        padding: const EdgeInsets.only(right: 4),
+                        width: 77,
+                        child: Text(
+                          post.title,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 8,
+                              color: Color.fromARGB(255, 33, 53, 88)),
+                        )),
+                    CircleAvatar(
+                      radius: 8,
+                      backgroundColor: post.verified
+                          ? const Color.fromARGB(255, 73, 155, 109)
+                          : post.flagged
+                              ? const Color.fromARGB(255, 152, 72, 85)
+                              : const Color.fromARGB(255, 175, 103, 51),
+                      child: Icon(
+                        post.verified
+                            ? Icons.verified
+                            : post.flagged
+                                ? Icons.priority_high
+                                : Icons.pending,
+                        size: 10,
+                        color: Colors.white,
+                      ),
+                    )
+                  ])),
+
+              //Post Image
+              clickableImage(post),
+
+              //Clickable Buttons
+              Container(
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 4, bottom: 2),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      editPostButton(),
+                      deletePostButton(post),
+                    ],
+                  )),
+              Container(
+                  padding: const EdgeInsets.only(left: 6, bottom: 5, right: 8),
+                  child: Text('Sighted at ${post.sightingLocation}',
+                      textAlign: TextAlign.right,
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 8,
-                          color: Color.fromARGB(255, 33, 53, 88)),
-                    )),
-                CircleAvatar(
-                  radius: 8,
-                  backgroundColor: post.verified
-                      ? const Color.fromARGB(255, 73, 155, 109)
-                      : post.flagged
-                          ? const Color.fromARGB(255, 152, 72, 85)
-                          : const Color.fromARGB(255, 175, 103, 51),
-                  child: Icon(
-                    post.verified
-                        ? Icons.verified
-                        : post.flagged
-                            ? Icons.priority_high
-                            : Icons.pending,
-                    size: 10,
-                    color: Colors.white,
-                  ),
-                )
-              ])),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(6),
-              child: InkWell(
-                  child: Ink.image(
-                      image: NetworkImage(post.pic), fit: BoxFit.cover),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => PostPage(postid: post.postid)),
-                    );
-                  }),
-            ),
-          ),
-          Container(
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 4, bottom: 2),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                      style: TextButton.styleFrom(
-                          padding: const EdgeInsets.all(3),
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                      onPressed: () {},
-                      child: const Text('Edit Post',
-                          style: TextStyle(
-                              fontSize: 7,
-                              color: Color.fromARGB(255, 33, 53, 88)))),
-                  TextButton(
-                      style: TextButton.styleFrom(
-                          padding: const EdgeInsets.all(3),
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                  title: const Text("Warning"),
-                                  content: const Text(
-                                      'Are you sure? This action is irreversible!'),
-                                  actions: [
-                                    ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                const Color.fromARGB(
-                                                    255, 80, 170, 121)),
-                                        child: const Text("Yes"),
-                                        onPressed: () {
-                                          httpHelpers
-                                              .deletePostRequest(
-                                                  post.postid, jwt)
-                                              .then(
-                                            (response) {
-                                              Navigator.pop(context);
-                                              if (response == 'Post Deleted') {
-                                                setState(() {});
-                                                Fluttertoast.showToast(
-                                                  msg: 'Post deleted',
-                                                  toastLength:
-                                                      Toast.LENGTH_SHORT,
-                                                  gravity: ToastGravity.BOTTOM,
-                                                  timeInSecForIosWeb: 1,
-                                                );
-                                              } else {
-                                                Fluttertoast.showToast(
-                                                  msg:
-                                                      'Post failed to delete :(',
-                                                  toastLength:
-                                                      Toast.LENGTH_SHORT,
-                                                  gravity: ToastGravity.BOTTOM,
-                                                  timeInSecForIosWeb: 1,
-                                                );
-                                              }
-                                            },
-                                          );
-                                        }),
-                                    ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                const Color.fromARGB(
-                                                    255, 170, 80, 80)),
-                                        child: const Text("Cancel"),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        })
-                                  ]);
-                            });
-                      },
-                      child: const Text('Delete Post',
-                          style: TextStyle(
-                              fontSize: 7,
-                              color: Color.fromARGB(255, 33, 53, 88)))),
-                ],
-              )),
-          Container(
-              padding: const EdgeInsets.only(left: 6, bottom: 5, right: 8),
-              child: Text('Sighted at ${post.sightingLocation}',
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                      fontSize: 7, color: Color.fromARGB(255, 33, 53, 88)))),
-        ]));
+                          fontSize: 7,
+                          color: Color.fromARGB(255, 33, 53, 88)))),
+            ]));
   }
 
   Widget otherPostCard(Post post) {
@@ -297,14 +423,7 @@ class GalleryPageState extends State<GalleryPage> {
                 appBar: AppBar(
                   title: const Text('Gallery Page'),
                   backgroundColor: const Color.fromARGB(255, 70, 88, 152),
-                  actions: [
-                    IconButton(
-                      icon: const Icon(Icons.logout),
-                      onPressed: () {
-                        helpers.logout(jwt, context);
-                      },
-                    ),
-                  ],
+                  actions: [logoutButton()],
                 ),
                 body: galleryScreen(context, snapshot.data!),
               );
@@ -316,70 +435,5 @@ class GalleryPageState extends State<GalleryPage> {
             return const LoadingScreen();
           }
         }));
-  }
-
-  Widget galleryLegend() {
-    return Padding(
-        padding: const EdgeInsets.only(left: 18, top: 10, right: 9),
-        child: Row(children: const [
-          Text(
-            "Key:",
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: Color.fromARGB(255, 60, 89, 139)),
-          ),
-          SizedBox(width: 8),
-          CircleAvatar(
-              radius: 7,
-              backgroundColor: Color.fromARGB(255, 73, 155, 109),
-              child: Icon(
-                Icons.verified,
-                size: 10,
-                color: Colors.white,
-              )),
-          SizedBox(width: 4),
-          Text(
-            "[ ID Verified ]",
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 11,
-                color: Color.fromARGB(255, 73, 155, 109)),
-          ),
-          SizedBox(width: 14),
-          CircleAvatar(
-              radius: 7,
-              backgroundColor: Color.fromARGB(255, 175, 103, 51),
-              child: Icon(
-                Icons.pending,
-                size: 10,
-                color: Colors.white,
-              )),
-          SizedBox(width: 4),
-          Text(
-            "[ Pending Verification ]",
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 11,
-                color: Color.fromARGB(255, 175, 103, 51)),
-          ),
-          SizedBox(width: 14),
-          CircleAvatar(
-              radius: 7,
-              backgroundColor: Color.fromARGB(255, 152, 72, 85),
-              child: Icon(
-                Icons.priority_high,
-                size: 10,
-                color: Colors.white,
-              )),
-          SizedBox(width: 4),
-          Text(
-            "[ Flagged ]",
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 11,
-                color: Color.fromARGB(255, 152, 72, 85)),
-          ),
-        ]));
   }
 }

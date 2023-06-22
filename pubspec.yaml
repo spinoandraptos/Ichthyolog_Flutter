@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_test:
+    sdk: flutter
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -45,7 +47,7 @@ dependencies:
   amplify_auth_cognito: ^1.0.1
   uuid: ^3.0.7
   fluttertoast: ^8.2.2
-  intl: ^0.17.0
+  intl: ^0.18.0
   list_picker: ^1.1.0
   selectable_list: ^0.1.1
   easy_stepper: ^0.6.0
@@ -54,8 +56,6 @@ dependencies:
   test: ^1.22.0
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

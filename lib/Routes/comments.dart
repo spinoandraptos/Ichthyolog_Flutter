@@ -457,7 +457,7 @@ class OtherCommentState extends State<OtherComment> {
                                             widget.userid,
                                             widget.jwt)
                                         .then((response) {
-                                        if (response == 'Comment Downvoted') {
+                                        if (response == 'Comment Un-upvoted') {
                                           widget.updateCallBack(response);
                                           Fluttertoast.showToast(
                                             msg: 'Upvote Removed',
@@ -556,18 +556,18 @@ class OtherCommentState extends State<OtherComment> {
                                             widget.userid,
                                             widget.jwt)
                                         .then((response) {
-                                        if (response == 'Downvote Removed') {
+                                        if (response ==
+                                            'Comment Un-downvoted') {
                                           widget.updateCallBack(response);
                                           Fluttertoast.showToast(
-                                            msg: 'Error :(',
+                                            msg: 'Downvote Removed',
                                             toastLength: Toast.LENGTH_SHORT,
                                             gravity: ToastGravity.BOTTOM,
                                             timeInSecForIosWeb: 1,
                                           );
                                         } else {
                                           Fluttertoast.showToast(
-                                            msg:
-                                                'Comment failed to Downvote :(',
+                                            msg: 'Error :(',
                                             toastLength: Toast.LENGTH_SHORT,
                                             gravity: ToastGravity.BOTTOM,
                                             timeInSecForIosWeb: 1,
