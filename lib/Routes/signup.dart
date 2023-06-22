@@ -274,18 +274,19 @@ class SignUpPageState extends State<SignUpPage> {
 
                   //Username field
                   usernameField(),
-                  const SizedBox(height: 20),
+                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 40),
 
                   //Email field
                   emailField(),
-                  const SizedBox(height: 20),
+                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 40),
 
                   //Password field
                   passwordField(),
-                  const SizedBox(height: 20),
+                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 40),
 
                   //Confirm password field
                   confirmPasswordField(),
+                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 22),
 
                   //Sign up button
                   signUpButton()

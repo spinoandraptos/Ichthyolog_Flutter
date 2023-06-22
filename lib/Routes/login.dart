@@ -204,18 +204,18 @@ class LoginPageState extends State<LoginPage> {
 
                   //Email field
                   emailField(),
-                  const SizedBox(height: 20),
+                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 40),
 
                   //Password field
                   passwordField(),
 
                   //Forgot password button
                   forgotPasswordButton(),
-                  const SizedBox(height: 20),
+                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 40),
 
                   //Login button
                   loginButton(),
-                  const SizedBox(height: 30),
+                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 28),
 
                   //Sign up button
                   signupButton(),
