@@ -196,8 +196,11 @@ class CommentPageState extends State<CommentPage> {
 
   updateCommentCallback(response) {
     if (response == 'Comment Deleted' ||
+        response == 'Comment Posted' ||
         response == 'Comment Upvoted' ||
-        response == 'Comment Downvoted') {
+        response == 'Comment Downvoted' ||
+        response == 'Comment Un-upvoted' ||
+        response == 'Comment Un-downvoted') {
       setState(() {});
     }
   }

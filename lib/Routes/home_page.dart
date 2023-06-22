@@ -38,6 +38,51 @@ class HomePageState extends State<RegularHomePage> {
     });
   }
 
+  Widget logoutButton() {
+    return IconButton(
+      icon: const Icon(Icons.logout),
+      onPressed: () {
+        helpers.logout(jwt, context);
+      },
+    );
+  }
+
+  Widget cameraPageButton() {
+    return IconButton(
+      icon: const Icon(Icons.add_a_photo_rounded),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CameraPage()),
+        );
+      },
+    );
+  }
+
+  Widget statsPageButton() {
+    return IconButton(
+      icon: const Icon(Icons.search),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const StatisticsPage()),
+        );
+      },
+    );
+  }
+
+  Widget galleryPageButton() {
+    return IconButton(
+      icon: const Icon(Icons.photo_library),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const GalleryPage()),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_authorised) {
@@ -56,14 +101,7 @@ class HomePageState extends State<RegularHomePage> {
                     leading: const Icon(Icons.menu),
                     title: const Text('Regular Home'),
                     backgroundColor: const Color.fromARGB(255, 70, 88, 152),
-                    actions: [
-                      IconButton(
-                        icon: const Icon(Icons.logout),
-                        onPressed: () {
-                          helpers.logout(jwt, context);
-                        },
-                      ),
-                    ],
+                    actions: [logoutButton()],
                   ),
                   body: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -125,36 +163,14 @@ class HomePageState extends State<RegularHomePage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        IconButton(
-                          icon: const Icon(Icons.add_a_photo_rounded),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const CameraPage()),
-                            );
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.photo_library),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const GalleryPage()),
-                            );
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.search),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const StatisticsPage()),
-                            );
-                          },
-                        ),
+                        //Visit camera page to post sighting
+                        cameraPageButton(),
+
+                        //Visit gallery page to view sightings
+                        galleryPageButton(),
+
+                        //Visit statistics page to access sighting data
+                        statsPageButton()
                       ],
                     ),
                   ),

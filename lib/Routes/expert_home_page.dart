@@ -39,6 +39,63 @@ class HomePageState extends State<ExpertHomePage> {
     });
   }
 
+  Widget logoutButton() {
+    return IconButton(
+      icon: const Icon(Icons.logout),
+      onPressed: () {
+        helpers.logout(jwt, context);
+      },
+    );
+  }
+
+  Widget cameraPageButton() {
+    return IconButton(
+      icon: const Icon(Icons.add_a_photo_rounded),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CameraPage()),
+        );
+      },
+    );
+  }
+
+  Widget statsPageButton() {
+    return IconButton(
+      icon: const Icon(Icons.search),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const StatisticsPage()),
+        );
+      },
+    );
+  }
+
+  Widget galleryPageButton() {
+    return IconButton(
+      icon: const Icon(Icons.photo_library),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const GalleryPage()),
+        );
+      },
+    );
+  }
+
+  Widget waitingListPageButton() {
+    return IconButton(
+      icon: const Icon(Icons.feedback),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const WaitingListPage()),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_authorised) {
@@ -54,14 +111,7 @@ class HomePageState extends State<ExpertHomePage> {
                   leading: const Icon(Icons.menu),
                   title: const Text('Expert Home'),
                   backgroundColor: const Color.fromARGB(255, 70, 88, 152),
-                  actions: [
-                    IconButton(
-                      icon: const Icon(Icons.logout),
-                      onPressed: () {
-                        helpers.logout(jwt, context);
-                      },
-                    ),
-                  ],
+                  actions: [logoutButton()],
                 ),
                 body: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -122,46 +172,17 @@ class HomePageState extends State<ExpertHomePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.add_a_photo_rounded),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const CameraPage()),
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.photo_library),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const GalleryPage()),
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.search),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const StatisticsPage()),
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.feedback),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const WaitingListPage()),
-                          );
-                        },
-                      ),
+                      //Visit camera page to post sighting
+                      cameraPageButton(),
+
+                      //Visit gallery page to view sightings
+                      galleryPageButton(),
+
+                      //Visit statistics page to access sighting data
+                      statsPageButton(),
+
+                      //Visit waiting list page to verify sightings
+                      waitingListPageButton()
                     ],
                   ),
                 ),

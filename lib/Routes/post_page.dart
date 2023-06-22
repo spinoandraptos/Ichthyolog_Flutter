@@ -161,7 +161,12 @@ class PostPageState extends State<PostPage> {
   }
 
   changeCommentCallback(response) {
-    if (response == 'Comment Deleted' || response == 'Comment Posted') {
+    if (response == 'Comment Deleted' ||
+        response == 'Comment Posted' ||
+        response == 'Comment Upvoted' ||
+        response == 'Comment Downvoted' ||
+        response == 'Comment Un-upvoted' ||
+        response == 'Comment Un-downvoted') {
       setState(() {});
     }
   }

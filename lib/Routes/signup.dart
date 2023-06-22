@@ -88,6 +88,169 @@ class SignUpPageState extends State<SignUpPage> {
     return hasCapitalLetter && hasSpecialCharacter;
   }
 
+  Widget signUpButton() {
+    return SizedBox(
+      width: 250,
+      height: 36,
+      child: ElevatedButton(
+        onPressed: () {
+          validateForm();
+        },
+        style: ButtonStyle(
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)))),
+        child: const Text('Sign Up'),
+      ),
+    );
+  }
+
+  Widget confirmPasswordField() {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15), color: Colors.white),
+      margin: const EdgeInsets.only(right: 40, left: 40),
+      child: TextFormField(
+        obscureText: true,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please confirm your password';
+          } else if (value != _password) {
+            return 'Passwords do not match';
+          } else {
+            return null;
+          }
+        },
+        onChanged: (value) => _confirmPassword = value,
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          hintText: 'Confirm your password',
+          contentPadding: EdgeInsets.only(left: 10, right: 10),
+        ),
+      ),
+    );
+  }
+
+  Widget passwordField() {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15), color: Colors.white),
+      margin: const EdgeInsets.only(right: 40, left: 40),
+      child: TextFormField(
+        obscureText: true,
+        onChanged: (value) {
+          _password = value;
+        },
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Please enter a password';
+          } else if (value.length < 6 || value.length > 20) {
+            return 'Password must be 6-20 characters';
+          } else if (!isValidPassword(value)) {
+            return 'Password must contain at least one capital letter and one special character';
+          }
+          return null;
+        },
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          hintText: 'Enter your password',
+          contentPadding: EdgeInsets.only(left: 10, right: 10),
+        ),
+      ),
+    );
+  }
+
+  Widget emailField() {
+    return Container(
+      margin: const EdgeInsets.only(right: 40, left: 40),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15), color: Colors.white),
+      child: TextFormField(
+        keyboardType: TextInputType.emailAddress,
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Please enter an email';
+          } else if (!isValidEmail(value)) {
+            return 'Please enter a valid email';
+          } else {
+            return null;
+          }
+        },
+        onChanged: (value) {
+          _userEmail = value;
+        },
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          hintText: 'Enter your email',
+          contentPadding: EdgeInsets.only(left: 10, right: 10),
+        ),
+      ),
+    );
+  }
+
+  Widget projectName() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      child: const Text(
+        'Ichthyolog',
+        style: TextStyle(
+          fontSize: 50,
+          fontWeight: FontWeight.bold,
+          color: Color.fromARGB(255, 255, 255, 255),
+        ),
+      ),
+    );
+  }
+
+  Widget usernameField() {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15), color: Colors.white),
+      margin: const EdgeInsets.only(right: 40, left: 40),
+      child: TextFormField(
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter a username';
+          } else if (value.trim().length > 25) {
+            return 'Username must be less than 25 characters';
+          } else {
+            return null;
+          }
+        },
+        onChanged: (value) => _userName = value,
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          hintText: 'Enter a username',
+          contentPadding: EdgeInsets.only(left: 10, right: 10),
+        ),
+      ),
+    );
+  }
+
+  Widget logo() {
+    return Container(
+      width: 170,
+      height: 170,
+      margin: const EdgeInsets.only(top: 10),
+      child: Image.asset('assets/images/Logo.png'),
+    );
+  }
+
+  Widget backButton() {
+    return Container(
+      alignment: Alignment.topLeft,
+      margin: const EdgeInsets.only(top: 20),
+      child: IconButton(
+          color: const Color.fromARGB(255, 57, 81, 189),
+          iconSize: 35,
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+              )),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,170 +264,31 @@ class SignUpPageState extends State<SignUpPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   //arrow back button to login page
-                  Container(
-                    alignment: Alignment.topLeft,
-                    margin: const EdgeInsets.only(top: 20),
-                    child: IconButton(
-                        color: const Color.fromARGB(255, 57, 81, 189),
-                        iconSize: 35,
-                        icon: const Icon(Icons.arrow_back),
-                        onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const LoginPage()),
-                            )),
-                  ),
+                  backButton(),
 
                   //Logo up top
-                  Container(
-                    width: 170,
-                    height: 170,
-                    margin: const EdgeInsets.only(top: 10),
-                    child: Image.asset('assets/images/Logo.png'),
-                  ),
+                  logo(),
 
                   //Project name
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 20),
-                    child: const Text(
-                      'Ichthyolog',
-                      style: TextStyle(
-                        fontSize: 50,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 255, 255, 255),
-                      ),
-                    ),
-                  ),
+                  projectName(),
 
                   //Username field
-                  Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.white),
-                    margin: const EdgeInsets.only(right: 40, left: 40),
-                    child: TextFormField(
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a username';
-                        } else if (value.trim().length > 25) {
-                          return 'Username must be less than 25 characters';
-                        } else {
-                          return null;
-                        }
-                      },
-                      onChanged: (value) => _userName = value,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Enter a username',
-                        contentPadding: EdgeInsets.only(left: 10, right: 10),
-                      ),
-                    ),
-                  ),
+                  usernameField(),
                   const SizedBox(height: 20),
 
                   //Email field
-                  Container(
-                    margin: const EdgeInsets.only(right: 40, left: 40),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.white),
-                    child: TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter an email';
-                        } else if (!isValidEmail(value)) {
-                          return 'Please enter a valid email';
-                        } else {
-                          return null;
-                        }
-                      },
-                      onChanged: (value) {
-                        _userEmail = value;
-                      },
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Enter your email',
-                        contentPadding: EdgeInsets.only(left: 10, right: 10),
-                      ),
-                    ),
-                  ),
+                  emailField(),
                   const SizedBox(height: 20),
 
                   //Password field
-                  Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.white),
-                    margin: const EdgeInsets.only(right: 40, left: 40),
-                    child: TextFormField(
-                      obscureText: true,
-                      onChanged: (value) {
-                        _password = value;
-                      },
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter a password';
-                        } else if (value.length < 6 || value.length > 20) {
-                          return 'Password must be 6-20 characters';
-                        } else if (!isValidPassword(value)) {
-                          return 'Password must contain at least one capital letter and one special character';
-                        }
-                        return null;
-                      },
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Enter your password',
-                        contentPadding: EdgeInsets.only(left: 10, right: 10),
-                      ),
-                    ),
-                  ),
+                  passwordField(),
                   const SizedBox(height: 20),
 
                   //Confirm password field
-                  Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.white),
-                    margin: const EdgeInsets.only(right: 40, left: 40),
-                    child: TextFormField(
-                      obscureText: true,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please confirm your password';
-                        } else if (value != _password) {
-                          return 'Passwords do not match';
-                        } else {
-                          return null;
-                        }
-                      },
-                      onChanged: (value) => _confirmPassword = value,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Confirm your password',
-                        contentPadding: EdgeInsets.only(left: 10, right: 10),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+                  confirmPasswordField(),
 
                   //Sign up button
-                  SizedBox(
-                    width: 250,
-                    height: 36,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        validateForm();
-                      },
-                      style: ButtonStyle(
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(15)))),
-                      child: const Text('Sign Up'),
-                    ),
-                  ),
+                  signUpButton()
                 ],
               ),
             ),

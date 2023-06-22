@@ -36,6 +36,80 @@ class GalleryPageState extends State<GalleryPage> {
     });
   }
 
+  Widget logoutButton() {
+    return IconButton(
+      icon: const Icon(Icons.logout),
+      onPressed: () {
+        helpers.logout(jwt, context);
+      },
+    );
+  }
+
+  Widget galleryLegend() {
+    return Padding(
+        padding: const EdgeInsets.only(left: 18, top: 10, right: 9),
+        child: Row(children: const [
+          Text(
+            "Key:",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Color.fromARGB(255, 60, 89, 139)),
+          ),
+          SizedBox(width: 8),
+          CircleAvatar(
+              radius: 7,
+              backgroundColor: Color.fromARGB(255, 73, 155, 109),
+              child: Icon(
+                Icons.verified,
+                size: 10,
+                color: Colors.white,
+              )),
+          SizedBox(width: 4),
+          Text(
+            "[ ID Verified ]",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
+                color: Color.fromARGB(255, 73, 155, 109)),
+          ),
+          SizedBox(width: 14),
+          CircleAvatar(
+              radius: 7,
+              backgroundColor: Color.fromARGB(255, 175, 103, 51),
+              child: Icon(
+                Icons.pending,
+                size: 10,
+                color: Colors.white,
+              )),
+          SizedBox(width: 4),
+          Text(
+            "[ Pending Verification ]",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
+                color: Color.fromARGB(255, 175, 103, 51)),
+          ),
+          SizedBox(width: 14),
+          CircleAvatar(
+              radius: 7,
+              backgroundColor: Color.fromARGB(255, 152, 72, 85),
+              child: Icon(
+                Icons.priority_high,
+                size: 10,
+                color: Colors.white,
+              )),
+          SizedBox(width: 4),
+          Text(
+            "[ Flagged ]",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
+                color: Color.fromARGB(255, 152, 72, 85)),
+          ),
+        ]));
+  }
+
   Widget galleryScreen(BuildContext context, List<Post> posts) {
     return Column(children: [
       galleryLegend(),
@@ -297,14 +371,7 @@ class GalleryPageState extends State<GalleryPage> {
                 appBar: AppBar(
                   title: const Text('Gallery Page'),
                   backgroundColor: const Color.fromARGB(255, 70, 88, 152),
-                  actions: [
-                    IconButton(
-                      icon: const Icon(Icons.logout),
-                      onPressed: () {
-                        helpers.logout(jwt, context);
-                      },
-                    ),
-                  ],
+                  actions: [logoutButton()],
                 ),
                 body: galleryScreen(context, snapshot.data!),
               );
@@ -316,70 +383,5 @@ class GalleryPageState extends State<GalleryPage> {
             return const LoadingScreen();
           }
         }));
-  }
-
-  Widget galleryLegend() {
-    return Padding(
-        padding: const EdgeInsets.only(left: 18, top: 10, right: 9),
-        child: Row(children: const [
-          Text(
-            "Key:",
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: Color.fromARGB(255, 60, 89, 139)),
-          ),
-          SizedBox(width: 8),
-          CircleAvatar(
-              radius: 7,
-              backgroundColor: Color.fromARGB(255, 73, 155, 109),
-              child: Icon(
-                Icons.verified,
-                size: 10,
-                color: Colors.white,
-              )),
-          SizedBox(width: 4),
-          Text(
-            "[ ID Verified ]",
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 11,
-                color: Color.fromARGB(255, 73, 155, 109)),
-          ),
-          SizedBox(width: 14),
-          CircleAvatar(
-              radius: 7,
-              backgroundColor: Color.fromARGB(255, 175, 103, 51),
-              child: Icon(
-                Icons.pending,
-                size: 10,
-                color: Colors.white,
-              )),
-          SizedBox(width: 4),
-          Text(
-            "[ Pending Verification ]",
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 11,
-                color: Color.fromARGB(255, 175, 103, 51)),
-          ),
-          SizedBox(width: 14),
-          CircleAvatar(
-              radius: 7,
-              backgroundColor: Color.fromARGB(255, 152, 72, 85),
-              child: Icon(
-                Icons.priority_high,
-                size: 10,
-                color: Colors.white,
-              )),
-          SizedBox(width: 4),
-          Text(
-            "[ Flagged ]",
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 11,
-                color: Color.fromARGB(255, 152, 72, 85)),
-          ),
-        ]));
   }
 }
