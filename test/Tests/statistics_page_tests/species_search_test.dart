@@ -10,9 +10,9 @@ void main() {
     String testerDate =
         DateFormat("yyyy-MM-dd hh:mm:ss").format(DateTime.now());
 
-    Future testSearch = httpHelpers.searchSpecies(
-        testerSpecies, "2000-01-01 00:00:00", testerDate, "");
-    testSearch.then(
+    await httpHelpers
+        .searchSpecies(testerSpecies, "2000-01-01 00:00:00", testerDate, "")
+        .then(
       (response) {
         expect(response, ['1', testerDate, 'AAAAAAAA']);
       },
@@ -24,9 +24,9 @@ void main() {
     String testerDate =
         DateFormat("yyyy-MM-dd hh:mm:ss").format(DateTime.now());
 
-    Future testSearch = httpHelpers.searchSpecies(
-        testerSpecies, "2000-01-01 00:00:00", testerDate, "");
-    testSearch.then(
+    await httpHelpers
+        .searchSpecies(testerSpecies, "2000-01-01 00:00:00", testerDate, "")
+        .then(
       (response) {
         expect(response, 'Species not found! Error 404');
       },

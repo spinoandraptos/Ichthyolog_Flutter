@@ -5,9 +5,9 @@ void main() {
   final httpHelpers = HttpHelpers();
 
   //user fetches all posts
-  test('User should fetch all posts successfully', () {
-    httpHelpers.viewAllPostsRequest().then((response) {
-      expect(response.isNotEmpty, false);
+  test('User should fetch all posts successfully', () async {
+    await httpHelpers.viewAllPostsRequest().then((response) {
+      expect(response.isNotEmpty, true);
     });
   });
 }

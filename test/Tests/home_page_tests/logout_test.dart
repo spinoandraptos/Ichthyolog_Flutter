@@ -6,23 +6,23 @@ void main() {
   final httpHelpers = HttpHelpers();
 
   //logged in user logs out
-  test('User should log out successfully', () {
+  test('User should log out successfully', () async {
     String jwt = '';
-    httpHelpers
+    await httpHelpers
         .loginRequest('tester8@gmail.com', 'tester8@gmail.com', 'Tester8!')
         .then((response) {
       expect(JwtDecoder.decode(response)['username'], 'tester8');
       jwt = response;
     });
-    httpHelpers.logoutRequest(jwt).then((response) {
+    await httpHelpers.logoutRequest(jwt).then((response) {
       expect(response, 'Logged out');
     });
   });
 
   //users logs out without logging in
-  test('User should fail to log out', () {
+  test('User should fail to log out', () async {
     String jwt = '';
-    httpHelpers.logoutRequest(jwt).then((response) {
+    await httpHelpers.logoutRequest(jwt).then((response) {
       expect(response, 'Logout failed');
     });
   });

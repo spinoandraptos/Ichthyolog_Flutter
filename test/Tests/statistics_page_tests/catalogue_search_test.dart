@@ -7,8 +7,7 @@ void main() {
   test(
       'Test whether class catalogue returns correct list of species with count',
       () async {
-    Future testSearch = httpHelpers.searchClassCatalogue();
-    testSearch.then(
+    await httpHelpers.searchClassCatalogue().then(
       (response) {
         expect(response, [
           ['Actinopterygii', '1'],
@@ -21,8 +20,7 @@ void main() {
   test(
       'Test whether order catalogue returns correct list of species with count',
       () async {
-    Future testSearch = httpHelpers.searchOrderCatalogue();
-    testSearch.then(
+    await httpHelpers.searchOrderCatalogue().then(
       (response) {
         expect(response, [
           ['Perciformes', '1'],
@@ -35,8 +33,7 @@ void main() {
   test(
       'Test whether family catalogue returns correct list of species with count',
       () async {
-    Future testSearch = httpHelpers.searchFamilyCatalogue();
-    testSearch.then(
+    await httpHelpers.searchFamilyCatalogue().then(
       (response) {
         expect(response, [
           ['Cichlidae', '1'],
@@ -49,8 +46,7 @@ void main() {
   test(
       'Test whether genus catalogue returns correct list of species with count',
       () async {
-    Future testSearch = httpHelpers.searchGenusCatalogue();
-    testSearch.then(
+    await httpHelpers.searchGenusCatalogue().then(
       (response) {
         expect(response, [
           ['Cichla', '1'],

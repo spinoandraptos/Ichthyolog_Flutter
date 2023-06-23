@@ -6,21 +6,23 @@ void main() {
   final httpHelpers = HttpHelpers();
 
   //logged in user fetches profile info
-  test('User should fetch profile info successfully', () {
+  test('User should fetch profile info successfully', () async {
     String jwt = '';
-    httpHelpers.loginRequest('tester9', 'tester9', 'Tester9!').then((response) {
+    await httpHelpers
+        .loginRequest('tester9', 'tester9', 'Tester9!')
+        .then((response) {
       expect(JwtDecoder.decode(response)['username'], 'tester9');
       jwt = response;
     });
-    httpHelpers.viewOwnUserProfileRequest(jwt).then((response) {
+    await httpHelpers.viewOwnUserProfileRequest(jwt).then((response) {
       expect(response.username, 'tester9');
     });
   });
 
   //user fetches profile info without logging in
-  test('User should fail to fetch profile info', () {
+  test('User should fail to fetch profile info', () async {
     String jwt = '';
-    httpHelpers.viewOwnUserProfileRequest(jwt).then((response) {
+    await httpHelpers.viewOwnUserProfileRequest(jwt).then((response) {
       expect(response, Future.error("User Not Found"));
     });
   });

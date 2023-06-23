@@ -14,9 +14,10 @@ void main() {
     String testerDate =
         DateFormat("yyyy-MM-dd hh:mm:ss").format(DateTime.now());
 
-    Future testSearch = httpHelpers.searchClassification(testerClass, testOrder,
-        testFamily, testGenus, "2000-01-01 00:00:00", testerDate, "");
-    testSearch.then(
+    await httpHelpers
+        .searchClassification(testerClass, testOrder, testFamily, testGenus,
+            "2000-01-01 00:00:00", testerDate, "")
+        .then(
       (response) {
         expect(response, ['Temensis Bass']);
       },
@@ -28,9 +29,9 @@ void main() {
     String testerDate =
         DateFormat("yyyy-MM-dd hh:mm:ss").format(DateTime.now());
 
-    Future testSearch = httpHelpers.searchClass(
-        testerClass, "2000-01-01 00:00:00", testerDate, "");
-    testSearch.then(
+    await httpHelpers
+        .searchClass(testerClass, "2000-01-01 00:00:00", testerDate, "")
+        .then(
       (response) {
         expect(response, ['Temensis Bass', 'Black fish']);
       },
@@ -42,9 +43,9 @@ void main() {
     String testerDate =
         DateFormat("yyyy-MM-dd hh:mm:ss").format(DateTime.now());
 
-    Future testSearch = httpHelpers.searchOrder(
-        testOrder, "2000-01-01 00:00:00", testerDate, "");
-    testSearch.then(
+    await httpHelpers
+        .searchOrder(testOrder, "2000-01-01 00:00:00", testerDate, "")
+        .then(
       (response) {
         expect(response, ['Temensis Bass']);
       },
@@ -56,9 +57,9 @@ void main() {
     String testerDate =
         DateFormat("yyyy-MM-dd hh:mm:ss").format(DateTime.now());
 
-    Future testSearch = httpHelpers.searchFamily(
-        testFamily, "2000-01-01 00:00:00", testerDate, "");
-    testSearch.then(
+    await httpHelpers
+        .searchFamily(testFamily, "2000-01-01 00:00:00", testerDate, "")
+        .then(
       (response) {
         expect(response, ['Black fish']);
       },
@@ -70,9 +71,9 @@ void main() {
     String testerDate =
         DateFormat("yyyy-MM-dd hh:mm:ss").format(DateTime.now());
 
-    Future testSearch = httpHelpers.searchGenus(
-        testGenus, "2000-01-01 00:00:00", testerDate, "");
-    testSearch.then(
+    await httpHelpers
+        .searchGenus(testGenus, "2000-01-01 00:00:00", testerDate, "")
+        .then(
       (response) {
         expect(response, ['Temensis Bass']);
       },
