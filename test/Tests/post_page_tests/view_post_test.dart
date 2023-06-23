@@ -15,10 +15,11 @@ void main() {
 
   //user fetches post using incorrect postid
   test('User should fail to fetch post info', () async {
-    int postid = -(Random().nextInt(200));
-    final error = Future.error("Post Not Found");
-    await httpHelpers.viewPostRequest(postid).then((response) {
-      expect(response, error);
-    });
+    int postId = -(Random().nextInt(200));
+
+    expect(
+      () async => await httpHelpers.viewPostRequest(postId),
+      throwsA('Post Not Found'),
+    );
   });
 }

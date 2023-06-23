@@ -22,8 +22,16 @@ void main() {
   //user fetches profile info without logging in
   test('User should fail to fetch profile info', () async {
     String jwt = '';
-    await httpHelpers.viewOwnUserProfileRequest(jwt).then((response) {
-      expect(response, Future.error("User Not Found"));
-    });
+
+    expect(
+      () async => await httpHelpers.viewOwnUserProfileRequest(jwt),
+      throwsA(
+        isA<FormatException>().having(
+          (error) => error.toString(),
+          'error message',
+          contains('jwt must be provided'),
+        ),
+      ),
+    );
   });
 }

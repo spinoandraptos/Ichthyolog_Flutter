@@ -15,9 +15,10 @@ void main() {
 
   //user fetches post comments using incorrect postid
   test('User should fail to fetch post comments', () async {
-    int postid = -(Random().nextInt(200));
-    await httpHelpers.viewPostCommentsRequest(postid).then((response) async {
-      expect(response, Future.error("Comments Not Found"));
-    });
+    int postId = -(Random().nextInt(200));
+
+    expect(() async {
+      await httpHelpers.viewPostCommentsRequest(postId);
+    }, throwsA('Comments Not Found'));
   });
 }

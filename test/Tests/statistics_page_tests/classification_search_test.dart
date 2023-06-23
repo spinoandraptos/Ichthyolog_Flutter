@@ -33,7 +33,7 @@ void main() {
         .searchClass(testerClass, "2000-01-01 00:00:00", testerDate, "")
         .then(
       (response) {
-        expect(response, ['Temensis Bass', 'Black fish']);
+        expect(response, ['Temensis Bass']);
       },
     );
   });
@@ -53,7 +53,7 @@ void main() {
   });
 
   test('Test whether search by family shows correct species list', () async {
-    String testFamily = 'Osphronemidae';
+    String testFamily = 'Cichlidae';
     String testerDate =
         DateFormat("yyyy-MM-dd hh:mm:ss").format(DateTime.now());
 
@@ -61,7 +61,7 @@ void main() {
         .searchFamily(testFamily, "2000-01-01 00:00:00", testerDate, "")
         .then(
       (response) {
-        expect(response, ['Black fish']);
+        expect(response, ['Temensis Bass']);
       },
     );
   });

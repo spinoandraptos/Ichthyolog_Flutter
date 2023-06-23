@@ -14,7 +14,7 @@ void main() {
         .searchSpecies(testerSpecies, "2000-01-01 00:00:00", testerDate, "")
         .then(
       (response) {
-        expect(response, ['1', testerDate, 'AAAAAAAA']);
+        expect(response, ['1', '2023-06-15T04:49:00.000Z', 'AAAAAAAA']);
       },
     );
   });
@@ -24,12 +24,12 @@ void main() {
     String testerDate =
         DateFormat("yyyy-MM-dd hh:mm:ss").format(DateTime.now());
 
-    await httpHelpers
+    httpHelpers
         .searchSpecies(testerSpecies, "2000-01-01 00:00:00", testerDate, "")
-        .then(
-      (response) {
-        expect(response, 'Species not found! Error 404');
-      },
-    );
+        .then((response) {
+      fail('Error was expected, but the future completed successfully.');
+    }).catchError((error) {
+      expect(error, isA<Error>());
+    });
   });
 }

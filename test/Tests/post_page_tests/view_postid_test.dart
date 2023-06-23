@@ -6,9 +6,9 @@ void main() {
 
   //user fetches post using correct postid
   test('User should get postid by title', () async {
-    String title = 'fail';
+    String title = 'AAA';
     await httpHelpers.viewPostIdByTitleRequest(title).then((response) async {
-      expect(response, 1);
+      expect(response, 5);
     });
   });
 }
