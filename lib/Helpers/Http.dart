@@ -69,7 +69,7 @@ class HttpHelpers {
     if (response.body == 'Valid token') {
       return ('Logged out');
     } else {
-      return ('Logout failed}');
+      return ('Logout failed');
     }
   }
 

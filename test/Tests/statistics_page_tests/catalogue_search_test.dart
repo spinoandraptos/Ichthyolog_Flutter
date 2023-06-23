@@ -11,7 +11,7 @@ void main() {
       (response) {
         expect(response, [
           ['Actinopterygii', '1'],
-          ['unknown', '10']
+          ['null', '10']
         ]);
       },
     );
@@ -24,7 +24,7 @@ void main() {
       (response) {
         expect(response, [
           ['Perciformes', '1'],
-          ['unknown', '10']
+          ['null', '10']
         ]);
       },
     );
@@ -37,7 +37,7 @@ void main() {
       (response) {
         expect(response, [
           ['Cichlidae', '1'],
-          ['unknown', '10']
+          ['null', '10']
         ]);
       },
     );
@@ -50,7 +50,7 @@ void main() {
       (response) {
         expect(response, [
           ['Cichla', '1'],
-          ['unknown', '10']
+          ['null', '10']
         ]);
       },
     );
