@@ -10,6 +10,7 @@ class CatalogueMuxPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Select a Catalogue'),
+        backgroundColor: const Color.fromARGB(255, 70, 88, 152),
       ),
       body: Center(
         child: GridView.count(

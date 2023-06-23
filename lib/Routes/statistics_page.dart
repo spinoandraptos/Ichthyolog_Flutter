@@ -4,11 +4,28 @@ import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
 import 'date_time_picker.dart';
 import 'Stepper.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'stats_result_page.dart';
 import 'search_result_page.dart';
 import 'catalogue_page.dart';
 import 'catalogue_mux_page.dart';
+
+class ErrorPage extends StatelessWidget {
+  const ErrorPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Error'),
+      ),
+      body: const Center(
+        child: Text('No data found. Please try again.',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center),
+      ),
+    );
+  }
+}
 
 class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});
@@ -20,8 +37,8 @@ class StatisticsPage extends StatefulWidget {
 class StatisticsPageState extends State<StatisticsPage> {
   String mux = '';
   String jwt = '';
-  String date1 = '';
-  String time1 = '';
+  String date1 = '2000-01-01';
+  String time1 = '00:00:00';
   String date2 = DateFormat("yyyy-MM-dd").format(DateTime.now());
   String time2 = DateFormat("hh:mm:ss").format(DateTime.now());
   String species = '';
@@ -37,8 +54,8 @@ class StatisticsPageState extends State<StatisticsPage> {
 
   void _clearSearchInputs() {
     setState(() {
-      date1 = '';
-      time1 = '';
+      date1 = '2000-01-01';
+      time1 = '00:00:00';
       date2 = DateFormat("yyyy-MM-dd").format(DateTime.now());
       time2 = DateFormat("hh:mm:ss").format(DateTime.now());
       species = '';
@@ -67,15 +84,15 @@ class StatisticsPageState extends State<StatisticsPage> {
     // Insert HTTP search query here with given parameters
     // Return a result page with approriate contents
     if (mux == 'species') {
-      try {
-        httpHelpers
-            .searchSpecies(
-          species,
-          '$date1 $time1',
-          '$date2 $time2',
-          location,
-        )
-            .then((value) {
+      httpHelpers
+          .searchSpecies(
+        species,
+        '$date1 $time1',
+        '$date2 $time2',
+        location,
+      )
+          .then((value) {
+        if (value.isNotEmpty) {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -85,16 +102,35 @@ class StatisticsPageState extends State<StatisticsPage> {
               ),
             ),
           );
-        });
-      } catch (e) {
-        print(e);
-      }
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ErrorPage(),
+            ),
+          );
+        }
+      }).catchError((error) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ErrorPage(),
+          ),
+        );
+      });
     } else {
-      try {
-        httpHelpers
-            .searchClassification(class_, order, family, genus, '$date1 $time1',
-                '$date2 $time2', location)
-            .then((value) {
+      httpHelpers
+          .searchClassification(
+        class_,
+        order,
+        family,
+        genus,
+        '$date1 $time1',
+        '$date2 $time2',
+        location,
+      )
+          .then((value) {
+        if (value.isNotEmpty) {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -106,20 +142,23 @@ class StatisticsPageState extends State<StatisticsPage> {
               ),
             ),
           );
-        });
-      } catch (e) {
-        print(e);
-      }
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ErrorPage(),
+            ),
+          );
+        }
+      }).catchError((error) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ErrorPage(),
+          ),
+        );
+      });
     }
-
-    Fluttertoast.showToast(
-        msg: "Search query sent",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: const Color.fromARGB(255, 51, 64, 113),
-        textColor: Colors.white,
-        fontSize: 16.0);
   }
 
   void showCatalogue(String mux) {
@@ -328,19 +367,12 @@ class StatisticsPageState extends State<StatisticsPage> {
                       width: double.infinity,
                       height: 45,
                       color: const Color.fromARGB(255, 224, 228, 238),
-                      child: (date1 == '' && time1 == '')
-                          ? const Text(
-                              'From:',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Color.fromARGB(255, 51, 64, 113)),
-                            )
-                          : Text(
-                              "From: $date1 $time1",
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Color.fromARGB(255, 51, 64, 113)),
-                            ),
+                      child: Text(
+                        "From: $date1 $time1",
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Color.fromARGB(255, 51, 64, 113)),
+                      ),
                     ),
                   ],
                 ),

@@ -29,6 +29,7 @@ class CataloguePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('$mux Catalogue'),
+        backgroundColor: const Color.fromARGB(255, 70, 88, 152),
       ),
       body: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
