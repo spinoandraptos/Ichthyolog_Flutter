@@ -11,6 +11,7 @@ void main() {
       (response) {
         expect(response, [
           ['Actinopterygii', '1'],
+          ['Chondrichthyes', '1'],
           ['null', '10']
         ]);
       },
@@ -23,6 +24,7 @@ void main() {
     await httpHelpers.searchOrderCatalogue().then(
       (response) {
         expect(response, [
+          ['Dummy 1', '1'],
           ['Perciformes', '1'],
           ['null', '10']
         ]);
@@ -36,6 +38,7 @@ void main() {
     await httpHelpers.searchFamilyCatalogue().then(
       (response) {
         expect(response, [
+          ['Channidae', '1'],
           ['Cichlidae', '1'],
           ['null', '10']
         ]);
@@ -49,6 +52,7 @@ void main() {
     await httpHelpers.searchGenusCatalogue().then(
       (response) {
         expect(response, [
+          ['Channidae', '1'],
           ['Cichla', '1'],
           ['null', '10']
         ]);
