@@ -377,7 +377,12 @@ class CameraPageState extends State<CameraPage> {
         }
       });
     } catch (error) {
-      print(error);
+      Fluttertoast.showToast(
+        msg: error.toString(),
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+      );
     }
   }
 

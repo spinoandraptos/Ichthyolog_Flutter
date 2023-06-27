@@ -44,3 +44,25 @@ class NoticeDialog extends StatelessWidget {
     );
   }
 }
+
+class LoadingComment extends StatelessWidget {
+  const LoadingComment({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: const Color.fromARGB(255, 236, 249, 255),
+      child: const Center(
+        child: SizedBox(
+          height: 35.0,
+          width: 35.0,
+          child: CircularProgressIndicator(
+              backgroundColor: Color.fromARGB(255, 91, 170, 255),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  Color.fromARGB(255, 184, 218, 255)),
+              strokeWidth: 8),
+        ),
+      ),
+    );
+  }
+}

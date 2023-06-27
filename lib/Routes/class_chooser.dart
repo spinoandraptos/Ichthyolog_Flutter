@@ -17,8 +17,6 @@ class ClassPickerState extends State<ClassPicker> {
         description: 'Non-bony sharks and rays'),
     SpeciesClassification(
         classification: 'Actinopterygii', description: 'Ray-finned fish'),
-    SpeciesClassification(
-        classification: 'Sarcopterygii', description: 'Lungfish')
   ];
 
   String? selectedClass;
