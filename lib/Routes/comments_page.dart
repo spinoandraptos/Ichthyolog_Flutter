@@ -200,7 +200,8 @@ class CommentPageState extends State<CommentPage> {
         response == 'Comment Upvoted' ||
         response == 'Comment Downvoted' ||
         response == 'Comment Un-upvoted' ||
-        response == 'Comment Un-downvoted') {
+        response == 'Comment Un-downvoted' ||
+        response == 'Comment Edited') {
       setState(() {});
     }
   }

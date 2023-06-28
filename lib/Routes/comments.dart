@@ -23,6 +23,7 @@ class OwnComment extends StatefulWidget {
 
 class OwnCommentState extends State<OwnComment> {
   final httpHelpers = HttpHelpers();
+  String updatedContent = '';
   bool upvoted = false;
   @override
   Widget build(BuildContext context) {
@@ -66,7 +67,9 @@ class OwnCommentState extends State<OwnComment> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Posted at ${widget.comment.postedTime}',
+                            widget.comment.edited
+                                ? 'Edited at ${widget.comment.editedTime}'
+                                : 'Posted at ${widget.comment.postedTime}',
                             style: const TextStyle(fontSize: 11),
                           ),
                           Container(
@@ -80,7 +83,102 @@ class OwnCommentState extends State<OwnComment> {
                                           minimumSize: Size.zero,
                                           tapTargetSize:
                                               MaterialTapTargetSize.shrinkWrap),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                  title: const Text(
+                                                      "Edit Comment"),
+                                                  content: TextFormField(
+                                                    initialValue:
+                                                        widget.comment.content,
+                                                    minLines: 1,
+                                                    maxLines: 10,
+                                                    decoration:
+                                                        const InputDecoration(
+                                                      hintText: "Edit Comment",
+                                                    ),
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        updatedContent = value;
+                                                      });
+                                                    },
+                                                  ),
+                                                  actions: [
+                                                    ElevatedButton(
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                                backgroundColor:
+                                                                    const Color
+                                                                            .fromARGB(
+                                                                        255,
+                                                                        80,
+                                                                        170,
+                                                                        121)),
+                                                        child: const Text(
+                                                            "Confirm"),
+                                                        onPressed: () {
+                                                          httpHelpers
+                                                              .editCommentRequest(
+                                                                  widget.comment
+                                                                      .commentId,
+                                                                  updatedContent,
+                                                                  widget.jwt)
+                                                              .then((response) {
+                                                            if (response ==
+                                                                'Comment Edited') {
+                                                              widget
+                                                                  .updateCallBack(
+                                                                      response);
+                                                              Navigator.pop(
+                                                                  context);
+                                                              Fluttertoast
+                                                                  .showToast(
+                                                                msg:
+                                                                    'Comment Edited',
+                                                                toastLength: Toast
+                                                                    .LENGTH_SHORT,
+                                                                gravity:
+                                                                    ToastGravity
+                                                                        .BOTTOM,
+                                                                timeInSecForIosWeb:
+                                                                    1,
+                                                              );
+                                                            } else {
+                                                              Fluttertoast
+                                                                  .showToast(
+                                                                msg:
+                                                                    'Comment Edit Failed :(',
+                                                                toastLength: Toast
+                                                                    .LENGTH_SHORT,
+                                                                gravity:
+                                                                    ToastGravity
+                                                                        .BOTTOM,
+                                                                timeInSecForIosWeb:
+                                                                    1,
+                                                              );
+                                                            }
+                                                          });
+                                                        }),
+                                                    ElevatedButton(
+                                                        style: ElevatedButton.styleFrom(
+                                                            backgroundColor:
+                                                                const Color
+                                                                        .fromARGB(
+                                                                    255,
+                                                                    170,
+                                                                    80,
+                                                                    80)),
+                                                        child: const Text(
+                                                            "Cancel"),
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        })
+                                                  ]);
+                                            });
+                                      },
                                       child: const Text('Edit Comment',
                                           style: TextStyle(
                                               fontSize: 10,
@@ -370,7 +468,7 @@ class OwnCommentState extends State<OwnComment> {
           } else if (snapshot.hasError) {
             return Text('ERROR: ${snapshot.error}');
           } else {
-            return const LoadingScreen();
+            return const LoadingComment();
           }
         }));
   }
@@ -433,7 +531,9 @@ class OtherCommentState extends State<OtherComment> {
                             Text(widget.comment.content)
                           ])),
                   subtitle: Text(
-                    'Posted at ${widget.comment.postedTime}',
+                    widget.comment.edited
+                        ? 'Posted at ${widget.comment.editedTime}'
+                        : 'Posted at ${widget.comment.postedTime}',
                     style: const TextStyle(fontSize: 11),
                   ),
                   trailing: Row(
@@ -615,7 +715,7 @@ class OtherCommentState extends State<OtherComment> {
           } else if (snapshot.hasError) {
             return Text('ERROR: ${snapshot.error}');
           } else {
-            return const LoadingScreen();
+            return const LoadingComment();
           }
         }));
   }

@@ -9,6 +9,8 @@ class Comment {
   final String authorPic;
   final String postedTime;
   final int upvotes;
+  final bool edited;
+  final String editedTime;
 
   Comment(
       {required this.commentId,
@@ -18,7 +20,9 @@ class Comment {
       required this.authorPic,
       required this.content,
       required this.postedTime,
-      required this.upvotes});
+      required this.upvotes,
+      required this.edited,
+      required this.editedTime});
 
   factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
@@ -30,6 +34,11 @@ class Comment {
         authorPic: json['authorpic'],
         postedTime: DateFormat("hh:mm a, dd/MM/yyyy")
             .format(DateTime.parse(json['postedtime'])),
-        upvotes: json['upvotes']);
+        upvotes: json['upvotes'],
+        edited: json['edited'],
+        editedTime: json['editedtime'] == null
+            ? 'Null'
+            : DateFormat("hh:mm a, dd/MM/yyyy")
+                .format(DateTime.parse(json['editedtime'])));
   }
 }

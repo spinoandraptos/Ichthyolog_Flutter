@@ -51,11 +51,12 @@ class LoadingComment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.only(top: 10, bottom: 10),
       color: const Color.fromARGB(255, 236, 249, 255),
       child: const Center(
         child: SizedBox(
-          height: 35.0,
-          width: 35.0,
+          height: 15.0,
+          width: 15.0,
           child: CircularProgressIndicator(
               backgroundColor: Color.fromARGB(255, 91, 170, 255),
               valueColor: AlwaysStoppedAnimation<Color>(

@@ -6,6 +6,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'stepper.dart';
 
 class GalleryPage extends StatefulWidget {
   const GalleryPage({super.key});
@@ -18,6 +19,8 @@ class GalleryPageState extends State<GalleryPage> {
   Map<String, dynamic> decodedJWT = {};
   final httpHelpers = HttpHelpers();
   final helpers = Helpers();
+  String newTitle = '';
+  String newDescription = '';
 
   @override
   void initState() {
@@ -36,6 +39,39 @@ class GalleryPageState extends State<GalleryPage> {
     });
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: httpHelpers.viewAllPostsRequest(),
+        builder: ((context, snapshot) {
+          if (snapshot.hasData) {
+            if (jwt == '') {
+              return Scaffold(
+                appBar: AppBar(
+                  title: const Text('Gallery Page'),
+                  backgroundColor: const Color.fromARGB(255, 51, 64, 113),
+                ),
+                body: galleryScreen(context, snapshot.data!),
+              );
+            } else {
+              return Scaffold(
+                appBar: AppBar(
+                  title: const Text('Gallery Page'),
+                  backgroundColor: const Color.fromARGB(255, 70, 88, 152),
+                  actions: [logoutButton()],
+                ),
+                body: galleryScreen(context, snapshot.data!),
+              );
+            }
+          } else if (snapshot.hasError) {
+            return const NoticeDialog(
+                content: 'Posts not found! Please try again');
+          } else {
+            return const LoadingScreen();
+          }
+        }));
+  }
+
   Widget logoutButton() {
     return IconButton(
       icon: const Icon(Icons.logout),
@@ -45,13 +81,247 @@ class GalleryPageState extends State<GalleryPage> {
     );
   }
 
-  Widget editPostButton() {
+  Widget editPostButton(Post post) {
     return TextButton(
         style: TextButton.styleFrom(
             padding: const EdgeInsets.all(3),
             minimumSize: Size.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-        onPressed: () {},
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                String newClass = '';
+                String newOrder = '';
+                String newFamily = '';
+                String newGenus = '';
+
+                return StatefulBuilder(builder: (context, setState) {
+                  classCallback(newValue) {
+                    setState(() {
+                      newClass = newValue;
+                    });
+                    print(newClass);
+                  }
+
+                  orderCallback(newValue) {
+                    setState(() {
+                      newOrder = newValue;
+                    });
+                    print(newOrder);
+                  }
+
+                  familyCallback(newValue) {
+                    setState(() {
+                      newFamily = newValue;
+                    });
+                    print(newFamily);
+                  }
+
+                  genusCallback(newValue) {
+                    setState(() {
+                      newGenus = newValue;
+                    });
+                    print(newGenus);
+                  }
+
+                  return AlertDialog(
+                    title: const Text("Edit Post"),
+                    content: SingleChildScrollView(
+                        child: Column(children: [
+                      Container(
+                          margin: const EdgeInsets.only(left: 15),
+                          alignment: Alignment.centerLeft,
+                          child: const Text(
+                            'Edit Title',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color.fromARGB(255, 51, 64, 113)),
+                          )),
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(top: 5, left: 15, right: 15),
+                        child: TextFormField(
+                          initialValue: post.title,
+                          decoration: const InputDecoration(
+                            hintText: 'Edit Title',
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              newTitle = value;
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                          margin: const EdgeInsets.only(top: 20, left: 15),
+                          alignment: Alignment.centerLeft,
+                          child: const Text(
+                            'Edit Description',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color.fromARGB(255, 51, 64, 113)),
+                          )),
+                      Padding(
+                          padding: const EdgeInsets.only(
+                              left: 15, right: 15, bottom: 15),
+                          child: TextFormField(
+                            initialValue: post.description,
+                            minLines: 1,
+                            maxLines: 8,
+                            decoration: const InputDecoration(
+                                hintText: 'Edit Description'),
+                            onChanged: (value) {
+                              setState(() {
+                                newDescription = value;
+                              });
+                            },
+                          )),
+                      Wrap(
+                        children: [
+                          const Text(
+                            'Class: ',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color.fromARGB(255, 51, 64, 113),
+                                fontSize: 14),
+                          ),
+                          Text(
+                            newClass == ''
+                                ? '${post.class_}   '
+                                : '$newClass   ',
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          const Text(
+                            'Order: ',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color.fromARGB(255, 51, 64, 113),
+                                fontSize: 14),
+                          ),
+                          Text(
+                            newOrder == '' ? '${post.order}' : newOrder,
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        ],
+                      ),
+                      Wrap(
+                        children: [
+                          const Text(
+                            'Family: ',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color.fromARGB(255, 51, 64, 113),
+                                fontSize: 14),
+                          ),
+                          Text(
+                            newFamily == ''
+                                ? '${post.family}   '
+                                : '$newFamily   ',
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                          const Text(
+                            'Genus: ',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color.fromARGB(255, 51, 64, 113),
+                                fontSize: 14),
+                          ),
+                          Text(
+                            newGenus == '' ? '${post.genus}' : newGenus,
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        ],
+                      ),
+                    ])),
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(content: StatefulBuilder(
+                                  builder: (context, setState) {
+                                    return SpeciesStepper(
+                                      classCallback: classCallback,
+                                      orderCallback: orderCallback,
+                                      familyCallback: familyCallback,
+                                      genusCallback: genusCallback,
+                                    );
+                                  },
+                                ));
+                              });
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromARGB(255, 102, 154, 217)),
+                        child: const Text(
+                          'Edit Classification',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 80, 170, 121)),
+                          child: const Text("Confirm",
+                              style: TextStyle(fontSize: 12)),
+                          onPressed: () {
+                            httpHelpers
+                                .editPostInfoRequest(
+                                    post.postid,
+                                    jwt,
+                                    newTitle,
+                                    newDescription,
+                                    newClass,
+                                    newOrder,
+                                    newFamily,
+                                    newGenus)
+                                .then((response) {
+                              if (response == 'Post Edited') {
+                                Navigator.pop(context);
+                                setState(() {
+                                  newClass = '';
+                                  newOrder = '';
+                                  newFamily = '';
+                                  newGenus = '';
+                                });
+                                Fluttertoast.showToast(
+                                  msg: 'Post Edited',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                );
+                              } else {
+                                Fluttertoast.showToast(
+                                  msg: 'Post Edit Failed :(',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                );
+                              }
+                            });
+                          }),
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 170, 80, 80)),
+                          child: const Text("Cancel",
+                              style: TextStyle(fontSize: 12)),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            setState(() {
+                              newClass = '';
+                              newOrder = '';
+                              newFamily = '';
+                              newGenus = '';
+                            });
+                          })
+                    ],
+                  );
+                });
+              });
+        },
         child: const Text('Edit Post',
             style: TextStyle(
                 fontSize: 10, color: Color.fromARGB(255, 33, 53, 88))));
@@ -207,7 +477,7 @@ class GalleryPageState extends State<GalleryPage> {
       galleryLegend(),
       GridView.builder(
           itemCount: posts.length,
-          physics: ScrollPhysics(),
+          physics: const ScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 5.0,
@@ -280,7 +550,7 @@ class GalleryPageState extends State<GalleryPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      editPostButton(),
+                      editPostButton(post),
                       deletePostButton(post),
                     ],
                   )),
@@ -346,38 +616,5 @@ class GalleryPageState extends State<GalleryPage> {
                           fontSize: 9,
                           color: Color.fromARGB(255, 33, 53, 88)))),
             ]));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: httpHelpers.viewAllPostsRequest(),
-        builder: ((context, snapshot) {
-          if (snapshot.hasData) {
-            if (jwt == '') {
-              return Scaffold(
-                appBar: AppBar(
-                  title: const Text('Gallery Page'),
-                  backgroundColor: const Color.fromARGB(255, 51, 64, 113),
-                ),
-                body: galleryScreen(context, snapshot.data!),
-              );
-            } else {
-              return Scaffold(
-                appBar: AppBar(
-                  title: const Text('Gallery Page'),
-                  backgroundColor: const Color.fromARGB(255, 70, 88, 152),
-                  actions: [logoutButton()],
-                ),
-                body: galleryScreen(context, snapshot.data!),
-              );
-            }
-          } else if (snapshot.hasError) {
-            return const NoticeDialog(
-                content: 'Posts not found! Please try again');
-          } else {
-            return const LoadingScreen();
-          }
-        }));
   }
 }

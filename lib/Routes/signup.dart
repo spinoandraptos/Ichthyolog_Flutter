@@ -17,6 +17,47 @@ class SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
   final httpHelpers = HttpHelpers();
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(children: [
+        const LoginBackgroundPage(),
+        ListView(children: [
+          Center(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  //arrow back button to login page
+                  backButton(),
+                  //Logo up top
+                  logo(),
+                  //Project name
+                  projectName(),
+                  //Username field
+                  usernameField(),
+                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 40),
+                  //Email field
+                  emailField(),
+                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 40),
+                  //Password field
+                  passwordField(),
+                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 40),
+                  //Confirm password field
+                  confirmPasswordField(),
+                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 22),
+                  //Sign up button
+                  signUpButton()
+                ],
+              ),
+            ),
+          ),
+        ]),
+      ]),
+    );
+  }
+
   bool isValidUsername(String username) {
     if (username.isEmpty || username.length > 25) {
       return false;
@@ -248,54 +289,6 @@ class SignUpPageState extends State<SignUpPage> {
                 context,
                 MaterialPageRoute(builder: (context) => const LoginPage()),
               )),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(children: [
-        const LoginBackgroundPage(),
-        ListView(children: [
-          Center(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  //arrow back button to login page
-                  backButton(),
-
-                  //Logo up top
-                  logo(),
-
-                  //Project name
-                  projectName(),
-
-                  //Username field
-                  usernameField(),
-                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 40),
-
-                  //Email field
-                  emailField(),
-                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 40),
-
-                  //Password field
-                  passwordField(),
-                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 40),
-
-                  //Confirm password field
-                  confirmPasswordField(),
-                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 22),
-
-                  //Sign up button
-                  signUpButton()
-                ],
-              ),
-            ),
-          ),
-        ]),
-      ]),
     );
   }
 }

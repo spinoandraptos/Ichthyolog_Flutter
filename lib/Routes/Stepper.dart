@@ -56,8 +56,6 @@ class SpeciesStepperState extends State<SpeciesStepper> {
                   currentStep = stepIndex;
                 }),
                 onStepContinue: () {
-                  print(
-                      'CLASS: $class_, ORDER: $order, FAMILY: $family, GENUS: $genus');
                   if (isLastStep) {
                     Navigator.pop(context);
                   } else {
@@ -144,27 +142,27 @@ class SpeciesStepperState extends State<SpeciesStepper> {
     setState(() {
       class_ = newvalue;
     });
-    widget.classCallback(newvalue);
+    widget.classCallback(class_);
   }
 
   stepperOrderChooser(newvalue) {
     setState(() {
       order = newvalue;
     });
-    widget.orderCallback(newvalue);
+    widget.orderCallback(order);
   }
 
   stepperFamilyChooser(newvalue) {
     setState(() {
       family = newvalue;
     });
-    widget.familyCallback(newvalue);
+    widget.familyCallback(family);
   }
 
   stepperGenusChooser(newvalue) {
     setState(() {
       genus = newvalue;
     });
-    widget.genusCallback(newvalue);
+    widget.genusCallback(genus);
   }
 }

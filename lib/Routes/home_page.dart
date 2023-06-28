@@ -38,51 +38,6 @@ class HomePageState extends State<RegularHomePage> {
     });
   }
 
-  Widget logoutButton() {
-    return IconButton(
-      icon: const Icon(Icons.logout),
-      onPressed: () {
-        helpers.logout(jwt, context);
-      },
-    );
-  }
-
-  Widget cameraPageButton() {
-    return IconButton(
-      icon: const Icon(Icons.add_a_photo_rounded),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const CameraPage()),
-        );
-      },
-    );
-  }
-
-  Widget statsPageButton() {
-    return IconButton(
-      icon: const Icon(Icons.search),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const StatisticsPage()),
-        );
-      },
-    );
-  }
-
-  Widget galleryPageButton() {
-    return IconButton(
-      icon: const Icon(Icons.photo_library),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const GalleryPage()),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     if (!_authorised) {
@@ -100,19 +55,14 @@ class HomePageState extends State<RegularHomePage> {
                   appBar: AppBar(
                     leading: const Icon(Icons.menu),
                     title: const Text('Regular Home'),
-                    backgroundColor: const Color.fromARGB(255, 70, 88, 152),
+                    backgroundColor: const Color.fromARGB(255, 65, 90, 181),
                     actions: [logoutButton()],
                   ),
                   body: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const SizedBox(height: 60),
-                      CircleAvatar(
-                        radius: 80,
-                        backgroundColor: Colors.white,
-                        backgroundImage:
-                            NetworkImage(snapshot.data!.profilepic),
-                      ),
+                      profilePicture(snapshot.data!),
                       const SizedBox(height: 35),
                       Text(
                         snapshot.data!.username,
@@ -184,5 +134,96 @@ class HomePageState extends State<RegularHomePage> {
             }
           }));
     }
+  }
+
+  Widget profilePicture(User user) {
+    return Stack(
+      children: [
+        CircleAvatar(
+          radius: 75,
+          backgroundColor: Colors.grey.shade200,
+          child: CircleAvatar(
+            radius: 80,
+            backgroundColor: Colors.white,
+            backgroundImage: NetworkImage(user.profilepic),
+          ),
+        ),
+        Positioned(
+          bottom: 50,
+          right: 80,
+          child: Container(
+            decoration: BoxDecoration(
+                border: Border.all(
+                  width: 3,
+                  color: Colors.white,
+                ),
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(
+                    50,
+                  ),
+                ),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    offset: const Offset(2, 4),
+                    color: Colors.black.withOpacity(
+                      0.3,
+                    ),
+                    blurRadius: 3,
+                  ),
+                ]),
+            child: const Padding(
+              padding: EdgeInsets.all(2.0),
+              child: Icon(Icons.add_a_photo, color: Colors.black),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget logoutButton() {
+    return IconButton(
+      icon: const Icon(Icons.logout),
+      onPressed: () {
+        helpers.logout(jwt, context);
+      },
+    );
+  }
+
+  Widget cameraPageButton() {
+    return IconButton(
+      icon: const Icon(Icons.add_a_photo_rounded),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CameraPage()),
+        );
+      },
+    );
+  }
+
+  Widget statsPageButton() {
+    return IconButton(
+      icon: const Icon(Icons.search),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const StatisticsPage()),
+        );
+      },
+    );
+  }
+
+  Widget galleryPageButton() {
+    return IconButton(
+      icon: const Icon(Icons.photo_library),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const GalleryPage()),
+        );
+      },
+    );
   }
 }

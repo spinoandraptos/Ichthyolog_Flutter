@@ -449,7 +449,7 @@ class FamilyPickerState extends State<FamilyPicker> {
     SpeciesClassification(
         classification: 'Rhinobatidae', description: 'Shovelnose Ray'),
     SpeciesClassification(
-        classification: 'Rhynchobatus', description: 'Guitarfish'),
+        classification: 'Rhinidae', description: 'Guitarfish'),
   ];
   final familyTorpediniformes = [
     SpeciesClassification(

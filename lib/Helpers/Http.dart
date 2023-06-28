@@ -108,9 +108,9 @@ class HttpHelpers {
     }
   }
 
-  Future<String> updateUserRequest(
-      String email, String username, String password, String jwt) async {
-    String url = 'https://ichthyolog-nodejs.onrender.com/user';
+  Future<String> editUserProfileRequest(String email, String username,
+      String oldPassword, String newPassword, String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/user/profile';
     var response = await http.put(
       Uri.parse(url),
       headers: <String, String>{
@@ -118,18 +118,43 @@ class HttpHelpers {
         'Authorisation': jwt
       },
       body: json.encode(<String, String>{
-        'email': email,
         'username': username,
-        'password': password
+        'oldPassword': oldPassword,
+        'newPassword': newPassword,
+        'email': email
+      }),
+    );
+    print(response.body);
+    if (response.body == 'User not found') {
+      return ('User Not Found');
+    } else if (response.body == 'Incorrect password') {
+      return ('Incorrect Password');
+    } else if (response.statusCode != 200) {
+      return ('Error');
+    } else {
+      return ('User Edited');
+    }
+  }
+
+  Future<String> editUserProfilePicRequest(String imageurl, String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/user/profile';
+    var response = await http.put(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+      body: json.encode(<String, String>{
+        'profilepic': imageurl,
       }),
     );
 
-    if (response.statusCode == 200) {
-      return response.body;
-    } else if (response.statusCode == 404) {
-      return ('Password Incorrect');
+    if (response.body == 'User not found') {
+      return ('User Not Found');
+    } else if (response.statusCode != 200) {
+      return ('Error');
     } else {
-      return ('Username Not Found');
+      return ('User Edited');
     }
   }
 
@@ -272,6 +297,48 @@ class HttpHelpers {
     }
   }
 
+  Future<String> editPostInfoRequest(
+      int postid,
+      String jwt,
+      String title,
+      String description,
+      String class_,
+      String order,
+      String family,
+      String genus) async {
+    String urlInfo = 'https://ichthyolog-nodejs.onrender.com/post/$postid/info';
+    String urlClassification =
+        'https://ichthyolog-nodejs.onrender.com/post/$postid/classification';
+    var responseInfo = await http.put(Uri.parse(urlInfo),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorisation': jwt
+        },
+        body: json.encode(
+            <String, dynamic>{'title': title, 'description': description}));
+
+    var responseClassification = await http.put(Uri.parse(urlClassification),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorisation': jwt
+        },
+        body: json.encode(<String, dynamic>{
+          '_class': class_,
+          'order': order,
+          'family': family,
+          'genus': genus
+        }));
+    if (responseInfo.body == 'Post not found' ||
+        responseClassification.body == 'Post not found') {
+      return ('Post Not Found');
+    } else if (responseInfo.statusCode != 200 ||
+        responseClassification.statusCode != 200) {
+      return ('Error');
+    } else {
+      return ('Post Edited');
+    }
+  }
+
   Future<List<Comment>> viewPostCommentsRequest(int postid) async {
     String url = 'https://ichthyolog-nodejs.onrender.com/comments/$postid';
     var response = await http.get(
@@ -352,6 +419,27 @@ class HttpHelpers {
       return ('Comment Posted');
     } else {
       return ('Comment Post Failed');
+    }
+  }
+
+  Future<String> editCommentRequest(
+      int commentid, String content, String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/comment/$commentid';
+    var response = await http.put(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+      body: json.encode(<String, dynamic>{'content': content}),
+    );
+    print(response.body);
+    if (response.body == 'Comment not found') {
+      return ('Comment Not Found');
+    } else if (response.statusCode != 200) {
+      return ('Error');
+    } else {
+      return ('Comment Edited');
     }
   }
 
