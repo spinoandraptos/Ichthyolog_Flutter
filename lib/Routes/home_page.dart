@@ -1,5 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../Helpers/standard_widgets.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:uuid/uuid.dart';
 import 'gallery_page.dart';
 import '../Models/user.dart';
 import '../Helpers/helper.dart';
@@ -17,6 +21,7 @@ class RegularHomePage extends StatefulWidget {
 
 class HomePageState extends State<RegularHomePage> {
   bool _authorised = false;
+  File? image;
   String jwt = '';
   String newUsername = '';
   String newEmail = '';
@@ -24,6 +29,7 @@ class HomePageState extends State<RegularHomePage> {
   String oldPassword = '';
   final helpers = Helpers();
   final httpHelpers = HttpHelpers();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -203,10 +209,171 @@ class HomePageState extends State<RegularHomePage> {
             child: IconButton(
                 padding: const EdgeInsets.all(2.0),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CameraPage()),
-                  );
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return StatefulBuilder(builder: (context, setState) {
+                          void _uploadPic(
+                            String jwt,
+                          ) async {
+                            final key = const Uuid().v4();
+                            final file = AWSFile.fromPath(image!.path);
+
+                            try {
+                              Amplify.Storage.uploadFile(
+                                key: key,
+                                localFile: file,
+                                options: const StorageUploadFileOptions(
+                                  accessLevel: StorageAccessLevel.guest,
+                                ),
+                              );
+                              httpHelpers
+                                  .editUserProfilePicRequest(
+                                      "https://ichthyolog175756-dev.s3.ap-southeast-1.amazonaws.com/public/$key",
+                                      jwt)
+                                  .then((String response) {
+                                if (response == 'User Edited') {
+                                  Navigator.pop(context);
+                                  setState(() {
+                                    image = null;
+                                  });
+                                  Fluttertoast.showToast(
+                                    msg: 'Profile Picture Edited',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    timeInSecForIosWeb: 1,
+                                  );
+                                } else {
+                                  Fluttertoast.showToast(
+                                    msg: 'Profile Edit Failed :(',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    timeInSecForIosWeb: 1,
+                                  );
+                                }
+                              });
+                            } catch (error) {
+                              Fluttertoast.showToast(
+                                msg: error.toString(),
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            }
+                          }
+
+                          Future<void> takePhoto(ImageSource source) async {
+                            final imagePicker = ImagePicker();
+                            final pickedImage =
+                                await imagePicker.pickImage(source: source);
+
+                            if (pickedImage != null) {
+                              setState(() {
+                                image = File(pickedImage.path);
+                              });
+                            }
+                          }
+
+                          Future<void> selectFromGallery() async {
+                            takePhoto(ImageSource.gallery);
+                          }
+
+                          return AlertDialog(
+                            title: const Text('Change Profile Picture'),
+                            content: image != null
+                                ? SingleChildScrollView(
+                                    child: Center(
+                                        child: Column(
+                                    children: [
+                                      Image.file(image!),
+                                      Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 10),
+                                          child: Wrap(
+                                            spacing: 10,
+                                            children: [
+                                              ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          backgroundColor:
+                                                              const Color
+                                                                      .fromARGB(
+                                                                  255,
+                                                                  80,
+                                                                  170,
+                                                                  121)),
+                                                  child: const Text("Confirm",
+                                                      style: TextStyle(
+                                                          fontSize: 12)),
+                                                  onPressed: () {
+                                                    _uploadPic(jwt);
+                                                    image = null;
+                                                  }),
+                                              ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          backgroundColor:
+                                                              const Color
+                                                                      .fromARGB(
+                                                                  255,
+                                                                  170,
+                                                                  80,
+                                                                  80)),
+                                                  child: const Text("Cancel",
+                                                      style: TextStyle(
+                                                          fontSize: 12)),
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                    setState(() {
+                                                      image = null;
+                                                    });
+                                                  })
+                                            ],
+                                          ))
+                                    ],
+                                  )))
+                                : SingleChildScrollView(
+                                    child: Center(
+                                        child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                        Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              const Icon(
+                                                Icons.photo,
+                                                size: 110,
+                                                color: Color.fromARGB(
+                                                    255, 51, 64, 113),
+                                              ),
+                                              const SizedBox(height: 10),
+                                              ElevatedButton(
+                                                onPressed: () => takePhoto(
+                                                    ImageSource.camera),
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      const Color.fromARGB(
+                                                          255, 74, 112, 178),
+                                                ),
+                                                child: const Text('Take Photo'),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: selectFromGallery,
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      const Color.fromARGB(
+                                                          255, 87, 131, 206),
+                                                ),
+                                                child: const Text(
+                                                    'Select from Gallery'),
+                                              ),
+                                            ])
+                                      ]))),
+                          );
+                        });
+                      });
                 },
                 icon: const Icon(Icons.add_a_photo),
                 color: const Color.fromARGB(255, 70, 88, 152)),
@@ -273,38 +440,40 @@ class HomePageState extends State<RegularHomePage> {
               return AlertDialog(
                 title: const Text("Edit Profile"),
                 content: SingleChildScrollView(
-                    child: Column(children: [
-                  Container(
-                      margin: const EdgeInsets.only(left: 15),
-                      alignment: Alignment.centerLeft,
-                      child: const Text(
-                        'Edit Username',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Color.fromARGB(255, 51, 64, 113)),
-                      )),
-                  usernameField(),
-                  Container(
-                      margin: const EdgeInsets.only(top: 20, left: 15),
-                      alignment: Alignment.centerLeft,
-                      child: const Text(
-                        'Edit Email',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Color.fromARGB(255, 51, 64, 113)),
-                      )),
-                  emailField(),
-                  Container(
-                      margin: const EdgeInsets.only(top: 20, left: 15),
-                      alignment: Alignment.centerLeft,
-                      child: const Text(
-                        'Edit Password',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Color.fromARGB(255, 51, 64, 113)),
-                      )),
-                  newPasswordField(),
-                ])),
+                    child: Form(
+                        key: _formKey,
+                        child: Column(children: [
+                          Container(
+                              margin: const EdgeInsets.only(left: 15),
+                              alignment: Alignment.centerLeft,
+                              child: const Text(
+                                'Edit Username',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 51, 64, 113)),
+                              )),
+                          usernameField(),
+                          Container(
+                              margin: const EdgeInsets.only(top: 20, left: 15),
+                              alignment: Alignment.centerLeft,
+                              child: const Text(
+                                'Edit Email',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 51, 64, 113)),
+                              )),
+                          emailField(),
+                          Container(
+                              margin: const EdgeInsets.only(top: 20, left: 15),
+                              alignment: Alignment.centerLeft,
+                              child: const Text(
+                                'Edit Password',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 51, 64, 113)),
+                              )),
+                          newPasswordField(),
+                        ]))),
                 actions: [
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -313,80 +482,115 @@ class HomePageState extends State<RegularHomePage> {
                       child:
                           const Text("Confirm", style: TextStyle(fontSize: 12)),
                       onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('Double Confirm'),
-                                content: Column(children: [
-                                  Container(
-                                      margin: const EdgeInsets.only(
-                                          top: 20, left: 15),
-                                      alignment: Alignment.centerLeft,
-                                      child: const Text(
-                                        'Enter your current password',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            color: Color.fromARGB(
-                                                255, 51, 64, 113)),
-                                      )),
-                                  oldPasswordField()
-                                ]),
-                                actions: [
-                                  ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 80, 170, 121)),
-                                      child: const Text("Confirm",
-                                          style: TextStyle(fontSize: 12)),
-                                      onPressed: () {
-                                        print(
-                                            'Username: $newUsername, Password: $newPassword, Email: $newEmail');
-                                        httpHelpers
-                                            .editUserProfileRequest(
-                                                newEmail,
-                                                newUsername,
-                                                oldPassword,
-                                                newPassword,
-                                                jwt)
-                                            .then((response) {
-                                          if (response == 'User Edited') {
-                                            Fluttertoast.showToast(
-                                              msg: 'Post Edited',
-                                              toastLength: Toast.LENGTH_SHORT,
-                                              gravity: ToastGravity.BOTTOM,
-                                              timeInSecForIosWeb: 1,
-                                            );
-                                          } else if (response ==
-                                              'Incorrect Password') {
-                                            Fluttertoast.showToast(
-                                              msg: 'Incorrect Password',
-                                              toastLength: Toast.LENGTH_SHORT,
-                                              gravity: ToastGravity.BOTTOM,
-                                              timeInSecForIosWeb: 1,
-                                            );
-                                          } else {
-                                            Fluttertoast.showToast(
-                                              msg: 'Post Edit Failed :(',
-                                              toastLength: Toast.LENGTH_SHORT,
-                                              gravity: ToastGravity.BOTTOM,
-                                              timeInSecForIosWeb: 1,
-                                            );
-                                          }
-                                        });
-                                      }),
-                                  ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 170, 80, 80)),
-                                      child: const Text("Cancel",
-                                          style: TextStyle(fontSize: 12)),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      })
-                                ],
-                              );
-                            });
+                        print(
+                            'Username: $newUsername, Password: $newPassword, Email: $newEmail');
+
+                        if (newUsername == '' &&
+                            newEmail == '' &&
+                            newPassword == '') {
+                          Navigator.pop(context);
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return const NoticeDialog(
+                                    content: 'No changes made!');
+                              });
+                        } else {
+                          final bool? isValid =
+                              _formKey.currentState?.validate();
+                          if (isValid == true) {
+                            Navigator.pop(context);
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Double Confirm'),
+                                    content: SingleChildScrollView(
+                                        child: Column(children: [
+                                      Container(
+                                          margin: const EdgeInsets.only(
+                                              top: 20, left: 15),
+                                          alignment: Alignment.centerLeft,
+                                          child: const Text(
+                                            'Enter your current password',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                color: Color.fromARGB(
+                                                    255, 51, 64, 113)),
+                                          )),
+                                      oldPasswordField()
+                                    ])),
+                                    actions: [
+                                      ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  const Color.fromARGB(
+                                                      255, 80, 170, 121)),
+                                          child: const Text("Confirm",
+                                              style: TextStyle(fontSize: 12)),
+                                          onPressed: () {
+                                            httpHelpers
+                                                .editUserProfileRequest(
+                                                    newEmail,
+                                                    newUsername,
+                                                    oldPassword,
+                                                    newPassword,
+                                                    jwt)
+                                                .then((response) {
+                                              if (response == 'User Edited') {
+                                                Navigator.pop(context);
+                                                setState(() {
+                                                  newUsername = '';
+                                                  newEmail = '';
+                                                  newPassword = '';
+                                                });
+                                                Fluttertoast.showToast(
+                                                  msg: 'Profile Edited',
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  timeInSecForIosWeb: 1,
+                                                );
+                                              } else if (response ==
+                                                  'Incorrect Password') {
+                                                Fluttertoast.showToast(
+                                                  msg: 'Incorrect Password',
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  timeInSecForIosWeb: 1,
+                                                );
+                                              } else {
+                                                Fluttertoast.showToast(
+                                                  msg: 'Profile Edit Failed :(',
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  timeInSecForIosWeb: 1,
+                                                );
+                                              }
+                                            });
+                                          }),
+                                      ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  const Color.fromARGB(
+                                                      255, 170, 80, 80)),
+                                          child: const Text("Cancel",
+                                              style: TextStyle(fontSize: 12)),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            setState(() {
+                                              newUsername = '';
+                                              newEmail = '';
+                                              newPassword = '';
+                                            });
+                                          })
+                                    ],
+                                  );
+                                });
+                          }
+                        }
                       }),
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -396,6 +600,11 @@ class HomePageState extends State<RegularHomePage> {
                           const Text("Cancel", style: TextStyle(fontSize: 12)),
                       onPressed: () {
                         Navigator.pop(context);
+                        setState(() {
+                          newUsername = '';
+                          newEmail = '';
+                          newPassword = '';
+                        });
                       })
                 ],
               );
@@ -451,15 +660,17 @@ class HomePageState extends State<RegularHomePage> {
             });
           },
           validator: (value) {
-            if (value!.length < 6 || value.length > 20) {
-              return 'Password must be 6-20 characters';
-            } else if (!isValidPassword(value)) {
-              return 'Password must contain at least one capital letter and one special character';
+            if (value!.isNotEmpty) {
+              if (value.length < 6 || value.length > 20) {
+                return 'Password must be 6-20 characters';
+              } else if (!isValidPassword(value)) {
+                return 'Password must contain at least one capital letter and one special character';
+              }
             }
             return null;
           },
           decoration: const InputDecoration(
-            hintText: 'Enter a password',
+            hintText: 'Leave blank if not changing',
           ),
         ));
   }
@@ -494,8 +705,10 @@ class HomePageState extends State<RegularHomePage> {
         child: TextFormField(
           keyboardType: TextInputType.emailAddress,
           validator: (value) {
-            if (!isValidEmail(value!)) {
-              return 'Please enter a valid email';
+            if (value!.isNotEmpty) {
+              if (!isValidEmail(value)) {
+                return 'Please enter a valid email';
+              }
             } else {
               return null;
             }
@@ -506,7 +719,7 @@ class HomePageState extends State<RegularHomePage> {
             });
           },
           decoration: const InputDecoration(
-            hintText: "Enter an email",
+            hintText: "Leave blank if not changing",
           ),
         ));
   }
@@ -516,8 +729,10 @@ class HomePageState extends State<RegularHomePage> {
       padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
       child: TextFormField(
         validator: (value) {
-          if (value!.trim().length > 25) {
-            return 'Username must be less than 25 characters';
+          if (value!.isNotEmpty) {
+            if (value.trim().length > 25) {
+              return 'Username must be less than 25 characters';
+            }
           } else {
             return null;
           }
@@ -528,7 +743,7 @@ class HomePageState extends State<RegularHomePage> {
           });
         },
         decoration: const InputDecoration(
-          hintText: 'Enter a username',
+          hintText: 'Leave blank if not changing',
         ),
       ),
     );

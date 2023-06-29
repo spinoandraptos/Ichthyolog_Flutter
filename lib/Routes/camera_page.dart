@@ -249,6 +249,13 @@ class CameraPageState extends State<CameraPage> {
                                     order,
                                     family,
                                     genus);
+                                setState(() {
+                                  image = null;
+                                  class_ = '';
+                                  order = '';
+                                  family = '';
+                                  genus = '';
+                                });
                               },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor:

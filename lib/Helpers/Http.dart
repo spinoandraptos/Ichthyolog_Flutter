@@ -124,7 +124,6 @@ class HttpHelpers {
         'email': email
       }),
     );
-    print(response.body);
     if (response.body == 'User not found') {
       return ('User Not Found');
     } else if (response.body == 'Incorrect password') {
@@ -137,7 +136,7 @@ class HttpHelpers {
   }
 
   Future<String> editUserProfilePicRequest(String imageurl, String jwt) async {
-    String url = 'https://ichthyolog-nodejs.onrender.com/user/profile';
+    String url = 'https://ichthyolog-nodejs.onrender.com/user/profilepic';
     var response = await http.put(
       Uri.parse(url),
       headers: <String, String>{
