@@ -226,7 +226,7 @@ class HomePageState extends State<ExpertHomePage> {
                       context: context,
                       builder: (BuildContext context) {
                         return StatefulBuilder(builder: (context, setState) {
-                          void _uploadPic(
+                          void uploadPic(
                             String jwt,
                           ) async {
                             final key = const Uuid().v4();
@@ -319,7 +319,7 @@ class HomePageState extends State<ExpertHomePage> {
                                                       style: TextStyle(
                                                           fontSize: 12)),
                                                   onPressed: () {
-                                                    _uploadPic(jwt);
+                                                    uploadPic(jwt);
                                                     image = null;
                                                   }),
                                               ElevatedButton(
@@ -386,7 +386,9 @@ class HomePageState extends State<ExpertHomePage> {
                                       ]))),
                           );
                         });
-                      });
+                      }).then((value) {
+                    setState(() {});
+                  });
                 },
                 icon: const Icon(Icons.add_a_photo),
                 color: const Color.fromARGB(255, 70, 88, 152)),
