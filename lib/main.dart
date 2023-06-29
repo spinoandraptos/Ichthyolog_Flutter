@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
     return Authenticator(
       child: const MaterialApp(
         home: LoginPage(),
+        debugShowCheckedModeBanner: false,
       ),
     );
   }
