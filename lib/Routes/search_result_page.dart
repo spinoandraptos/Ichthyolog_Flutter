@@ -157,7 +157,7 @@ class _SearchResultPageState extends State<SearchResultPage>
                   end: const Offset(0.0, 0.0),
                 ).animate(_animation),
                 child: Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     border: Border(
                       bottom: BorderSide(
                         color: Colors.grey,

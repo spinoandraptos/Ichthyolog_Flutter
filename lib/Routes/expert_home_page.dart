@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gradient_widgets/gradient_widgets.dart';
 import '../Helpers/standard_widgets.dart';
 import '../Models/user.dart';
 import '../Helpers/helper.dart';
@@ -25,7 +24,6 @@ class HomePageState extends State<ExpertHomePage> {
   String newEmail = '';
   String newPassword = '';
   String oldPassword = '';
-  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
