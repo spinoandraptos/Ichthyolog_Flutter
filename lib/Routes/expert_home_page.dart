@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../Helpers/standard_widgets.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:uuid/uuid.dart';
 import '../Models/user.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
@@ -26,6 +29,7 @@ class HomePageState extends State<ExpertHomePage> {
   String newPassword = '';
   String oldPassword = '';
   final _formKey = GlobalKey<FormState>();
+  File? image;
 
   @override
   void initState() {
@@ -218,10 +222,171 @@ class HomePageState extends State<ExpertHomePage> {
             child: IconButton(
                 padding: const EdgeInsets.all(2.0),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CameraPage()),
-                  );
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return StatefulBuilder(builder: (context, setState) {
+                          void _uploadPic(
+                            String jwt,
+                          ) async {
+                            final key = const Uuid().v4();
+                            final file = AWSFile.fromPath(image!.path);
+
+                            try {
+                              Amplify.Storage.uploadFile(
+                                key: key,
+                                localFile: file,
+                                options: const StorageUploadFileOptions(
+                                  accessLevel: StorageAccessLevel.guest,
+                                ),
+                              );
+                              httpHelpers
+                                  .editUserProfilePicRequest(
+                                      "https://ichthyolog175756-dev.s3.ap-southeast-1.amazonaws.com/public/$key",
+                                      jwt)
+                                  .then((String response) {
+                                if (response == 'User Edited') {
+                                  Navigator.pop(context);
+                                  setState(() {
+                                    image = null;
+                                  });
+                                  Fluttertoast.showToast(
+                                    msg: 'Profile Picture Edited',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    timeInSecForIosWeb: 1,
+                                  );
+                                } else {
+                                  Fluttertoast.showToast(
+                                    msg: 'Profile Edit Failed :(',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    timeInSecForIosWeb: 1,
+                                  );
+                                }
+                              });
+                            } catch (error) {
+                              Fluttertoast.showToast(
+                                msg: error.toString(),
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                            }
+                          }
+
+                          Future<void> takePhoto(ImageSource source) async {
+                            final imagePicker = ImagePicker();
+                            final pickedImage =
+                                await imagePicker.pickImage(source: source);
+
+                            if (pickedImage != null) {
+                              setState(() {
+                                image = File(pickedImage.path);
+                              });
+                            }
+                          }
+
+                          Future<void> selectFromGallery() async {
+                            takePhoto(ImageSource.gallery);
+                          }
+
+                          return AlertDialog(
+                            title: const Text('Change Profile Picture'),
+                            content: image != null
+                                ? SingleChildScrollView(
+                                    child: Center(
+                                        child: Column(
+                                    children: [
+                                      Image.file(image!),
+                                      Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 10),
+                                          child: Wrap(
+                                            spacing: 10,
+                                            children: [
+                                              ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          backgroundColor:
+                                                              const Color
+                                                                      .fromARGB(
+                                                                  255,
+                                                                  80,
+                                                                  170,
+                                                                  121)),
+                                                  child: const Text("Confirm",
+                                                      style: TextStyle(
+                                                          fontSize: 12)),
+                                                  onPressed: () {
+                                                    _uploadPic(jwt);
+                                                    image = null;
+                                                  }),
+                                              ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          backgroundColor:
+                                                              const Color
+                                                                      .fromARGB(
+                                                                  255,
+                                                                  170,
+                                                                  80,
+                                                                  80)),
+                                                  child: const Text("Cancel",
+                                                      style: TextStyle(
+                                                          fontSize: 12)),
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                    setState(() {
+                                                      image = null;
+                                                    });
+                                                  })
+                                            ],
+                                          ))
+                                    ],
+                                  )))
+                                : SingleChildScrollView(
+                                    child: Center(
+                                        child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                        Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              const Icon(
+                                                Icons.photo,
+                                                size: 110,
+                                                color: Color.fromARGB(
+                                                    255, 51, 64, 113),
+                                              ),
+                                              const SizedBox(height: 10),
+                                              ElevatedButton(
+                                                onPressed: () => takePhoto(
+                                                    ImageSource.camera),
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      const Color.fromARGB(
+                                                          255, 74, 112, 178),
+                                                ),
+                                                child: const Text('Take Photo'),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: selectFromGallery,
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      const Color.fromARGB(
+                                                          255, 87, 131, 206),
+                                                ),
+                                                child: const Text(
+                                                    'Select from Gallery'),
+                                              ),
+                                            ])
+                                      ]))),
+                          );
+                        });
+                      });
                 },
                 icon: const Icon(Icons.add_a_photo),
                 color: const Color.fromARGB(255, 70, 88, 152)),
