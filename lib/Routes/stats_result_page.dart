@@ -14,12 +14,31 @@ class StatsResultPage extends StatefulWidget {
   _StatsResultPageState createState() => _StatsResultPageState();
 }
 
-class _StatsResultPageState extends State<StatsResultPage> {
+class _StatsResultPageState extends State<StatsResultPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+
   final PageController _pageController = PageController();
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+    _animationController.forward();
+  }
 
   @override
   void dispose() {
     _pageController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -32,6 +51,7 @@ class _StatsResultPageState extends State<StatsResultPage> {
     String time = dateTime[1];
 
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 190, 222, 248),
       appBar: AppBar(
         title: Text('${widget.species} Stats'),
         backgroundColor: const Color.fromARGB(255, 51, 64, 113),
@@ -45,56 +65,208 @@ class _StatsResultPageState extends State<StatsResultPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              margin: const EdgeInsets.all(20),
-              child: Text(
-                widget.species,
-                style: const TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            AnimatedBuilder(
+              animation: _animation,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: _animation.value,
+                  child: Transform.translate(
+                    offset: Offset(0.0, (1 - _animation.value) * 20),
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      margin: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 0, 0, 0),
+                          width: 3,
+                        ),
+                        color: const Color.fromARGB(255, 134, 195, 246),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Flexible(
+                        child: Text(
+                          widget.species,
+                          style: const TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-            Container(
-              margin: const EdgeInsets.all(20),
-              child: Text(
-                'Total Sightings: ${widget.dataList[0]}',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            AnimatedBuilder(
+              animation: _animation,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: _animation.value,
+                  child: Transform.translate(
+                    offset: Offset(0.0, (1 - _animation.value) * 20),
+                    child: Container(
+                      alignment: Alignment.centerLeft,
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 134, 195, 246),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      margin: const EdgeInsets.only(
+                          left: 10, right: 10, top: 5, bottom: 5),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.visibility),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Flexible(
+                            child: Text(
+                              'Total sightings: ${widget.dataList[0]}',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-            Container(
-              margin: const EdgeInsets.all(20),
-              child: Text(
-                'Last seen on: $date at $time',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            AnimatedBuilder(
+              animation: _animation,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: _animation.value,
+                  child: Transform.translate(
+                    offset: Offset(0.0, (1 - _animation.value) * 20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 134, 195, 246),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.all(10),
+                      alignment: Alignment.centerLeft,
+                      margin: const EdgeInsets.only(
+                          left: 10, right: 10, top: 5, bottom: 5),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.calendar_month_outlined),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Flexible(
+                            child: Text(
+                              'Last seen on $date at $time',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-            Container(
-              margin: const EdgeInsets.all(20),
-              child: Text(
-                'Last seen location: ${widget.dataList[2]}',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            AnimatedBuilder(
+              animation: _animation,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: _animation.value,
+                  child: Transform.translate(
+                    offset: Offset(0.0, (1 - _animation.value) * 20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 134, 195, 246),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.all(10),
+                      alignment: Alignment.centerLeft,
+                      margin: const EdgeInsets.only(
+                          left: 10, right: 10, top: 5, bottom: 5),
+                      child: Expanded(
+                        child: Row(
+                          children: [
+                            const Icon(Icons.location_on_outlined),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Flexible(
+                              child: Text(
+                                'Last seen location: ${widget.dataList[2]}',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
             SizedBox(
               height: 400,
-              child: PageView(
-                controller: _pageController,
-                children: [
-                  _buildStatsBox('Sightings last 3 days'),
-                  _buildStatsBox('Sightings last 7 days'),
-                  _buildStatsBox('Sightings last month'),
-                ],
+              child: AnimatedBuilder(
+                animation: _animation,
+                builder: (context, child) {
+                  return Opacity(
+                    opacity: _animation.value,
+                    child: Transform.translate(
+                      offset: Offset(0.0, (1 - _animation.value) * 20),
+                      child: PageView(
+                        controller: _pageController,
+                        children: [
+                          _buildStatsBox('Sightings last 24 hours'),
+                          _buildStatsBox('Sightings last 7 days'),
+                          _buildStatsBox('Sightings last month'),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ],
@@ -110,6 +282,14 @@ class _StatsResultPageState extends State<StatsResultPage> {
       decoration: BoxDecoration(
         color: Colors.blue,
         borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Center(
         child: Text(
