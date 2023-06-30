@@ -111,41 +111,9 @@ class _StatsResultPageState extends State<StatsResultPage>
                   opacity: _animation.value,
                   child: Transform.translate(
                     offset: Offset(0.0, (1 - _animation.value) * 20),
-                    child: Container(
-                      alignment: Alignment.centerLeft,
-                      width: MediaQuery.of(context).size.width,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 134, 195, 246),
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      margin: const EdgeInsets.only(
-                          left: 10, right: 10, top: 5, bottom: 5),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.visibility),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          Flexible(
-                            child: Text(
-                              'Total sightings: ${widget.dataList[0]}',
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    child: StatsContainer(
+                      icon: Icons.visibility,
+                      text: 'Total sightings: ${widget.dataList[0]}',
                     ),
                   ),
                 );
@@ -158,41 +126,9 @@ class _StatsResultPageState extends State<StatsResultPage>
                   opacity: _animation.value,
                   child: Transform.translate(
                     offset: Offset(0.0, (1 - _animation.value) * 20),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 134, 195, 246),
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      width: MediaQuery.of(context).size.width,
-                      padding: const EdgeInsets.all(10),
-                      alignment: Alignment.centerLeft,
-                      margin: const EdgeInsets.only(
-                          left: 10, right: 10, top: 5, bottom: 5),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.calendar_month_outlined),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          Flexible(
-                            child: Text(
-                              'Last seen on $date at $time',
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    child: StatsContainer(
+                      icon: Icons.calendar_month_outlined,
+                      text: 'Last seen on $date at $time',
                     ),
                   ),
                 );
@@ -205,43 +141,9 @@ class _StatsResultPageState extends State<StatsResultPage>
                   opacity: _animation.value,
                   child: Transform.translate(
                     offset: Offset(0.0, (1 - _animation.value) * 20),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 134, 195, 246),
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      width: MediaQuery.of(context).size.width,
-                      padding: const EdgeInsets.all(10),
-                      alignment: Alignment.centerLeft,
-                      margin: const EdgeInsets.only(
-                          left: 10, right: 10, top: 5, bottom: 5),
-                      child: Expanded(
-                        child: Row(
-                          children: [
-                            const Icon(Icons.location_on_outlined),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Flexible(
-                              child: Text(
-                                'Last seen location: ${widget.dataList[2]}',
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    child: StatsContainer(
+                      icon: Icons.location_on_outlined,
+                      text: 'Last seen location: ${widget.dataList[2]}',
                     ),
                   ),
                 );
@@ -300,6 +202,54 @@ class _StatsResultPageState extends State<StatsResultPage>
             color: Colors.white,
           ),
         ),
+      ),
+    );
+  }
+}
+
+class StatsContainer extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const StatsContainer({
+    Key? key,
+    required this.icon,
+    required this.text,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.centerLeft,
+      width: MediaQuery.of(context).size.width,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 134, 195, 246),
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      margin: const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
+      child: Row(
+        children: [
+          Icon(icon),
+          const SizedBox(width: 5),
+          Flexible(
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

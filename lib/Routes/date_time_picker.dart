@@ -42,7 +42,7 @@ class PickerDateTimeRouteState extends State<PickerDateTimeRoute> {
                         borderRadius: BorderRadius.circular(5)),
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     side: const BorderSide(
-                        color: Color.fromARGB(255, 179, 195, 236))),
+                        color: Color.fromARGB(255, 82, 108, 175))),
                 child: const Text("Select date of sighting",
                     style: TextStyle(color: Color.fromARGB(255, 82, 108, 175))),
                 onPressed: () {
@@ -58,7 +58,7 @@ class PickerDateTimeRouteState extends State<PickerDateTimeRoute> {
                         borderRadius: BorderRadius.circular(5)),
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     side: const BorderSide(
-                        color: Color.fromARGB(255, 179, 195, 236))),
+                        color: Color.fromARGB(255, 82, 108, 175))),
                 child: const Text("Select time of sighting",
                     style: TextStyle(color: Color.fromARGB(255, 82, 108, 175))),
                 onPressed: () {
