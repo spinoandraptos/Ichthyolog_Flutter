@@ -11,10 +11,10 @@ class StatsResultPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _StatsResultPageState createState() => _StatsResultPageState();
+  StatsResultPageState createState() => StatsResultPageState();
 }
 
-class _StatsResultPageState extends State<StatsResultPage>
+class StatsResultPageState extends State<StatsResultPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import '../Helpers/http.dart';
 import 'stats_result_page.dart';
@@ -21,10 +19,10 @@ class SearchResultPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _SearchResultPageState createState() => _SearchResultPageState();
+  SearchResultPageState createState() => SearchResultPageState();
 }
 
-class _SearchResultPageState extends State<SearchResultPage>
+class SearchResultPageState extends State<SearchResultPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late CurvedAnimation _animation;
@@ -114,7 +112,7 @@ class _SearchResultPageState extends State<SearchResultPage>
                       end: const Offset(0.0, 0.0),
                     ).animate(_animation),
                     child: Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         border: Border(
                           bottom: BorderSide(
                             color: Colors.grey,

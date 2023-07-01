@@ -61,7 +61,7 @@ class LoadingComment extends StatelessWidget {
               backgroundColor: Color.fromARGB(255, 91, 170, 255),
               valueColor: AlwaysStoppedAnimation<Color>(
                   Color.fromARGB(255, 184, 218, 255)),
-              strokeWidth: 8),
+              strokeWidth: 4),
         ),
       ),
     );

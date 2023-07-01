@@ -83,9 +83,9 @@ class HttpHelpers {
       },
     );
     if (response.body == 'User not found') {
-      return Future.error("User Not Found");
+      return Future.error('User Not Found');
     } else if (response.statusCode != 200) {
-      return Future.error("Error");
+      return Future.error('Error');
     } else {
       return User.fromJson(json.decode(response.body)[0]);
     }
@@ -100,9 +100,9 @@ class HttpHelpers {
       },
     );
     if (response.body == 'User not found') {
-      return Future.error("User Not Found");
+      return Future.error('User Not Found');
     } else if (response.statusCode != 200) {
-      return Future.error("Error");
+      return Future.error('Error');
     } else {
       return User.fromJson(json.decode(response.body)[0]);
     }
@@ -148,6 +148,7 @@ class HttpHelpers {
       }),
     );
 
+    print(response.body);
     if (response.body == 'User not found') {
       return ('User Not Found');
     } else if (response.statusCode != 200) {
@@ -166,9 +167,9 @@ class HttpHelpers {
       },
     );
     if (response.body == 'Posts not found') {
-      return Future.error("Posts Not Found");
+      return Future.error('Posts Not Found');
     } else if (response.statusCode != 200) {
-      return Future.error("Error");
+      return Future.error('Error');
     } else {
       List<Post> postlist = [];
       var responseData = json.decode(response.body);
@@ -189,9 +190,9 @@ class HttpHelpers {
       },
     );
     if (response.body == 'Posts not found') {
-      return Future.error("Posts Not Found");
+      return Future.error('Posts Not Found');
     } else if (response.statusCode != 200) {
-      return Future.error("Error");
+      return Future.error('Error');
     } else {
       List<Post> postlist = [];
       var responseData = json.decode(response.body);
@@ -212,9 +213,33 @@ class HttpHelpers {
       },
     );
     if (response.body == 'Posts not found') {
-      return Future.error("Posts Not Found");
+      return Future.error('Posts Not Found');
     } else if (response.statusCode != 200) {
-      return Future.error("Error");
+      return Future.error('Error');
+    } else {
+      List<Post> postlist = [];
+      var responseData = json.decode(response.body);
+      for (var everypost in responseData) {
+        Post post = Post.fromJson(everypost);
+        postlist.add(post);
+      }
+      return postlist;
+    }
+  }
+
+  Future<List<Post>> viewOwnPostsRequest(String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/posts/user';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.body == 'Posts not found') {
+      return Future.error('Posts Not Found');
+    } else if (response.statusCode != 200) {
+      return Future.error('Error');
     } else {
       List<Post> postlist = [];
       var responseData = json.decode(response.body);
@@ -235,9 +260,9 @@ class HttpHelpers {
       },
     );
     if (response.body == 'Post not found') {
-      return Future.error("Post Not Found");
+      return Future.error('Post Not Found');
     } else if (response.statusCode != 200) {
-      return Future.error("Error");
+      return Future.error('Error');
     } else {
       return Post.fromJson(json.decode(response.body)[0]);
     }
@@ -249,9 +274,9 @@ class HttpHelpers {
       'Content-Type': 'application/json; charset=UTF-8',
     });
     if (response.body == 'Post not found') {
-      return Future.error("Post Not Found");
+      return Future.error('Post Not Found');
     } else if (response.statusCode != 200) {
-      return Future.error("Error");
+      return Future.error('Error');
     } else {
       print(json.decode(response.body)[0]['postid']);
       return json.decode(response.body)[0]['postid'];
@@ -347,9 +372,9 @@ class HttpHelpers {
       },
     );
     if (response.body == 'Comments not found') {
-      return Future.error("Comments Not Found");
+      return Future.error('Comments Not Found');
     } else if (response.statusCode != 200) {
-      return Future.error("Error");
+      return Future.error('Error');
     } else {
       List<Comment> comments = [];
       var responseData = json.decode(response.body);
@@ -371,9 +396,9 @@ class HttpHelpers {
       },
     );
     if (response.body == 'Comments not found') {
-      return Future.error("Comments Not Found");
+      return Future.error('Comments Not Found');
     } else if (response.statusCode != 200) {
-      return Future.error("Error");
+      return Future.error('Error');
     } else {
       List<Comment> comments = [];
       var responseData = json.decode(response.body);
@@ -394,9 +419,9 @@ class HttpHelpers {
       },
     );
     if (response.body == 'Comment not found') {
-      return Future.error("Comment Not Found");
+      return Future.error('Comment Not Found');
     } else if (response.statusCode != 200) {
-      return Future.error("Error");
+      return Future.error('Error');
     } else {
       return Comment.fromJson(json.decode(response.body)[0]);
     }
@@ -624,7 +649,7 @@ class HttpHelpers {
     if (response.statusCode == 200) {
       return json.decode(response.body)[0]['exists'];
     } else {
-      return Future.error("Server error");
+      return Future.error('Server error');
     }
   }
 
@@ -642,7 +667,7 @@ class HttpHelpers {
     if (response.statusCode == 200) {
       return json.decode(response.body)[0]['exists'];
     } else {
-      return Future.error("Server error");
+      return Future.error('Server error');
     }
   }
 

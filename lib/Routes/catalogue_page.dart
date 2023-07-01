@@ -11,10 +11,10 @@ class CataloguePage extends StatefulWidget {
       : super(key: key);
 
   @override
-  _CataloguePageState createState() => _CataloguePageState();
+  CataloguePageState createState() => CataloguePageState();
 }
 
-class _CataloguePageState extends State<CataloguePage>
+class CataloguePageState extends State<CataloguePage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _offsetAnimation;

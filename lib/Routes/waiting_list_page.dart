@@ -576,7 +576,7 @@ class WaitingListPageState extends State<WaitingListPage> {
       style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.only(left: 5, top: 3, bottom: 3, right: 5),
           minimumSize: Size.zero,
-          backgroundColor: Color.fromARGB(255, 59, 132, 91),
+          backgroundColor: const Color.fromARGB(255, 59, 132, 91),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap),
       child: const Text('Verify', style: TextStyle(fontSize: 10)),
     );
@@ -635,7 +635,7 @@ class WaitingListPageState extends State<WaitingListPage> {
       style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.only(left: 5, top: 3, bottom: 3, right: 5),
           minimumSize: Size.zero,
-          backgroundColor: Color.fromARGB(255, 189, 104, 20),
+          backgroundColor: const Color.fromARGB(255, 189, 104, 20),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap),
       child: const Text('Delete', style: TextStyle(fontSize: 10)),
     );
