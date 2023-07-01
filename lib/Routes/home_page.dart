@@ -9,9 +9,9 @@ import '../Models/post.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
 import 'camera_page.dart';
-import 'expert_home_page.dart';
 import 'gallery_page.dart';
 import 'post_page.dart';
+import 'waiting_list_page.dart';
 import 'statistics_page.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'stepper.dart';
@@ -64,13 +64,10 @@ class HomePageState extends State<RegularHomePage> {
           future: httpHelpers.viewOwnUserProfileRequest(jwt),
           builder: ((context, snapshot) {
             if (snapshot.hasData) {
-              if (snapshot.data!.expert) {
-                return const ExpertHomePage();
-              } else {
-                return Scaffold(
+              return Scaffold(
                   appBar: AppBar(
                     leading: const Icon(Icons.menu),
-                    title: const Text('Regular Home'),
+                    title: const Text('Home Page'),
                     backgroundColor: const Color.fromARGB(255, 65, 90, 181),
                     actions: [settingsButton(snapshot.data!), logoutButton()],
                   ),
@@ -152,21 +149,35 @@ class HomePageState extends State<RegularHomePage> {
                               })),
                         ],
                       )),
-                  bottomNavigationBar: BottomAppBar(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        //Visit camera page to post sighting
-                        cameraPageButton(),
-                        //Visit gallery page to view sightings
-                        galleryPageButton(),
-                        //Visit statistics page to access sighting data
-                        statsPageButton(),
-                      ],
-                    ),
-                  ),
-                );
-              }
+                  bottomNavigationBar: snapshot.data!.expert
+                      ? BottomAppBar(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              //Visit camera page to post sighting
+                              cameraPageButton(),
+                              //Visit gallery page to view sightings
+                              galleryPageButton(),
+                              //Visit statistics page to access sighting data
+                              statsPageButton(),
+                              //Visit waiting list page to verify/flag posts
+                              waitingListPageButton()
+                            ],
+                          ),
+                        )
+                      : BottomAppBar(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              //Visit camera page to post sighting
+                              cameraPageButton(),
+                              //Visit gallery page to view sightings
+                              galleryPageButton(),
+                              //Visit statistics page to access sighting data
+                              statsPageButton(),
+                            ],
+                          ),
+                        ));
             } else if (snapshot.hasError) {
               return const NoticeDialog(
                   content: 'User not found! Please try again');
@@ -620,7 +631,8 @@ class HomePageState extends State<RegularHomePage> {
 
   Widget cameraPageButton() {
     return IconButton(
-      icon: const Icon(Icons.add_a_photo_rounded),
+      icon: const Icon(Icons.add_a_photo_rounded,
+          color: Color.fromARGB(255, 52, 66, 117)),
       onPressed: () {
         Navigator.push(
           context,
@@ -632,7 +644,7 @@ class HomePageState extends State<RegularHomePage> {
 
   Widget statsPageButton() {
     return IconButton(
-      icon: const Icon(Icons.search),
+      icon: const Icon(Icons.search, color: Color.fromARGB(255, 52, 66, 117)),
       onPressed: () {
         Navigator.push(
           context,
@@ -644,11 +656,27 @@ class HomePageState extends State<RegularHomePage> {
 
   Widget galleryPageButton() {
     return IconButton(
-      icon: const Icon(Icons.photo_library),
+      icon: const Icon(Icons.photo_library,
+          color: Color.fromARGB(255, 52, 66, 117)),
       onPressed: () {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const GalleryPage()),
+        );
+      },
+    );
+  }
+
+  Widget waitingListPageButton() {
+    return IconButton(
+      icon: const Icon(
+        Icons.feedback,
+        color: Color.fromARGB(255, 52, 66, 117),
+      ),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const WaitingListPage()),
         );
       },
     );

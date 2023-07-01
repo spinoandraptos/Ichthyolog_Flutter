@@ -302,8 +302,8 @@ class WaitingListPageState extends State<WaitingListPage> {
           backgroundColor: const Color.fromARGB(255, 170, 80, 80),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap),
       child: post.flagged
-          ? const Text('Unflag', style: TextStyle(fontSize: 10))
-          : const Text('Flag', style: TextStyle(fontSize: 10)),
+          ? const Text('Unflag', style: TextStyle(fontSize: 9))
+          : const Text('Flag', style: TextStyle(fontSize: 9)),
     );
   }
 
@@ -547,7 +547,7 @@ class WaitingListPageState extends State<WaitingListPage> {
           minimumSize: Size.zero,
           backgroundColor: const Color.fromARGB(255, 80, 106, 170),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-      child: const Text('Edit', style: TextStyle(fontSize: 10)),
+      child: const Text('Edit', style: TextStyle(fontSize: 9)),
     );
   }
 
@@ -578,7 +578,7 @@ class WaitingListPageState extends State<WaitingListPage> {
           minimumSize: Size.zero,
           backgroundColor: const Color.fromARGB(255, 59, 132, 91),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-      child: const Text('Verify', style: TextStyle(fontSize: 10)),
+      child: const Text('Verify', style: TextStyle(fontSize: 9)),
     );
   }
 
@@ -637,7 +637,7 @@ class WaitingListPageState extends State<WaitingListPage> {
           minimumSize: Size.zero,
           backgroundColor: const Color.fromARGB(255, 189, 104, 20),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-      child: const Text('Delete', style: TextStyle(fontSize: 10)),
+      child: const Text('Delete', style: TextStyle(fontSize: 9)),
     );
   }
 }
