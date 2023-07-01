@@ -8,6 +8,7 @@ class CatalogueMuxPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 190, 222, 248),
       appBar: AppBar(
         title: const Text('Select a Catalogue'),
         backgroundColor: const Color.fromARGB(255, 70, 88, 152),
@@ -15,7 +16,7 @@ class CatalogueMuxPage extends StatelessWidget {
       body: Center(
         child: GridView.count(
           crossAxisCount: 2,
-          childAspectRatio: 0.6,
+          childAspectRatio: 0.5,
           padding: const EdgeInsets.all(16),
           mainAxisSpacing: 10,
           crossAxisSpacing: 10,
@@ -89,7 +90,7 @@ class CustomButton extends StatelessWidget {
       child: Text(
         text,
         style: const TextStyle(
-          fontSize: 25,
+          fontSize: 30,
           fontWeight: FontWeight.bold,
         ),
         textAlign: TextAlign.center,
