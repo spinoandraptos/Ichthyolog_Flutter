@@ -5,13 +5,16 @@ import 'package:image_picker/image_picker.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:uuid/uuid.dart';
 import '../Models/user.dart';
+import '../Models/post.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
 import 'camera_page.dart';
 import 'gallery_page.dart';
+import 'post_page.dart';
 import 'statistics_page.dart';
 import 'waiting_list_page.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'stepper.dart';
 
 class ExpertHomePage extends StatefulWidget {
   const ExpertHomePage({super.key});
@@ -30,6 +33,8 @@ class HomePageState extends State<ExpertHomePage> {
   String oldPassword = '';
   final _formKey = GlobalKey<FormState>();
   File? image;
+  String newTitle = '';
+  String newDescription = '';
 
   @override
   void initState() {
@@ -55,135 +60,124 @@ class HomePageState extends State<ExpertHomePage> {
       return const NoticeDialog(
           content: 'Not authorised. Please sign in again');
     } else {
-      return SingleChildScrollView(
-        child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: FutureBuilder<User>(
-                future: httpHelpers.viewOwnUserProfileRequest(jwt),
-                builder: ((context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Scaffold(
-                      appBar: AppBar(
-                        leading: const Icon(Icons.menu),
-                        title: const Text('Expert Home'),
-                        backgroundColor: const Color.fromARGB(255, 65, 90, 181),
-                        actions: [
-                          settingsButton(snapshot.data!),
-                          logoutButton()
-                        ],
-                      ),
-                      body: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            decoration: const BoxDecoration(
-                                gradient: LinearGradient(
-                              begin: Alignment.topRight,
-                              end: Alignment.bottomLeft,
-                              colors: [
-                                Color.fromARGB(255, 30, 51, 128),
-                                Color.fromARGB(255, 66, 94, 185),
-                              ],
-                            )),
-                            height:
-                                MediaQuery.of(context).size.height * 1 / 2.5,
-                            width: MediaQuery.of(context).size.width,
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              1 /
-                                              18),
-                                  profilePicture(snapshot.data!),
-                                  SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              1 /
-                                              36),
-                                  Text(
-                                    snapshot.data!.username,
-                                    style: const TextStyle(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white),
-                                  ),
-                                  SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              1 /
-                                              80),
-                                  Text(
-                                    '${snapshot.data!.totalposts} sightings  |  ${snapshot.data!.speciescount} species',
-                                    style: const TextStyle(
-                                        fontSize: 16, color: Colors.white),
-                                  ),
-                                ]),
-                          ),
-                          SizedBox(
-                              height:
-                                  MediaQuery.of(context).size.height * 1 / 30),
-                          userLevel(snapshot.data!),
-                          SizedBox(
-                              height:
-                                  MediaQuery.of(context).size.height * 1 / 30),
-                          Expanded(
-                              child: Container(
-                            color: const Color.fromARGB(255, 197, 215, 255),
-                            width: MediaQuery.of(context).size.width,
-                            child: Column(children: [
-                              Container(
-                                  padding: EdgeInsets.only(
-                                      left: 20,
-                                      top: MediaQuery.of(context).size.height *
-                                          1 /
-                                          36),
-                                  alignment: Alignment.centerLeft,
-                                  child: const Text(
-                                    'Statistics',
-                                    style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white),
-                                  )),
-                              const SizedBox(height: 10),
-                              const Text(
-                                'Species with Most Posts: ', // Replace with the actual species
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ]),
-                          )),
-                        ],
-                      ),
-                      bottomNavigationBar: BottomAppBar(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+      return FutureBuilder<User>(
+          future: httpHelpers.viewOwnUserProfileRequest(jwt),
+          builder: ((context, snapshot) {
+            if (snapshot.hasData) {
+              return Scaffold(
+                appBar: AppBar(
+                  leading: const Icon(Icons.menu),
+                  title: const Text('Expert Home'),
+                  backgroundColor: const Color.fromARGB(255, 65, 90, 181),
+                  actions: [settingsButton(snapshot.data!), logoutButton()],
+                ),
+                body: SingleChildScrollView(
+                    child: SizedBox(
+                        height: MediaQuery.of(context).size.height * 7 / 8.4,
+                        width: MediaQuery.of(context).size.width,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            //Visit camera page to post sighting
-                            cameraPageButton(),
-
-                            //Visit gallery page to view sightings
-                            galleryPageButton(),
-
-                            //Visit statistics page to access sighting data
-                            statsPageButton(),
-
-                            //Visit waiting list page to verify sightings
-                            waitingListPageButton()
+                            Container(
+                              decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                begin: Alignment.topRight,
+                                end: Alignment.bottomLeft,
+                                colors: [
+                                  Color.fromARGB(255, 30, 51, 128),
+                                  Color.fromARGB(255, 66, 94, 185),
+                                ],
+                              )),
+                              height:
+                                  MediaQuery.of(context).size.height * 1 / 2.5,
+                              width: MediaQuery.of(context).size.width,
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                1 /
+                                                18),
+                                    profilePicture(snapshot.data!),
+                                    SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                1 /
+                                                36),
+                                    Text(
+                                      snapshot.data!.username,
+                                      style: const TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white),
+                                    ),
+                                    SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                1 /
+                                                80),
+                                    Text(
+                                      '${snapshot.data!.totalposts} sightings  |  ${snapshot.data!.speciescount} species',
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.white),
+                                    ),
+                                  ]),
+                            ),
+                            SizedBox(
+                                height: MediaQuery.of(context).size.height *
+                                    1 /
+                                    30),
+                            userLevel(snapshot.data!),
+                            SizedBox(
+                                height: MediaQuery.of(context).size.height *
+                                    1 /
+                                    30),
+                            FutureBuilder(
+                                future: httpHelpers.viewOwnPostsRequest(jwt),
+                                builder: ((context, snapshot) {
+                                  return snapshot.hasData
+                                      ? galleryScreen(context, snapshot.data!)
+                                      : snapshot.hasError &&
+                                              snapshot.error ==
+                                                  'Posts not found'
+                                          ? const Center(
+                                              child: Text(
+                                                'No sightings yet, start posting!',
+                                                style: TextStyle(
+                                                    color: Color.fromARGB(
+                                                        255, 70, 88, 152),
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              ),
+                                            )
+                                          : const LoadingScreen();
+                                })),
                           ],
-                        ),
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    return const NoticeDialog(
-                        content: 'User not found! Please try again');
-                  } else {
-                    return const LoadingScreen();
-                  }
-                }))),
-      );
+                        ))),
+                bottomNavigationBar: BottomAppBar(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      //Visit camera page to post sighting
+                      cameraPageButton(),
+                      //Visit gallery page to view sightings
+                      galleryPageButton(),
+                      //Visit statistics page to access sighting data
+                      statsPageButton(),
+                      //Visit waiting list page to verify sightings
+                      waitingListPageButton(),
+                    ],
+                  ),
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return const NoticeDialog(
+                  content: 'User not found! Please try again');
+            } else {
+              return const LoadingScreen();
+            }
+          }));
     }
   }
 
@@ -732,10 +726,8 @@ class HomePageState extends State<ExpertHomePage> {
         child: TextFormField(
           keyboardType: TextInputType.emailAddress,
           validator: (value) {
-            if (value!.isNotEmpty) {
-              if (!isValidEmail(value)) {
-                return 'Please enter a valid email';
-              }
+            if (value!.isNotEmpty && !isValidEmail(value)) {
+              return 'Please enter a valid email';
             } else {
               return null;
             }
@@ -756,10 +748,8 @@ class HomePageState extends State<ExpertHomePage> {
       padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
       child: TextFormField(
         validator: (value) {
-          if (value!.isNotEmpty) {
-            if (value.trim().length > 25) {
-              return 'Username must be less than 25 characters';
-            }
+          if (value!.isNotEmpty && value.trim().length > 25) {
+            return 'Username must be less than 25 characters';
           } else {
             return null;
           }
@@ -805,5 +795,416 @@ class HomePageState extends State<ExpertHomePage> {
     }
 
     return hasCapitalLetter && hasSpecialCharacter;
+  }
+
+  Widget editPostButton(Post post) {
+    return TextButton(
+        style: TextButton.styleFrom(
+            padding: const EdgeInsets.all(3),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                String newClass = '';
+                String newOrder = '';
+                String newFamily = '';
+                String newGenus = '';
+
+                return StatefulBuilder(builder: (context, setState) {
+                  classCallback(newValue) {
+                    setState(() {
+                      newClass = newValue;
+                    });
+                    print(newClass);
+                  }
+
+                  orderCallback(newValue) {
+                    setState(() {
+                      newOrder = newValue;
+                    });
+                    print(newOrder);
+                  }
+
+                  familyCallback(newValue) {
+                    setState(() {
+                      newFamily = newValue;
+                    });
+                    print(newFamily);
+                  }
+
+                  genusCallback(newValue) {
+                    setState(() {
+                      newGenus = newValue;
+                    });
+                    print(newGenus);
+                  }
+
+                  return AlertDialog(
+                    title: const Text("Edit Post"),
+                    content: SingleChildScrollView(
+                        child: Column(children: [
+                      Container(
+                          margin: const EdgeInsets.only(left: 15),
+                          alignment: Alignment.centerLeft,
+                          child: const Text(
+                            'Edit Title',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color.fromARGB(255, 51, 64, 113)),
+                          )),
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(top: 5, left: 15, right: 15),
+                        child: TextFormField(
+                          initialValue: post.title,
+                          decoration: const InputDecoration(
+                            hintText: 'Edit Title',
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              newTitle = value;
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                          margin: const EdgeInsets.only(top: 20, left: 15),
+                          alignment: Alignment.centerLeft,
+                          child: const Text(
+                            'Edit Description',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color.fromARGB(255, 51, 64, 113)),
+                          )),
+                      Padding(
+                          padding: const EdgeInsets.only(
+                              left: 15, right: 15, bottom: 15),
+                          child: TextFormField(
+                            initialValue: post.description,
+                            minLines: 1,
+                            maxLines: 8,
+                            decoration: const InputDecoration(
+                                hintText: 'Edit Description'),
+                            onChanged: (value) {
+                              setState(() {
+                                newDescription = value;
+                              });
+                            },
+                          )),
+                      Wrap(
+                        children: [
+                          const Text(
+                            'Class: ',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color.fromARGB(255, 51, 64, 113),
+                                fontSize: 14),
+                          ),
+                          Text(
+                            newClass == ''
+                                ? '${post.class_}   '
+                                : '$newClass   ',
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          const Text(
+                            'Order: ',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color.fromARGB(255, 51, 64, 113),
+                                fontSize: 14),
+                          ),
+                          Text(
+                            newOrder == '' ? '${post.order}' : newOrder,
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        ],
+                      ),
+                      Wrap(
+                        children: [
+                          const Text(
+                            'Family: ',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color.fromARGB(255, 51, 64, 113),
+                                fontSize: 14),
+                          ),
+                          Text(
+                            newFamily == ''
+                                ? '${post.family}   '
+                                : '$newFamily   ',
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                          const Text(
+                            'Genus: ',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color.fromARGB(255, 51, 64, 113),
+                                fontSize: 14),
+                          ),
+                          Text(
+                            newGenus == '' ? '${post.genus}' : newGenus,
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        ],
+                      ),
+                    ])),
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(content: StatefulBuilder(
+                                  builder: (context, setState) {
+                                    return SpeciesStepper(
+                                      classCallback: classCallback,
+                                      orderCallback: orderCallback,
+                                      familyCallback: familyCallback,
+                                      genusCallback: genusCallback,
+                                    );
+                                  },
+                                ));
+                              });
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromARGB(255, 102, 154, 217)),
+                        child: const Text(
+                          'Edit Classification',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 80, 170, 121)),
+                          child: const Text("Confirm",
+                              style: TextStyle(fontSize: 12)),
+                          onPressed: () {
+                            httpHelpers
+                                .editPostInfoRequest(
+                                    post.postid,
+                                    jwt,
+                                    newTitle,
+                                    newDescription,
+                                    newClass,
+                                    newOrder,
+                                    newFamily,
+                                    newGenus)
+                                .then((response) {
+                              if (response == 'Post Edited') {
+                                Navigator.pop(context);
+                                setState(() {
+                                  newClass = '';
+                                  newOrder = '';
+                                  newFamily = '';
+                                  newGenus = '';
+                                });
+                                Fluttertoast.showToast(
+                                  msg: 'Post Edited',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                );
+                              } else {
+                                Fluttertoast.showToast(
+                                  msg: 'Post Edit Failed :(',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                );
+                              }
+                            });
+                          }),
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 170, 80, 80)),
+                          child: const Text("Cancel",
+                              style: TextStyle(fontSize: 12)),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            setState(() {
+                              newClass = '';
+                              newOrder = '';
+                              newFamily = '';
+                              newGenus = '';
+                            });
+                          })
+                    ],
+                  );
+                });
+              });
+        },
+        child: const Text('Edit Post',
+            style: TextStyle(
+                fontSize: 10, color: Color.fromARGB(255, 33, 53, 88))));
+  }
+
+  Widget deletePostButton(Post post) {
+    return TextButton(
+        style: TextButton.styleFrom(
+            padding: const EdgeInsets.all(3),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                    title: const Text("Warning"),
+                    content: const Text(
+                        'Are you sure? This action is irreversible!'),
+                    actions: [
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 80, 170, 121)),
+                          child: const Text("Yes"),
+                          onPressed: () {
+                            httpHelpers
+                                .deletePostRequest(post.postid, jwt)
+                                .then(
+                              (response) {
+                                Navigator.pop(context);
+                                if (response == 'Post Deleted') {
+                                  setState(() {});
+                                  Fluttertoast.showToast(
+                                    msg: 'Post deleted',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    timeInSecForIosWeb: 1,
+                                  );
+                                } else {
+                                  Fluttertoast.showToast(
+                                    msg: 'Post failed to delete :(',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    timeInSecForIosWeb: 1,
+                                  );
+                                }
+                              },
+                            );
+                          }),
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 170, 80, 80)),
+                          child: const Text("Cancel"),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          })
+                    ]);
+              });
+        },
+        child: const Text('Delete Post',
+            style: TextStyle(
+                fontSize: 10, color: Color.fromARGB(255, 33, 53, 88))));
+  }
+
+  Widget clickableImage(Post post) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(6),
+        child: InkWell(
+            child: Ink.image(image: NetworkImage(post.pic), fit: BoxFit.cover),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PostPage(postid: post.postid)),
+              );
+            }),
+      ),
+    );
+  }
+
+  Widget galleryScreen(BuildContext context, List<Post> posts) {
+    return Column(children: [
+      GridView.builder(
+          itemCount: posts.length,
+          physics: const ScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 5.0,
+            mainAxisSpacing: 7.0,
+            childAspectRatio: 0.85,
+          ),
+          itemBuilder: (context, index) {
+            return ownPostCard(posts[index]);
+          },
+          shrinkWrap: true,
+          padding: const EdgeInsets.all(12.0))
+    ]);
+  }
+
+  Widget ownPostCard(Post post) {
+    return Card(
+        color: const Color.fromARGB(255, 253, 254, 255),
+        elevation: 4.5,
+        shadowColor: const Color.fromARGB(255, 113, 165, 255),
+        clipBehavior: Clip.hardEdge,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(3),
+        ),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Padding(
+                  padding: const EdgeInsets.only(left: 9, top: 5, right: 9),
+                  child: Row(children: [
+                    Container(
+                        padding: const EdgeInsets.only(right: 4),
+                        width: MediaQuery.of(context).size.width * 1 / 2.85,
+                        child: Text(
+                          post.title,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              color: Color.fromARGB(255, 33, 53, 88)),
+                        )),
+                    CircleAvatar(
+                      radius: 9,
+                      backgroundColor: post.verified
+                          ? const Color.fromARGB(255, 73, 155, 109)
+                          : post.flagged
+                              ? const Color.fromARGB(255, 152, 72, 85)
+                              : const Color.fromARGB(255, 175, 103, 51),
+                      child: Icon(
+                        post.verified
+                            ? Icons.verified
+                            : post.flagged
+                                ? Icons.priority_high
+                                : Icons.pending,
+                        size: 10,
+                        color: Colors.white,
+                      ),
+                    )
+                  ])),
+
+              //Post Image
+              clickableImage(post),
+
+              //Clickable Buttons
+              Container(
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 4, bottom: 2),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      editPostButton(post),
+                      deletePostButton(post),
+                    ],
+                  )),
+              Container(
+                  padding: const EdgeInsets.only(left: 6, bottom: 5, right: 8),
+                  child: Text('Sighted at ${post.sightingLocation}',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(
+                          fontSize: 9,
+                          color: Color.fromARGB(255, 33, 53, 88)))),
+            ]));
   }
 }
