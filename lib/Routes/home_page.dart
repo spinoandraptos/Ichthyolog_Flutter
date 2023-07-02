@@ -6,6 +6,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:uuid/uuid.dart';
 import '../Models/user.dart';
 import '../Models/post.dart';
+import '../Models/species.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
 import 'camera_page.dart';
@@ -14,15 +15,16 @@ import 'post_page.dart';
 import 'waiting_list_page.dart';
 import 'statistics_page.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'stepper.dart';
 
-class RegularHomePage extends StatefulWidget {
-  const RegularHomePage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
   @override
   HomePageState createState() => HomePageState();
 }
 
-class HomePageState extends State<RegularHomePage> {
+class HomePageState extends State<HomePage> {
   bool _authorised = false;
   File? image;
   String jwt = '';
@@ -128,7 +130,7 @@ class HomePageState extends State<RegularHomePage> {
                           userLevel(snapshot.data!),
                           SizedBox(
                               height:
-                                  MediaQuery.of(context).size.height * 1 / 30),
+                                  MediaQuery.of(context).size.height * 1 / 45),
                           FutureBuilder(
                               future: httpHelpers.viewOwnPostsRequest(jwt),
                               builder: ((context, snapshot) {
@@ -187,7 +189,6 @@ class HomePageState extends State<RegularHomePage> {
                     leading: const Icon(Icons.menu),
                     title: const Text('Home Page'),
                     backgroundColor: const Color.fromARGB(255, 65, 90, 181),
-                    actions: [settingsButton(snapshot.data!), logoutButton()],
                   ),
                   body: const LoadingScreen());
             }
@@ -713,8 +714,15 @@ class HomePageState extends State<RegularHomePage> {
   }
 
   Widget newPasswordField() {
-    return Padding(
-        padding: const EdgeInsets.only(left: 5, right: 15, bottom: 10),
+    return Container(
+        margin: const EdgeInsets.only(top: 8, left: 5, right: 5, bottom: 15),
+        padding: const EdgeInsets.only(
+          left: 15,
+          right: 15,
+        ),
+        decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 225, 235, 248),
+            borderRadius: BorderRadius.circular(16)),
         child: TextFormField(
           obscureText: true,
           onChanged: (value) {
@@ -733,14 +741,22 @@ class HomePageState extends State<RegularHomePage> {
             return null;
           },
           decoration: const InputDecoration(
+            border: InputBorder.none,
             hintText: 'Leave blank if not changing',
           ),
         ));
   }
 
   Widget oldPasswordField() {
-    return Padding(
-        padding: const EdgeInsets.only(left: 5, right: 15, bottom: 10),
+    return Container(
+        margin: const EdgeInsets.only(top: 14, left: 5, right: 5),
+        padding: const EdgeInsets.only(
+          left: 15,
+          right: 15,
+        ),
+        decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 225, 235, 248),
+            borderRadius: BorderRadius.circular(16)),
         child: TextFormField(
           obscureText: true,
           onChanged: (value) {
@@ -757,14 +773,22 @@ class HomePageState extends State<RegularHomePage> {
             return null;
           },
           decoration: const InputDecoration(
+            border: InputBorder.none,
             hintText: 'Current password',
           ),
         ));
   }
 
   Widget emailField() {
-    return Padding(
-        padding: const EdgeInsets.only(left: 5, right: 15, bottom: 15),
+    return Container(
+        margin: const EdgeInsets.only(top: 8, left: 5, right: 5),
+        padding: const EdgeInsets.only(
+          left: 15,
+          right: 15,
+        ),
+        decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 225, 235, 248),
+            borderRadius: BorderRadius.circular(16)),
         child: TextFormField(
           keyboardType: TextInputType.emailAddress,
           validator: (value) {
@@ -780,14 +804,22 @@ class HomePageState extends State<RegularHomePage> {
             });
           },
           decoration: const InputDecoration(
+            border: InputBorder.none,
             hintText: "Leave blank if not changing",
           ),
         ));
   }
 
   Widget usernameField() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 5, right: 15, bottom: 15),
+    return Container(
+      margin: const EdgeInsets.only(top: 8, left: 5, right: 5),
+      padding: const EdgeInsets.only(
+        left: 15,
+        right: 15,
+      ),
+      decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 225, 235, 248),
+          borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         validator: (value) {
           if (value!.isNotEmpty && value.trim().length > 25) {
@@ -802,6 +834,7 @@ class HomePageState extends State<RegularHomePage> {
           });
         },
         decoration: const InputDecoration(
+          border: InputBorder.none,
           hintText: 'Leave blank if not changing',
         ),
       ),
@@ -840,327 +873,419 @@ class HomePageState extends State<RegularHomePage> {
   }
 
   Widget editPostButton(Post post) {
-    return TextButton(
-        style: TextButton.styleFrom(
-            padding: const EdgeInsets.all(3),
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-        onPressed: () {
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                String newClass = '';
-                String newOrder = '';
-                String newFamily = '';
-                String newGenus = '';
+    return IconButton(
+      constraints: const BoxConstraints(),
+      icon: CircleAvatar(
+          radius: 13,
+          backgroundColor: Colors.white.withOpacity(0.85),
+          child: const Icon(
+            Icons.edit,
+            size: 15,
+            color: Color.fromARGB(255, 39, 49, 133),
+          )),
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              String newTitle = '';
+              String newClass = '';
+              String newOrder = '';
+              String newFamily = '';
+              String newGenus = '';
+              String newSpecies = '';
+              String newLocation = '';
+              final TextEditingController titleController =
+                  TextEditingController();
+              final TextEditingController locationController =
+                  TextEditingController();
+              List<String> allSpecies = <String>[];
+              for (var record in singaporeRecords) {
+                allSpecies.add(record.commonNames);
+              }
+              return StatefulBuilder(builder: (context, setState) {
+                classCallback(newValue) {
+                  setState(() {
+                    newClass = newValue;
+                  });
+                }
 
-                return StatefulBuilder(builder: (context, setState) {
-                  classCallback(newValue) {
+                orderCallback(newValue) {
+                  setState(() {
+                    newOrder = newValue;
+                  });
+                }
+
+                familyCallback(newValue) {
+                  setState(() {
+                    newFamily = newValue;
+                  });
+                }
+
+                genusCallback(newValue) {
+                  setState(() {
+                    newGenus = newValue;
+                  });
+                }
+
+                titleCallback(newValue) {
+                  final splitNames = newValue.split(', ');
+                  setState(() {
+                    newTitle = splitNames[0];
+                  });
+                  final speciesRecord = singaporeRecords.singleWhere(
+                      (record) => record.commonNames == newValue, orElse: () {
+                    return SpeciesRecord(
+                        class_: '',
+                        order: '',
+                        family: '',
+                        genus: '',
+                        species: '',
+                        commonNames: '');
+                  });
+                  if (speciesRecord.class_ != '' &&
+                      speciesRecord.order != '' &&
+                      speciesRecord.family != '' &&
+                      speciesRecord.genus != '') {
                     setState(() {
-                      newClass = newValue;
+                      newClass = speciesRecord.class_;
+                      newOrder = speciesRecord.order;
+                      newFamily = speciesRecord.family;
+                      newGenus = speciesRecord.genus;
+                      newSpecies = speciesRecord.species;
                     });
-                    print(newClass);
                   }
+                }
 
-                  orderCallback(newValue) {
-                    setState(() {
-                      newOrder = newValue;
-                    });
-                    print(newOrder);
-                  }
+                locationCallback(newValue) {
+                  setState(() {
+                    newLocation = newValue;
+                  });
+                }
 
-                  familyCallback(newValue) {
-                    setState(() {
-                      newFamily = newValue;
-                    });
-                    print(newFamily);
-                  }
-
-                  genusCallback(newValue) {
-                    setState(() {
-                      newGenus = newValue;
-                    });
-                    print(newGenus);
-                  }
-
-                  return AlertDialog(
-                    title: const Text("Edit Post"),
-                    content: SingleChildScrollView(
-                        child: Column(children: [
-                      Container(
-                          margin: const EdgeInsets.only(left: 15),
-                          alignment: Alignment.centerLeft,
-                          child: const Text(
-                            'Edit Title',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: Color.fromARGB(255, 51, 64, 113)),
-                          )),
-                      Padding(
-                        padding:
-                            const EdgeInsets.only(top: 5, left: 15, right: 15),
+                return AlertDialog(
+                  title: const Padding(
+                    padding: EdgeInsets.only(left: 5),
+                    child: Text("Edit Post"),
+                  ),
+                  content: SingleChildScrollView(
+                      child: Column(children: [
+                    Container(
+                        margin: const EdgeInsets.only(left: 5),
+                        alignment: Alignment.centerLeft,
+                        child: const Text(
+                          'Edit Species Name',
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: Color.fromARGB(255, 51, 64, 113)),
+                        )),
+                    selectableTextForm(
+                        titleController, post.title, allSpecies, titleCallback),
+                    Container(
+                        margin: const EdgeInsets.only(top: 10, left: 5),
+                        alignment: Alignment.centerLeft,
+                        child: const Text(
+                          'Edit Description',
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: Color.fromARGB(255, 51, 64, 113)),
+                        )),
+                    Container(
+                        margin:
+                            const EdgeInsets.only(top: 8, left: 5, right: 5),
+                        padding: const EdgeInsets.only(
+                          left: 15,
+                          right: 15,
+                        ),
+                        decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 225, 235, 248),
+                            borderRadius: BorderRadius.circular(16)),
                         child: TextFormField(
-                          initialValue: post.title,
+                          initialValue: post.description,
+                          minLines: 1,
+                          maxLines: 8,
                           decoration: const InputDecoration(
-                            hintText: 'Edit Title',
-                          ),
+                              border: InputBorder.none,
+                              hintText: 'Edit Description'),
                           onChanged: (value) {
                             setState(() {
-                              newTitle = value;
+                              newDescription = value;
                             });
                           },
-                        ),
-                      ),
-                      Container(
-                          margin: const EdgeInsets.only(top: 20, left: 15),
-                          alignment: Alignment.centerLeft,
-                          child: const Text(
-                            'Edit Description',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: Color.fromARGB(255, 51, 64, 113)),
-                          )),
-                      Padding(
-                          padding: const EdgeInsets.only(
-                              left: 15, right: 15, bottom: 15),
-                          child: TextFormField(
-                            initialValue: post.description,
-                            minLines: 1,
-                            maxLines: 8,
-                            decoration: const InputDecoration(
-                                hintText: 'Edit Description'),
-                            onChanged: (value) {
-                              setState(() {
-                                newDescription = value;
-                              });
-                            },
-                          )),
-                      Wrap(
-                        children: [
-                          const Text(
-                            'Class: ',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: Color.fromARGB(255, 51, 64, 113),
-                                fontSize: 14),
-                          ),
-                          Text(
-                            newClass == ''
-                                ? '${post.class_}   '
-                                : '$newClass   ',
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          const Text(
-                            'Order: ',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: Color.fromARGB(255, 51, 64, 113),
-                                fontSize: 14),
-                          ),
-                          Text(
-                            newOrder == '' ? '${post.order}' : newOrder,
-                            style: const TextStyle(fontSize: 13),
-                          ),
-                        ],
-                      ),
-                      Wrap(
-                        children: [
-                          const Text(
-                            'Family: ',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: Color.fromARGB(255, 51, 64, 113),
-                                fontSize: 14),
-                          ),
-                          Text(
-                            newFamily == ''
-                                ? '${post.family}   '
-                                : '$newFamily   ',
-                            style: const TextStyle(fontSize: 13),
-                          ),
-                          const Text(
-                            'Genus: ',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: Color.fromARGB(255, 51, 64, 113),
-                                fontSize: 14),
-                          ),
-                          Text(
-                            newGenus == '' ? '${post.genus}' : newGenus,
-                            style: const TextStyle(fontSize: 13),
-                          ),
-                        ],
-                      ),
-                    ])),
-                    actions: [
-                      ElevatedButton(
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(content: StatefulBuilder(
-                                  builder: (context, setState) {
-                                    return SpeciesStepper(
-                                      classCallback: classCallback,
-                                      orderCallback: orderCallback,
-                                      familyCallback: familyCallback,
-                                      genusCallback: genusCallback,
-                                    );
-                                  },
-                                ));
-                              });
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromARGB(255, 102, 154, 217)),
+                        )),
+                    Container(
+                        margin: const EdgeInsets.only(left: 5, top: 10),
+                        alignment: Alignment.centerLeft,
                         child: const Text(
-                          'Edit Classification',
-                          style: TextStyle(fontSize: 12),
+                          'Edit Location',
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: Color.fromARGB(255, 51, 64, 113)),
+                        )),
+                    Padding(
+                        padding: const EdgeInsets.only(bottom: 18),
+                        child: selectableTextForm(
+                            locationController,
+                            post.sightingLocation,
+                            locations,
+                            locationCallback)),
+                    Wrap(
+                      children: [
+                        const Text(
+                          'Class: ',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: Color.fromARGB(255, 51, 64, 113),
+                              fontSize: 13),
                         ),
-                      ),
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromARGB(255, 80, 170, 121)),
-                          child: const Text("Confirm",
-                              style: TextStyle(fontSize: 12)),
+                        Text(
+                          newClass == '' ? '${post.class_}   ' : '$newClass   ',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        const Text(
+                          'Order: ',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: Color.fromARGB(255, 51, 64, 113),
+                              fontSize: 13),
+                        ),
+                        Text(
+                          newOrder == '' ? '${post.order}' : newOrder,
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ],
+                    ),
+                    Wrap(
+                      children: [
+                        const Text(
+                          'Family: ',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: Color.fromARGB(255, 51, 64, 113),
+                              fontSize: 13),
+                        ),
+                        Text(
+                          newFamily == ''
+                              ? '${post.family}   '
+                              : '$newFamily   ',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        const Text(
+                          'Genus: ',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: Color.fromARGB(255, 51, 64, 113),
+                              fontSize: 13),
+                        ),
+                        Text(
+                          newGenus == '' ? '${post.genus}' : newGenus,
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ])),
+                  actions: [
+                    Container(
+                        padding: const EdgeInsets.only(bottom: 5, left: 10),
+                        child: ElevatedButton(
                           onPressed: () {
-                            httpHelpers
-                                .editPostInfoRequest(
-                                    post.postid,
-                                    jwt,
-                                    newTitle,
-                                    newDescription,
-                                    newClass,
-                                    newOrder,
-                                    newFamily,
-                                    newGenus)
-                                .then((response) {
-                              if (response == 'Post Edited') {
-                                Navigator.pop(context);
-                                setState(() {
-                                  newClass = '';
-                                  newOrder = '';
-                                  newFamily = '';
-                                  newGenus = '';
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(content: StatefulBuilder(
+                                    builder: (context, setState) {
+                                      return SpeciesStepper(
+                                        classCallback: classCallback,
+                                        orderCallback: orderCallback,
+                                        familyCallback: familyCallback,
+                                        genusCallback: genusCallback,
+                                      );
+                                    },
+                                  ));
                                 });
-                                Fluttertoast.showToast(
-                                  msg: 'Post Edited',
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIosWeb: 1,
-                                );
-                              } else {
-                                Fluttertoast.showToast(
-                                  msg: 'Post Edit Failed :(',
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIosWeb: 1,
-                                );
-                              }
-                            });
-                          }),
-                      ElevatedButton(
+                          },
                           style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.only(
+                                  left: 10, top: 8, bottom: 8, right: 10),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               backgroundColor:
-                                  const Color.fromARGB(255, 170, 80, 80)),
-                          child: const Text("Cancel",
-                              style: TextStyle(fontSize: 12)),
-                          onPressed: () {
-                            Navigator.pop(context);
-                            setState(() {
-                              newClass = '';
-                              newOrder = '';
-                              newFamily = '';
-                              newGenus = '';
-                            });
-                          })
-                    ],
-                  );
-                });
-              });
-        },
-        child: const Text('Edit Post',
-            style: TextStyle(
-                fontSize: 10, color: Color.fromARGB(255, 33, 53, 88))));
-  }
-
-  Widget deletePostButton(Post post) {
-    return TextButton(
-        style: TextButton.styleFrom(
-            padding: const EdgeInsets.all(3),
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-        onPressed: () {
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                    title: const Text("Warning"),
-                    content: const Text(
-                        'Are you sure? This action is irreversible!'),
-                    actions: [
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromARGB(255, 80, 170, 121)),
-                          child: const Text("Yes"),
-                          onPressed: () {
-                            httpHelpers
-                                .deletePostRequest(post.postid, jwt)
-                                .then(
-                              (response) {
-                                Navigator.pop(context);
-                                if (response == 'Post Deleted') {
-                                  setState(() {});
+                                  const Color.fromARGB(255, 102, 154, 217)),
+                          child: const Text(
+                            'Edit Classification',
+                            style: TextStyle(fontSize: 13),
+                          ),
+                        )),
+                    Container(
+                        margin: const EdgeInsets.only(bottom: 5),
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.only(
+                                    left: 10, top: 8, bottom: 8, right: 10),
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                backgroundColor:
+                                    const Color.fromARGB(255, 80, 170, 121)),
+                            child: const Text(
+                              "Confirm",
+                              style: TextStyle(fontSize: 13),
+                            ),
+                            onPressed: () {
+                              httpHelpers
+                                  .editPostInfoRequest(
+                                      post.postid,
+                                      jwt,
+                                      newTitle,
+                                      newDescription,
+                                      newLocation,
+                                      newClass,
+                                      newOrder,
+                                      newFamily,
+                                      newGenus,
+                                      newSpecies)
+                                  .then((response) {
+                                if (response == 'Post Edited') {
+                                  Navigator.pop(context);
+                                  setState(() {
+                                    newClass = '';
+                                    newOrder = '';
+                                    newFamily = '';
+                                    newGenus = '';
+                                  });
                                   Fluttertoast.showToast(
-                                    msg: 'Post deleted',
+                                    msg: 'Post Edited',
                                     toastLength: Toast.LENGTH_SHORT,
                                     gravity: ToastGravity.BOTTOM,
                                     timeInSecForIosWeb: 1,
                                   );
                                 } else {
                                   Fluttertoast.showToast(
-                                    msg: 'Post failed to delete :(',
+                                    msg: 'Post Edit Failed :(',
                                     toastLength: Toast.LENGTH_SHORT,
                                     gravity: ToastGravity.BOTTOM,
                                     timeInSecForIosWeb: 1,
                                   );
                                 }
-                              },
-                            );
-                          }),
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromARGB(255, 170, 80, 80)),
-                          child: const Text("Cancel"),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          })
-                    ]);
+                              });
+                            })),
+                    Container(
+                        padding: const EdgeInsets.only(bottom: 5, right: 10),
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.only(
+                                    left: 10, top: 8, bottom: 8, right: 10),
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                backgroundColor:
+                                    const Color.fromARGB(255, 170, 80, 80)),
+                            child: const Text(
+                              "Cancel",
+                              style: TextStyle(fontSize: 13),
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context);
+                              setState(() {
+                                newClass = '';
+                                newOrder = '';
+                                newFamily = '';
+                                newGenus = '';
+                              });
+                            }))
+                  ],
+                );
               });
-        },
-        child: const Text('Delete Post',
-            style: TextStyle(
-                fontSize: 10, color: Color.fromARGB(255, 33, 53, 88))));
+            }).then((value) {
+          setState(() {});
+        });
+      },
+    );
+  }
+
+  Widget deletePostButton(Post post) {
+    return IconButton(
+      constraints: const BoxConstraints(),
+      padding: EdgeInsets.zero,
+      icon: CircleAvatar(
+          radius: 13,
+          backgroundColor: Colors.white.withOpacity(0.85),
+          child: const Icon(
+            Icons.delete,
+            size: 15,
+            color: Color.fromARGB(255, 155, 47, 47),
+          )),
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                  title: const Text("Warning"),
+                  content:
+                      const Text('Are you sure? This action is irreversible!'),
+                  actions: [
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromARGB(255, 80, 170, 121)),
+                        child: const Text("Yes"),
+                        onPressed: () {
+                          httpHelpers.deletePostRequest(post.postid, jwt).then(
+                            (response) {
+                              Navigator.pop(context);
+                              if (response == 'Post Deleted') {
+                                setState(() {});
+                                Fluttertoast.showToast(
+                                  msg: 'Post deleted',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                );
+                              } else {
+                                Fluttertoast.showToast(
+                                  msg: 'Post failed to delete :(',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                );
+                              }
+                            },
+                          );
+                        }),
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromARGB(255, 170, 80, 80)),
+                        child: const Text("Cancel"),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        })
+                  ]);
+            });
+      },
+    );
   }
 
   Widget clickableImage(Post post) {
     return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(6),
-        child: InkWell(
-            child: Ink.image(image: NetworkImage(post.pic), fit: BoxFit.cover),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => PostPage(postid: post.postid)),
-              );
-            }),
-      ),
-    );
+        child: Padding(
+            padding: const EdgeInsets.only(left: 6, right: 6),
+            child: Stack(children: [
+              InkWell(
+                  child: Ink.image(
+                      image: NetworkImage(post.pic), fit: BoxFit.cover),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PostPage(postid: post.postid)),
+                    );
+                  }),
+              Positioned(
+                  right: 8,
+                  child: Row(
+                      children: [editPostButton(post), deletePostButton(post)]))
+            ])));
   }
 
   Widget galleryScreen(BuildContext context, List<Post> posts) {
@@ -1175,14 +1300,14 @@ class HomePageState extends State<RegularHomePage> {
             childAspectRatio: 0.85,
           ),
           itemBuilder: (context, index) {
-            return ownPostCard(posts[index]);
+            return postCard(posts[index]);
           },
           shrinkWrap: true,
           padding: const EdgeInsets.all(12.0))
     ]);
   }
 
-  Widget ownPostCard(Post post) {
+  Widget postCard(Post post) {
     return Card(
         color: const Color.fromARGB(255, 253, 254, 255),
         elevation: 4.5,
@@ -1194,59 +1319,125 @@ class HomePageState extends State<RegularHomePage> {
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Padding(
-                  padding: const EdgeInsets.only(left: 9, top: 5, right: 9),
-                  child: Row(children: [
-                    Container(
-                        padding: const EdgeInsets.only(right: 4),
-                        width: MediaQuery.of(context).size.width * 1 / 2.85,
-                        child: Text(
-                          post.title,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                              color: Color.fromARGB(255, 33, 53, 88)),
-                        )),
-                    CircleAvatar(
-                      radius: 9,
-                      backgroundColor: post.verified
-                          ? const Color.fromARGB(255, 73, 155, 109)
-                          : post.flagged
-                              ? const Color.fromARGB(255, 152, 72, 85)
-                              : const Color.fromARGB(255, 175, 103, 51),
-                      child: Icon(
-                        post.verified
-                            ? Icons.verified
-                            : post.flagged
-                                ? Icons.priority_high
-                                : Icons.pending,
-                        size: 10,
-                        color: Colors.white,
-                      ),
-                    )
-                  ])),
-
+              ListTile(
+                  dense: true,
+                  minVerticalPadding: 0,
+                  horizontalTitleGap: 0,
+                  visualDensity:
+                      const VisualDensity(vertical: -4, horizontal: 0),
+                  contentPadding: post.species == null
+                      ? const EdgeInsets.symmetric(horizontal: 10)
+                      : const EdgeInsets.only(
+                          left: 10, right: 10, top: 2, bottom: 2),
+                  title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: post.species == null
+                          ? [
+                              Text(
+                                post.title,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 11,
+                                    color: Color.fromARGB(255, 33, 53, 88)),
+                              ),
+                            ]
+                          : [
+                              Text(
+                                post.title,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 11,
+                                    color: Color.fromARGB(255, 33, 53, 88)),
+                              ),
+                              Text(
+                                post.species!,
+                                style: const TextStyle(
+                                    fontSize: 8,
+                                    color: Color.fromARGB(255, 33, 53, 88)),
+                              ),
+                            ]),
+                  trailing: CircleAvatar(
+                    radius: 8,
+                    backgroundColor: post.flagged
+                        ? const Color.fromARGB(255, 152, 72, 85)
+                        : const Color.fromARGB(255, 175, 103, 51),
+                    child: Icon(
+                      post.flagged ? Icons.priority_high : Icons.pending,
+                      size: 10,
+                      color: Colors.white,
+                    ),
+                  )),
               //Post Image
               clickableImage(post),
-
-              //Clickable Buttons
-              Container(
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 4, bottom: 2),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      editPostButton(post),
-                      deletePostButton(post),
-                    ],
-                  )),
-              Container(
-                  padding: const EdgeInsets.only(left: 6, bottom: 5, right: 8),
-                  child: Text('Sighted at ${post.sightingLocation}',
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(
-                          fontSize: 9,
-                          color: Color.fromARGB(255, 33, 53, 88)))),
+              Padding(
+                  padding: const EdgeInsets.only(
+                      left: 12, top: 8, right: 9, bottom: 8),
+                  child: Row(children: [
+                    const Padding(
+                        padding: EdgeInsets.only(right: 8),
+                        child: Icon(
+                          Icons.pin_drop,
+                          size: 14,
+                          color: Color.fromARGB(255, 51, 64, 113),
+                        )),
+                    Expanded(
+                      child: Text(post.sightingLocation,
+                          style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                              color: Color.fromARGB(255, 33, 53, 88))),
+                    ),
+                  ])),
             ]));
+  }
+
+  Widget selectableTextForm(TextEditingController controller, String hintText,
+      List<String> options, Function callback) {
+    return Container(
+        margin: const EdgeInsets.only(top: 8, left: 5, right: 5),
+        padding: const EdgeInsets.only(
+          left: 15,
+          right: 15,
+        ),
+        decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 225, 235, 248),
+            borderRadius: BorderRadius.circular(16)),
+        child: TypeAheadFormField(
+          hideOnLoading: true,
+          hideOnEmpty: true,
+          textFieldConfiguration: TextFieldConfiguration(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: hintText,
+                focusColor: const Color.fromARGB(255, 51, 64, 113),
+                border: InputBorder.none,
+              ),
+              autofocus: true,
+              style: const TextStyle(color: Color.fromARGB(255, 51, 64, 113))),
+          itemBuilder: (context, suggestion) {
+            return ListTile(
+              title: Text(suggestion),
+            );
+          },
+          errorBuilder: (context, error) {
+            return NoticeDialog(content: '$error');
+          },
+          suggestionsCallback: (pattern) {
+            List<String> matches = [];
+            if (pattern == '') {
+              return matches;
+            } else {
+              matches.addAll(options);
+              matches.retainWhere((matches) {
+                return matches.toLowerCase().contains(pattern.toLowerCase());
+              });
+              return matches;
+            }
+          },
+          onSuggestionSelected: (suggestion) {
+            callback(suggestion);
+            controller.text = suggestion;
+          },
+        ));
   }
 }

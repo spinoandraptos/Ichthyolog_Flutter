@@ -301,7 +301,8 @@ class HttpHelpers {
       String class_,
       String order,
       String family,
-      String genus) async {
+      String genus,
+      String species) async {
     String url = 'https://ichthyolog-nodejs.onrender.com/post';
     var response = await http.post(
       Uri.parse(url),
@@ -318,7 +319,8 @@ class HttpHelpers {
         '_class': class_,
         'order': order,
         'family': family,
-        'genus': genus
+        'genus': genus,
+        'species': species
       }),
     );
 
@@ -334,10 +336,12 @@ class HttpHelpers {
       String jwt,
       String title,
       String description,
+      String location,
       String class_,
       String order,
       String family,
-      String genus) async {
+      String genus,
+      String species) async {
     String urlInfo = 'https://ichthyolog-nodejs.onrender.com/post/$postid/info';
     String urlClassification =
         'https://ichthyolog-nodejs.onrender.com/post/$postid/classification';
@@ -346,8 +350,11 @@ class HttpHelpers {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorisation': jwt
         },
-        body: json.encode(
-            <String, dynamic>{'title': title, 'description': description}));
+        body: json.encode(<String, dynamic>{
+          'title': title,
+          'description': description,
+          'sightingLocation': location
+        }));
 
     var responseClassification = await http.put(Uri.parse(urlClassification),
         headers: <String, String>{
@@ -358,7 +365,8 @@ class HttpHelpers {
           '_class': class_,
           'order': order,
           'family': family,
-          'genus': genus
+          'genus': genus,
+          'species': species
         }));
     if (responseInfo.body == 'Post not found' ||
         responseClassification.body == 'Post not found') {

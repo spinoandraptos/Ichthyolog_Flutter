@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
 import '../Models/post.dart';
+import '../Models/species.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'post_page.dart';
 import '../Helpers/standard_widgets.dart';
 import 'stepper.dart';
@@ -53,18 +55,14 @@ class WaitingListPageState extends State<WaitingListPage> {
             childAspectRatio: 0.85,
           ),
           itemBuilder: (context, index) {
-            if (decodedJWT['username'] == posts[index].authorname) {
-              return ownPostCard(posts[index]);
-            } else {
-              return otherPostCard(posts[index]);
-            }
+            return postCard(posts[index]);
           },
           shrinkWrap: true,
           padding: const EdgeInsets.all(12.0))
     ])));
   }
 
-  Widget ownPostCard(Post post) {
+  Widget postCard(Post post) {
     return Card(
         color: const Color.fromARGB(255, 253, 254, 255),
         elevation: 4.5,
@@ -76,73 +74,55 @@ class WaitingListPageState extends State<WaitingListPage> {
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Padding(
-                  padding: const EdgeInsets.only(left: 9, top: 5, right: 9),
-                  child: Row(children: [
-                    Container(
-                        padding: const EdgeInsets.only(right: 4),
-                        width: MediaQuery.of(context).size.width * 1 / 2.85,
-                        child: Text(
-                          post.title,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 8,
-                              color: Color.fromARGB(255, 33, 53, 88)),
-                        )),
-                    CircleAvatar(
-                      radius: 8,
-                      backgroundColor: post.flagged
-                          ? const Color.fromARGB(255, 152, 72, 85)
-                          : const Color.fromARGB(255, 175, 103, 51),
-                      child: Icon(
-                        post.flagged ? Icons.priority_high : Icons.pending,
-                        size: 10,
-                        color: Colors.white,
-                      ),
-                    )
-                  ])),
-              clickableImage(post),
-              expertActions(post)
-            ]));
-  }
-
-  Widget otherPostCard(Post post) {
-    return Card(
-        color: const Color.fromARGB(255, 253, 254, 255),
-        elevation: 4.5,
-        shadowColor: const Color.fromARGB(255, 113, 165, 255),
-        clipBehavior: Clip.hardEdge,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(3),
-        ),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Padding(
-                  padding: const EdgeInsets.only(left: 9, top: 5, right: 9),
-                  child: Row(children: [
-                    Container(
-                        padding: const EdgeInsets.only(right: 5),
-                        width: MediaQuery.of(context).size.width * 1 / 2.85,
-                        child: Text(
-                          post.title,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                              color: Color.fromARGB(255, 33, 53, 88)),
-                        )),
-                    CircleAvatar(
-                      radius: 8,
-                      backgroundColor: post.flagged
-                          ? const Color.fromARGB(255, 152, 72, 85)
-                          : const Color.fromARGB(255, 175, 103, 51),
-                      child: Icon(
-                        post.flagged ? Icons.priority_high : Icons.pending,
-                        size: 10,
-                        color: Colors.white,
-                      ),
-                    )
-                  ])),
+              ListTile(
+                  dense: true,
+                  minVerticalPadding: 0,
+                  horizontalTitleGap: 0,
+                  visualDensity:
+                      const VisualDensity(vertical: -4, horizontal: 0),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                  title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: post.species == null
+                          ? [
+                              Text(
+                                post.title,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 11,
+                                    color: Color.fromARGB(255, 33, 53, 88)),
+                              ),
+                            ]
+                          : [
+                              Padding(
+                                  padding: const EdgeInsets.only(top: 5),
+                                  child: Text(
+                                    post.title,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 11,
+                                        color: Color.fromARGB(255, 33, 53, 88)),
+                                  )),
+                              Padding(
+                                  padding: const EdgeInsets.only(bottom: 5),
+                                  child: Text(
+                                    post.species!,
+                                    style: const TextStyle(
+                                        fontSize: 8,
+                                        color: Color.fromARGB(255, 33, 53, 88)),
+                                  )),
+                            ]),
+                  trailing: CircleAvatar(
+                    radius: 8,
+                    backgroundColor: post.flagged
+                        ? const Color.fromARGB(255, 152, 72, 85)
+                        : const Color.fromARGB(255, 175, 103, 51),
+                    child: Icon(
+                      post.flagged ? Icons.priority_high : Icons.pending,
+                      size: 10,
+                      color: Colors.white,
+                    ),
+                  )),
               clickableImage(post),
               expertActions(post)
             ]));
@@ -193,24 +173,7 @@ class WaitingListPageState extends State<WaitingListPage> {
           SizedBox(width: 8),
           CircleAvatar(
               radius: 8,
-              backgroundColor: Color.fromARGB(255, 73, 155, 109),
-              child: Icon(
-                Icons.verified,
-                size: 10,
-                color: Colors.white,
-              )),
-          SizedBox(width: 4),
-          Text(
-            "[ Verified Post ]",
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-                color: Color.fromARGB(255, 73, 155, 109)),
-          ),
-          SizedBox(width: 14),
-          CircleAvatar(
-              radius: 8,
-              backgroundColor: Color.fromARGB(255, 152, 72, 85),
+              backgroundColor: Color.fromARGB(255, 175, 103, 51),
               child: Icon(
                 Icons.pending,
                 size: 10,
@@ -222,6 +185,23 @@ class WaitingListPageState extends State<WaitingListPage> {
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 12,
+                color: Color.fromARGB(255, 175, 103, 51)),
+          ),
+          SizedBox(width: 14),
+          CircleAvatar(
+              radius: 8,
+              backgroundColor: Color.fromARGB(255, 152, 72, 85),
+              child: Icon(
+                Icons.priority_high,
+                size: 10,
+                color: Colors.white,
+              )),
+          SizedBox(width: 4),
+          Text(
+            "[ Flagged ]",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
                 color: Color.fromARGB(255, 152, 72, 85)),
           ),
         ]));
@@ -230,7 +210,7 @@ class WaitingListPageState extends State<WaitingListPage> {
   Widget clickableImage(Post post) {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.all(6),
+        padding: const EdgeInsets.only(left: 6, right: 6, bottom: 6),
         child: InkWell(
             child: Ink.image(image: NetworkImage(post.pic), fit: BoxFit.cover),
             onTap: () {
@@ -299,7 +279,7 @@ class WaitingListPageState extends State<WaitingListPage> {
       style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.only(left: 5, top: 3, bottom: 3, right: 5),
           minimumSize: Size.zero,
-          backgroundColor: const Color.fromARGB(255, 170, 80, 80),
+          backgroundColor: const Color.fromARGB(255, 199, 96, 139),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap),
       child: post.flagged
           ? const Text('Unflag', style: TextStyle(fontSize: 9))
@@ -313,85 +293,126 @@ class WaitingListPageState extends State<WaitingListPage> {
         showDialog(
             context: context,
             builder: (BuildContext context) {
+              String newTitle = '';
               String newClass = '';
               String newOrder = '';
               String newFamily = '';
               String newGenus = '';
-
+              String newSpecies = '';
+              String newLocation = '';
+              final TextEditingController titleController =
+                  TextEditingController();
+              final TextEditingController locationController =
+                  TextEditingController();
+              List<String> allSpecies = <String>[];
+              for (var record in singaporeRecords) {
+                allSpecies.add(record.commonNames);
+              }
               return StatefulBuilder(builder: (context, setState) {
                 classCallback(newValue) {
                   setState(() {
                     newClass = newValue;
                   });
-                  print(newClass);
                 }
 
                 orderCallback(newValue) {
                   setState(() {
                     newOrder = newValue;
                   });
-                  print(newOrder);
                 }
 
                 familyCallback(newValue) {
                   setState(() {
                     newFamily = newValue;
                   });
-                  print(newFamily);
                 }
 
                 genusCallback(newValue) {
                   setState(() {
                     newGenus = newValue;
                   });
-                  print(newGenus);
+                }
+
+                titleCallback(newValue) {
+                  final splitNames = newValue.split(', ');
+                  setState(() {
+                    newTitle = splitNames[0];
+                  });
+                  final speciesRecord = singaporeRecords.singleWhere(
+                      (record) => record.commonNames == newValue, orElse: () {
+                    return SpeciesRecord(
+                        class_: '',
+                        order: '',
+                        family: '',
+                        genus: '',
+                        species: '',
+                        commonNames: '');
+                  });
+                  if (speciesRecord.class_ != '' &&
+                      speciesRecord.order != '' &&
+                      speciesRecord.family != '' &&
+                      speciesRecord.genus != '') {
+                    setState(() {
+                      newClass = speciesRecord.class_;
+                      newOrder = speciesRecord.order;
+                      newFamily = speciesRecord.family;
+                      newGenus = speciesRecord.genus;
+                      newSpecies = speciesRecord.species;
+                    });
+                  }
+                }
+
+                locationCallback(newValue) {
+                  setState(() {
+                    newLocation = newValue;
+                  });
                 }
 
                 return AlertDialog(
-                  title: const Text("Edit Post"),
+                  title: const Padding(
+                    padding: EdgeInsets.only(left: 5),
+                    child: Text("Edit Post"),
+                  ),
                   content: SingleChildScrollView(
                       child: Column(children: [
                     Container(
-                        margin: const EdgeInsets.only(left: 15),
+                        margin: const EdgeInsets.only(left: 5),
                         alignment: Alignment.centerLeft,
                         child: const Text(
-                          'Edit Title',
+                          'Edit Species Name',
                           style: TextStyle(
+                              fontSize: 15,
                               fontWeight: FontWeight.w500,
                               color: Color.fromARGB(255, 51, 64, 113)),
                         )),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 5, left: 15, right: 15),
-                      child: TextFormField(
-                        initialValue: post.title,
-                        decoration: const InputDecoration(
-                          hintText: 'Edit Title',
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            newTitle = value;
-                          });
-                        },
-                      ),
-                    ),
+                    selectableTextForm(
+                        titleController, post.title, allSpecies, titleCallback),
                     Container(
-                        margin: const EdgeInsets.only(top: 20, left: 15),
+                        margin: const EdgeInsets.only(top: 10, left: 5),
                         alignment: Alignment.centerLeft,
                         child: const Text(
                           'Edit Description',
                           style: TextStyle(
+                              fontSize: 15,
                               fontWeight: FontWeight.w500,
                               color: Color.fromARGB(255, 51, 64, 113)),
                         )),
-                    Padding(
+                    Container(
+                        margin:
+                            const EdgeInsets.only(top: 8, left: 5, right: 5),
                         padding: const EdgeInsets.only(
-                            left: 15, right: 15, bottom: 15),
+                          left: 15,
+                          right: 15,
+                        ),
+                        decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 225, 235, 248),
+                            borderRadius: BorderRadius.circular(16)),
                         child: TextFormField(
                           initialValue: post.description,
                           minLines: 1,
                           maxLines: 8,
                           decoration: const InputDecoration(
+                              border: InputBorder.none,
                               hintText: 'Edit Description'),
                           onChanged: (value) {
                             setState(() {
@@ -399,6 +420,23 @@ class WaitingListPageState extends State<WaitingListPage> {
                             });
                           },
                         )),
+                    Container(
+                        margin: const EdgeInsets.only(left: 5, top: 10),
+                        alignment: Alignment.centerLeft,
+                        child: const Text(
+                          'Edit Location',
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: Color.fromARGB(255, 51, 64, 113)),
+                        )),
+                    Padding(
+                        padding: const EdgeInsets.only(bottom: 18),
+                        child: selectableTextForm(
+                            locationController,
+                            post.sightingLocation,
+                            locations,
+                            locationCallback)),
                     Wrap(
                       children: [
                         const Text(
@@ -406,22 +444,22 @@ class WaitingListPageState extends State<WaitingListPage> {
                           style: TextStyle(
                               fontWeight: FontWeight.w500,
                               color: Color.fromARGB(255, 51, 64, 113),
-                              fontSize: 12),
+                              fontSize: 13),
                         ),
                         Text(
                           newClass == '' ? '${post.class_}   ' : '$newClass   ',
-                          style: const TextStyle(fontSize: 11),
+                          style: const TextStyle(fontSize: 12),
                         ),
                         const Text(
                           'Order: ',
                           style: TextStyle(
                               fontWeight: FontWeight.w500,
                               color: Color.fromARGB(255, 51, 64, 113),
-                              fontSize: 12),
+                              fontSize: 13),
                         ),
                         Text(
                           newOrder == '' ? '${post.order}' : newOrder,
-                          style: const TextStyle(fontSize: 11),
+                          style: const TextStyle(fontSize: 12),
                         ),
                       ],
                     ),
@@ -432,73 +470,127 @@ class WaitingListPageState extends State<WaitingListPage> {
                           style: TextStyle(
                               fontWeight: FontWeight.w500,
                               color: Color.fromARGB(255, 51, 64, 113),
-                              fontSize: 12),
+                              fontSize: 13),
                         ),
                         Text(
                           newFamily == ''
                               ? '${post.family}   '
                               : '$newFamily   ',
-                          style: const TextStyle(fontSize: 11),
+                          style: const TextStyle(fontSize: 12),
                         ),
                         const Text(
                           'Genus: ',
                           style: TextStyle(
                               fontWeight: FontWeight.w500,
                               color: Color.fromARGB(255, 51, 64, 113),
-                              fontSize: 12),
+                              fontSize: 13),
                         ),
                         Text(
                           newGenus == '' ? '${post.genus}' : newGenus,
-                          style: const TextStyle(fontSize: 11),
+                          style: const TextStyle(fontSize: 12),
                         ),
                       ],
                     ),
                   ])),
                   actions: [
-                    ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(content: StatefulBuilder(
-                                builder: (context, setState) {
-                                  return SpeciesStepper(
-                                    classCallback: classCallback,
-                                    orderCallback: orderCallback,
-                                    familyCallback: familyCallback,
-                                    genusCallback: genusCallback,
+                    Container(
+                        padding: const EdgeInsets.only(bottom: 5, left: 10),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(content: StatefulBuilder(
+                                    builder: (context, setState) {
+                                      return SpeciesStepper(
+                                        classCallback: classCallback,
+                                        orderCallback: orderCallback,
+                                        familyCallback: familyCallback,
+                                        genusCallback: genusCallback,
+                                      );
+                                    },
+                                  ));
+                                });
+                          },
+                          style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.only(
+                                  left: 10, top: 8, bottom: 8, right: 10),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              backgroundColor:
+                                  const Color.fromARGB(255, 102, 154, 217)),
+                          child: const Text(
+                            'Edit Classification',
+                            style: TextStyle(fontSize: 13),
+                          ),
+                        )),
+                    Container(
+                        margin: const EdgeInsets.only(bottom: 5),
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.only(
+                                    left: 10, top: 8, bottom: 8, right: 10),
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                backgroundColor:
+                                    const Color.fromARGB(255, 80, 170, 121)),
+                            child: const Text(
+                              "Confirm",
+                              style: TextStyle(fontSize: 13),
+                            ),
+                            onPressed: () {
+                              httpHelpers
+                                  .editPostInfoRequest(
+                                      post.postid,
+                                      jwt,
+                                      newTitle,
+                                      newDescription,
+                                      newLocation,
+                                      newClass,
+                                      newOrder,
+                                      newFamily,
+                                      newGenus,
+                                      newSpecies)
+                                  .then((response) {
+                                if (response == 'Post Edited') {
+                                  Navigator.pop(context);
+                                  setState(() {
+                                    newClass = '';
+                                    newOrder = '';
+                                    newFamily = '';
+                                    newGenus = '';
+                                  });
+                                  Fluttertoast.showToast(
+                                    msg: 'Post Edited',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    timeInSecForIosWeb: 1,
                                   );
-                                },
-                              ));
-                            });
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 102, 154, 217)),
-                      child: const Text(
-                        'Edit Classification',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
-                    ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromARGB(255, 80, 170, 121)),
-                        child: const Text("Confirm",
-                            style: TextStyle(fontSize: 12)),
-                        onPressed: () {
-                          httpHelpers
-                              .editPostInfoRequest(
-                                  post.postid,
-                                  jwt,
-                                  newTitle,
-                                  newDescription,
-                                  newClass,
-                                  newOrder,
-                                  newFamily,
-                                  newGenus)
-                              .then((response) {
-                            if (response == 'Post Edited') {
+                                } else {
+                                  Fluttertoast.showToast(
+                                    msg: 'Post Edit Failed :(',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    timeInSecForIosWeb: 1,
+                                  );
+                                }
+                              });
+                            })),
+                    Container(
+                        padding: const EdgeInsets.only(bottom: 5, right: 10),
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.only(
+                                    left: 10, top: 8, bottom: 8, right: 10),
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                backgroundColor:
+                                    const Color.fromARGB(255, 170, 80, 80)),
+                            child: const Text(
+                              "Cancel",
+                              style: TextStyle(fontSize: 13),
+                            ),
+                            onPressed: () {
                               Navigator.pop(context);
                               setState(() {
                                 newClass = '';
@@ -506,46 +598,18 @@ class WaitingListPageState extends State<WaitingListPage> {
                                 newFamily = '';
                                 newGenus = '';
                               });
-                              Fluttertoast.showToast(
-                                msg: 'Post Edited',
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                              );
-                            } else {
-                              Fluttertoast.showToast(
-                                msg: 'Post Edit Failed :(',
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                              );
-                            }
-                          });
-                        }),
-                    ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromARGB(255, 170, 80, 80)),
-                        child: const Text("Cancel",
-                            style: TextStyle(fontSize: 12)),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          setState(() {
-                            newClass = '';
-                            newOrder = '';
-                            newFamily = '';
-                            newGenus = '';
-                          });
-                        })
+                            }))
                   ],
                 );
               });
-            });
+            }).then((value) {
+          setState(() {});
+        });
       },
       style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.only(left: 5, top: 3, bottom: 3, right: 5),
           minimumSize: Size.zero,
-          backgroundColor: const Color.fromARGB(255, 80, 106, 170),
+          backgroundColor: const Color.fromARGB(255, 93, 123, 200),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap),
       child: const Text('Edit', style: TextStyle(fontSize: 9)),
     );
@@ -576,7 +640,7 @@ class WaitingListPageState extends State<WaitingListPage> {
       style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.only(left: 5, top: 3, bottom: 3, right: 5),
           minimumSize: Size.zero,
-          backgroundColor: const Color.fromARGB(255, 59, 132, 91),
+          backgroundColor: const Color.fromARGB(255, 63, 142, 97),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap),
       child: const Text('Verify', style: TextStyle(fontSize: 9)),
     );
@@ -635,9 +699,59 @@ class WaitingListPageState extends State<WaitingListPage> {
       style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.only(left: 5, top: 3, bottom: 3, right: 5),
           minimumSize: Size.zero,
-          backgroundColor: const Color.fromARGB(255, 189, 104, 20),
+          backgroundColor: const Color.fromARGB(255, 194, 93, 93),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap),
       child: const Text('Delete', style: TextStyle(fontSize: 9)),
     );
+  }
+
+  Widget selectableTextForm(TextEditingController controller, String hintText,
+      List<String> options, Function callback) {
+    return Container(
+        margin: const EdgeInsets.only(top: 8, left: 5, right: 5),
+        padding: const EdgeInsets.only(
+          left: 15,
+          right: 15,
+        ),
+        decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 225, 235, 248),
+            borderRadius: BorderRadius.circular(16)),
+        child: TypeAheadFormField(
+          hideOnLoading: true,
+          hideOnEmpty: true,
+          textFieldConfiguration: TextFieldConfiguration(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: hintText,
+                focusColor: const Color.fromARGB(255, 51, 64, 113),
+                border: InputBorder.none,
+              ),
+              autofocus: true,
+              style: const TextStyle(color: Color.fromARGB(255, 51, 64, 113))),
+          itemBuilder: (context, suggestion) {
+            return ListTile(
+              title: Text(suggestion),
+            );
+          },
+          errorBuilder: (context, error) {
+            return NoticeDialog(content: '$error');
+          },
+          suggestionsCallback: (pattern) {
+            List<String> matches = [];
+            if (pattern == '') {
+              return matches;
+            } else {
+              matches.addAll(options);
+              matches.retainWhere((matches) {
+                return matches.toLowerCase().contains(pattern.toLowerCase());
+              });
+              return matches;
+            }
+          },
+          onSuggestionSelected: (suggestion) {
+            callback(suggestion);
+            controller.text = suggestion;
+          },
+        ));
   }
 }

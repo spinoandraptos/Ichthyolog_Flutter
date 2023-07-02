@@ -35,7 +35,7 @@ class LoginPageState extends State<LoginPage> {
           if (context.mounted) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const RegularHomePage()),
+              MaterialPageRoute(builder: (context) => const HomePage()),
             );
           }
         } else {

@@ -39,76 +39,12 @@ class CameraPageState extends State<CameraPage> {
   String order = '';
   String family = '';
   String genus = '';
+  String species = '';
   final helpers = Helpers();
   final httpHelpers = HttpHelpers();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
-  List<String> species = <String>[];
-  List<String> locations = <String>[
-    'Classified',
-    'Singapore',
-    'Strait of Singapore',
-    'Singapore straits off raffles lighthouse',
-    'Singapore straits off Pulau Bukom',
-    'Singapore straits off Pulau Hantu',
-    'Singapore straits off St. John’s island ',
-    'Singapore straits off Pulau Sudong',
-    'Singapore straits off Pulau Satumu',
-    'Singapore straits off Terumbu berkas',
-    'Singapore straits off Terumbu Pempang Tengah',
-    'Singapore straits off Jurong Island',
-    'Singapore straits off Sentosa',
-    'Straits of Johor',
-    'Johor Straits off Tuas',
-    'Johor Straits off Sembawang',
-    'Johor Straits off Changi',
-    'Johor Straits off Pulau Ubin',
-    'Johor Straits off Pulau Tekong',
-    'Tuas',
-    'Raffles Marina',
-    'Kranji Reservoir ',
-    'Kranji Dam',
-    'Sembawang jetty',
-    'Sembawang Park',
-    'Lim Chu Kang Area',
-    'Woodlands Waterfront',
-    'Yishun Dam',
-    'Lower Seletar Reservoir (Rowers’ Bay)',
-    'Lower Seletar Reservoir',
-    'Punggol Waterfront',
-    'Punggol Point',
-    'Punggol Jetty',
-    'Lorong Halus',
-    'Punggol-Serangoon Reservoir',
-    'Punggol Reservoir',
-    'Coney East Dam',
-    'Lower Peirce Reservoir',
-    'Upper Seletar Reservoir',
-    'Macritchie Reservoir',
-    'Pasir Ris Park',
-    'Changi Boardwalk',
-    'Changi Beach Park',
-    'Pulau Ubin',
-    'NSRCC Canal',
-    'East Coast Park',
-    'East Coast Park (Bedok Jetty)',
-    'East Coast Park (Twin Jetty)',
-    'East Coast Park (White Jetty)',
-    'Bedok Reservoir',
-    'Kallang River',
-    'Kallang River (Marina Reservoir)',
-    'Kallang River (Kolam Ayer)',
-    'Kallang River (Rochor)',
-    'Kallang River (Macpherson)',
-    'Marina Barrage',
-    'Marina South Pier',
-    'Marina South',
-    'West Coast Park',
-    'Penjuru River',
-    'Pandan River',
-    'Pandan Reservoir ',
-    'Kent Ridge Park',
-  ];
+  List<String> allSpecies = <String>[];
 
   @override
   void initState() {
@@ -125,7 +61,7 @@ class CameraPageState extends State<CameraPage> {
       }
     });
     for (var record in singaporeRecords) {
-      species.add(record.commonNames);
+      allSpecies.add(record.commonNames);
     }
   }
 
@@ -153,7 +89,7 @@ class CameraPageState extends State<CameraPage> {
                           Icons.phishing,
                           color: Color.fromARGB(255, 51, 64, 113),
                         ),
-                        species,
+                        allSpecies,
                         titleCallback),
                     Container(
                         margin:
@@ -325,7 +261,8 @@ class CameraPageState extends State<CameraPage> {
                                     class_,
                                     order,
                                     family,
-                                    genus);
+                                    genus,
+                                    species);
                                 setState(() {
                                   image = null;
                                   class_ = '';
@@ -413,7 +350,8 @@ class CameraPageState extends State<CameraPage> {
       String class_,
       String order,
       String family,
-      String genus) async {
+      String genus,
+      String species) async {
     final key = const Uuid().v4();
     final file = AWSFile.fromPath(image!.path);
 
@@ -438,19 +376,23 @@ class CameraPageState extends State<CameraPage> {
               class_,
               order,
               family,
-              genus)
+              genus,
+              species)
           .then((String response) {
         if (response == 'Post Uploaded') {
+          titleController.text = '';
+          locationController.text = '';
           Fluttertoast.showToast(
             msg: 'Post uploaded successfully!',
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
             timeInSecForIosWeb: 1,
-          );
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const GalleryPage()),
-          );
+          ).then((value) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const GalleryPage()),
+            );
+          });
         } else {
           Fluttertoast.showToast(
             msg: 'Post upload failed!',
@@ -545,6 +487,7 @@ class CameraPageState extends State<CameraPage> {
         order = speciesRecord.order;
         family = speciesRecord.family;
         genus = speciesRecord.genus;
+        species = speciesRecord.species;
       });
     }
   }

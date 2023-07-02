@@ -18,6 +18,7 @@ class Post {
   final String? order;
   final String? family;
   final String? genus;
+  final String? species;
   final bool verified;
   final bool flagged;
 
@@ -37,6 +38,7 @@ class Post {
       this.order,
       this.family,
       this.genus,
+      this.species,
       required this.verified,
       required this.flagged});
 
@@ -58,6 +60,7 @@ class Post {
         order: json['_order'],
         family: json['family'],
         genus: json['genus'],
+        species: json['species'],
         verified: json['verified'],
         flagged: json['flagged']);
   }
