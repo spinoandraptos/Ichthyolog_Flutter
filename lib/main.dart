@@ -32,9 +32,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Authenticator(
-      child: const MaterialApp(
-        home: LoginPage(),
+      child: MaterialApp(
+        home: const LoginPage(),
         debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+            inputDecorationTheme: const InputDecorationTheme(
+                labelStyle: TextStyle(fontSize: 14),
+                floatingLabelStyle: TextStyle(
+                    color: Color.fromARGB(255, 71, 88, 149), fontSize: 14)),
+            textSelectionTheme: const TextSelectionThemeData(
+                cursorColor: Color.fromARGB(255, 71, 88, 149))),
       ),
     );
   }

@@ -124,10 +124,18 @@ class HttpHelpers {
         'email': email
       }),
     );
+    print(response.body);
+    print(response.statusCode);
     if (response.body == 'User not found') {
       return ('User Not Found');
     } else if (response.body == 'Incorrect password') {
       return ('Incorrect Password');
+    } else if (response.body ==
+        'duplicate key value violates unique constraint "users_email_key"') {
+      return 'Email Already Exists';
+    } else if (response.body ==
+        'duplicate key value violates unique constraint "users_username_key"') {
+      return ('Username Already Exists');
     } else if (response.statusCode != 200) {
       return ('Error');
     } else {

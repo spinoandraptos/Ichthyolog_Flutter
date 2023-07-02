@@ -106,6 +106,78 @@ class PostPageState extends State<PostPage> {
                                       alignment: Alignment.centerLeft,
                                       child:
                                           Text(snapshot.data!.description)))),
+                          Container(
+                              margin: const EdgeInsets.only(bottom: 5, top: 15),
+                              padding:
+                                  const EdgeInsets.only(left: 20, right: 20),
+                              alignment: Alignment.centerLeft,
+                              width: double.infinity,
+                              child: Column(children: [
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'Class: ',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color:
+                                              Color.fromARGB(255, 51, 64, 113),
+                                          fontSize: 14),
+                                    ),
+                                    Text(
+                                      snapshot.data!.class_ == null
+                                          ? '[Not recorded]    '
+                                          : '${snapshot.data!.class_}    ',
+                                      style: const TextStyle(fontSize: 13),
+                                    ),
+                                    const Text(
+                                      'Order: ',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color:
+                                              Color.fromARGB(255, 51, 64, 113),
+                                          fontSize: 14),
+                                    ),
+                                    Text(
+                                      snapshot.data!.order == null
+                                          ? '[Not recorded]'
+                                          : '${snapshot.data!.order}',
+                                      style: const TextStyle(fontSize: 13),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'Family: ',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color:
+                                              Color.fromARGB(255, 51, 64, 113),
+                                          fontSize: 14),
+                                    ),
+                                    Text(
+                                      snapshot.data!.family == null
+                                          ? '[Not recorded]    '
+                                          : '${snapshot.data!.family}    ',
+                                      style: const TextStyle(fontSize: 13),
+                                    ),
+                                    const Text(
+                                      'Genus: ',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color:
+                                              Color.fromARGB(255, 51, 64, 113),
+                                          fontSize: 14),
+                                    ),
+                                    Text(
+                                      snapshot.data!.genus == null
+                                          ? '[Not recorded]'
+                                          : '${snapshot.data!.genus}',
+                                      style: const TextStyle(fontSize: 13),
+                                    ),
+                                  ],
+                                ),
+                              ])),
                           Column(
                             children: [
                               Container(

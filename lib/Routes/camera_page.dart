@@ -4,9 +4,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'date_time_picker.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
+import '../Helpers/standard_widgets.dart';
+import '../Models/species.dart';
 import 'package:intl/intl.dart';
 import 'gallery_page.dart';
 import 'Stepper.dart';
@@ -38,6 +41,74 @@ class CameraPageState extends State<CameraPage> {
   String genus = '';
   final helpers = Helpers();
   final httpHelpers = HttpHelpers();
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController locationController = TextEditingController();
+  List<String> species = <String>[];
+  List<String> locations = <String>[
+    'Classified',
+    'Singapore',
+    'Strait of Singapore',
+    'Singapore straits off raffles lighthouse',
+    'Singapore straits off Pulau Bukom',
+    'Singapore straits off Pulau Hantu',
+    'Singapore straits off St. John’s island ',
+    'Singapore straits off Pulau Sudong',
+    'Singapore straits off Pulau Satumu',
+    'Singapore straits off Terumbu berkas',
+    'Singapore straits off Terumbu Pempang Tengah',
+    'Singapore straits off Jurong Island',
+    'Singapore straits off Sentosa',
+    'Straits of Johor',
+    'Johor Straits off Tuas',
+    'Johor Straits off Sembawang',
+    'Johor Straits off Changi',
+    'Johor Straits off Pulau Ubin',
+    'Johor Straits off Pulau Tekong',
+    'Tuas',
+    'Raffles Marina',
+    'Kranji Reservoir ',
+    'Kranji Dam',
+    'Sembawang jetty',
+    'Sembawang Park',
+    'Lim Chu Kang Area',
+    'Woodlands Waterfront',
+    'Yishun Dam',
+    'Lower Seletar Reservoir (Rowers’ Bay)',
+    'Lower Seletar Reservoir',
+    'Punggol Waterfront',
+    'Punggol Point',
+    'Punggol Jetty',
+    'Lorong Halus',
+    'Punggol-Serangoon Reservoir',
+    'Punggol Reservoir',
+    'Coney East Dam',
+    'Lower Peirce Reservoir',
+    'Upper Seletar Reservoir',
+    'Macritchie Reservoir',
+    'Pasir Ris Park',
+    'Changi Boardwalk',
+    'Changi Beach Park',
+    'Pulau Ubin',
+    'NSRCC Canal',
+    'East Coast Park',
+    'East Coast Park (Bedok Jetty)',
+    'East Coast Park (Twin Jetty)',
+    'East Coast Park (White Jetty)',
+    'Bedok Reservoir',
+    'Kallang River',
+    'Kallang River (Marina Reservoir)',
+    'Kallang River (Kolam Ayer)',
+    'Kallang River (Rochor)',
+    'Kallang River (Macpherson)',
+    'Marina Barrage',
+    'Marina South Pier',
+    'Marina South',
+    'West Coast Park',
+    'Penjuru River',
+    'Pandan River',
+    'Pandan Reservoir ',
+    'Kent Ridge Park',
+  ];
 
   @override
   void initState() {
@@ -53,6 +124,9 @@ class CameraPageState extends State<CameraPage> {
         });
       }
     });
+    for (var record in singaporeRecords) {
+      species.add(record.commonNames);
+    }
   }
 
   // ignore: unused_element
@@ -72,25 +146,32 @@ class CameraPageState extends State<CameraPage> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 5, left: 15, right: 15),
-                      child: TextFormField(
-                        decoration: const InputDecoration(
-                          hintText: 'Enter species name',
+                    selectableTextForm(
+                        titleController,
+                        'Enter species name',
+                        const Icon(
+                          Icons.phishing,
+                          color: Color.fromARGB(255, 51, 64, 113),
                         ),
-                        onChanged: (value) {
-                          setState(() {
-                            title = value;
-                          });
-                        },
-                      ),
-                    ),
-                    Padding(
-                        padding: const EdgeInsets.only(left: 15, right: 15),
+                        species,
+                        titleCallback),
+                    Container(
+                        margin:
+                            const EdgeInsets.only(top: 10, left: 12, right: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                        ),
+                        decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 225, 235, 248),
+                            borderRadius: BorderRadius.circular(16)),
                         child: TextFormField(
+                          minLines: 1,
+                          maxLines: 3,
                           decoration: const InputDecoration(
-                            hintText: 'Enter species description',
+                            icon: Icon(Icons.description,
+                                color: Color.fromARGB(255, 51, 64, 113)),
+                            border: InputBorder.none,
+                            labelText: 'Enter species description',
                           ),
                           onChanged: (value) {
                             setState(() {
@@ -98,19 +179,15 @@ class CameraPageState extends State<CameraPage> {
                             });
                           },
                         )),
-                    Padding(
-                        padding: const EdgeInsets.only(
-                            left: 15, right: 15, bottom: 8),
-                        child: TextFormField(
-                          decoration: const InputDecoration(
-                            hintText: 'Enter the location of sighting',
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              sightingLocation = value;
-                            });
-                          },
-                        )),
+                    selectableTextForm(
+                        locationController,
+                        'Enter the location of sighting',
+                        const Icon(
+                          Icons.pin_drop,
+                          color: Color.fromARGB(255, 51, 64, 113),
+                        ),
+                        locations,
+                        locationCallback),
                     Container(
                         alignment: Alignment.center,
                         width: double.infinity,
@@ -155,24 +232,24 @@ class CameraPageState extends State<CameraPage> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.w500,
                                     color: Color.fromARGB(255, 51, 64, 113),
-                                    fontSize: 16),
+                                    fontSize: 14),
                               ),
                               Text(
                                 class_ == ''
                                     ? '[Choose below]   '
                                     : '$class_   ',
-                                style: const TextStyle(fontSize: 15),
+                                style: const TextStyle(fontSize: 13),
                               ),
                               const Text(
                                 'Order: ',
                                 style: TextStyle(
                                     fontWeight: FontWeight.w500,
                                     color: Color.fromARGB(255, 51, 64, 113),
-                                    fontSize: 16),
+                                    fontSize: 14),
                               ),
                               Text(
                                 order == '' ? '[Choose below]' : order,
-                                style: const TextStyle(fontSize: 15),
+                                style: const TextStyle(fontSize: 13),
                               ),
                             ],
                           ),
@@ -183,24 +260,24 @@ class CameraPageState extends State<CameraPage> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.w500,
                                     color: Color.fromARGB(255, 51, 64, 113),
-                                    fontSize: 16),
+                                    fontSize: 14),
                               ),
                               Text(
                                 family == ''
                                     ? '[Choose below]   '
                                     : '$family   ',
-                                style: const TextStyle(fontSize: 15),
+                                style: const TextStyle(fontSize: 13),
                               ),
                               const Text(
                                 'Genus: ',
                                 style: TextStyle(
                                     fontWeight: FontWeight.w500,
                                     color: Color.fromARGB(255, 51, 64, 113),
-                                    fontSize: 16),
+                                    fontSize: 14),
                               ),
                               Text(
                                 genus == '' ? '[Choose below]' : genus,
-                                style: const TextStyle(fontSize: 15),
+                                style: const TextStyle(fontSize: 13),
                               ),
                             ],
                           ),
@@ -442,5 +519,90 @@ class CameraPageState extends State<CameraPage> {
     setState(() {
       genus = newValue;
     });
+  }
+
+  titleCallback(newValue) {
+    final splitNames = newValue.split(', ');
+    setState(() {
+      title = splitNames[0];
+    });
+    final speciesRecord = singaporeRecords
+        .singleWhere((record) => record.commonNames == newValue, orElse: () {
+      return SpeciesRecord(
+          class_: '',
+          order: '',
+          family: '',
+          genus: '',
+          species: '',
+          commonNames: '');
+    });
+    if (speciesRecord.class_ != '' &&
+        speciesRecord.order != '' &&
+        speciesRecord.family != '' &&
+        speciesRecord.genus != '') {
+      setState(() {
+        class_ = speciesRecord.class_;
+        order = speciesRecord.order;
+        family = speciesRecord.family;
+        genus = speciesRecord.genus;
+      });
+    }
+  }
+
+  locationCallback(newValue) {
+    setState(() {
+      sightingLocation = newValue;
+    });
+  }
+
+  Widget selectableTextForm(TextEditingController controller, String labelText,
+      Icon leadingIcon, List<String> options, Function callback) {
+    return Container(
+        margin: const EdgeInsets.only(top: 12, left: 12, right: 12),
+        padding: const EdgeInsets.only(
+          left: 15,
+          right: 15,
+        ),
+        decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 225, 235, 248),
+            borderRadius: BorderRadius.circular(16)),
+        child: TypeAheadFormField(
+          hideOnLoading: true,
+          hideOnEmpty: true,
+          textFieldConfiguration: TextFieldConfiguration(
+              controller: controller,
+              decoration: InputDecoration(
+                focusColor: const Color.fromARGB(255, 51, 64, 113),
+                icon: leadingIcon,
+                border: InputBorder.none,
+                labelText: labelText,
+              ),
+              autofocus: true,
+              style: const TextStyle(color: Color.fromARGB(255, 51, 64, 113))),
+          itemBuilder: (context, suggestion) {
+            return ListTile(
+              title: Text(suggestion),
+            );
+          },
+          errorBuilder: (context, error) {
+            return NoticeDialog(content: '$error');
+          },
+          suggestionsCallback: (pattern) {
+            List<String> matches = [];
+            if (pattern == '') {
+              return matches;
+            } else {
+              matches.addAll(options);
+              matches.retainWhere((matches) {
+                return matches.toLowerCase().contains(pattern.toLowerCase());
+              });
+              return matches;
+            }
+          },
+          onSuggestionSelected: (suggestion) {
+            callback(suggestion);
+            controller.text = suggestion;
+          },
+        ));
   }
 }

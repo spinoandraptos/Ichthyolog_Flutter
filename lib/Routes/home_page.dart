@@ -60,7 +60,7 @@ class HomePageState extends State<RegularHomePage> {
       return const NoticeDialog(
           content: 'Not authorised. Please sign in again');
     } else {
-      return FutureBuilder<User>(
+      return FutureBuilder(
           future: httpHelpers.viewOwnUserProfileRequest(jwt),
           builder: ((context, snapshot) {
             if (snapshot.hasData) {
@@ -182,7 +182,14 @@ class HomePageState extends State<RegularHomePage> {
               return const NoticeDialog(
                   content: 'User not found! Please try again');
             } else {
-              return const LoadingScreen();
+              return Scaffold(
+                  appBar: AppBar(
+                    leading: const Icon(Icons.menu),
+                    title: const Text('Home Page'),
+                    backgroundColor: const Color.fromARGB(255, 65, 90, 181),
+                    actions: [settingsButton(snapshot.data!), logoutButton()],
+                  ),
+                  body: const LoadingScreen());
             }
           }));
     }
@@ -454,13 +461,15 @@ class HomePageState extends State<RegularHomePage> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: const Text("Edit Profile"),
+                title: const Padding(
+                    padding: EdgeInsets.only(left: 5),
+                    child: Text("Edit Profile")),
                 content: SingleChildScrollView(
                     child: Form(
                         key: _formKey,
                         child: Column(children: [
                           Container(
-                              margin: const EdgeInsets.only(left: 15),
+                              margin: const EdgeInsets.only(left: 5),
                               alignment: Alignment.centerLeft,
                               child: const Text(
                                 'Edit Username',
@@ -470,7 +479,7 @@ class HomePageState extends State<RegularHomePage> {
                               )),
                           usernameField(),
                           Container(
-                              margin: const EdgeInsets.only(top: 20, left: 15),
+                              margin: const EdgeInsets.only(top: 20, left: 5),
                               alignment: Alignment.centerLeft,
                               child: const Text(
                                 'Edit Email',
@@ -480,7 +489,7 @@ class HomePageState extends State<RegularHomePage> {
                               )),
                           emailField(),
                           Container(
-                              margin: const EdgeInsets.only(top: 20, left: 15),
+                              margin: const EdgeInsets.only(top: 20, left: 5),
                               alignment: Alignment.centerLeft,
                               child: const Text(
                                 'Edit Password',
@@ -520,12 +529,14 @@ class HomePageState extends State<RegularHomePage> {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    title: const Text('Double Confirm'),
+                                    title: const Padding(
+                                        padding: EdgeInsets.only(left: 5),
+                                        child: Text('Double Confirm')),
                                     content: SingleChildScrollView(
                                         child: Column(children: [
                                       Container(
                                           margin: const EdgeInsets.only(
-                                              top: 20, left: 15),
+                                              top: 10, left: 5),
                                           alignment: Alignment.centerLeft,
                                           child: const Text(
                                             'Enter your current password',
@@ -571,6 +582,25 @@ class HomePageState extends State<RegularHomePage> {
                                                   'Incorrect Password') {
                                                 Fluttertoast.showToast(
                                                   msg: 'Incorrect Password',
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  timeInSecForIosWeb: 1,
+                                                );
+                                              } else if (response ==
+                                                  'Email Already Exists') {
+                                                Fluttertoast.showToast(
+                                                  msg: 'Email Already In Use',
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  timeInSecForIosWeb: 1,
+                                                );
+                                              } else if (response ==
+                                                  'Username Already Exists') {
+                                                Fluttertoast.showToast(
+                                                  msg:
+                                                      'Username Already In Use',
                                                   toastLength:
                                                       Toast.LENGTH_SHORT,
                                                   gravity: ToastGravity.BOTTOM,
@@ -684,7 +714,7 @@ class HomePageState extends State<RegularHomePage> {
 
   Widget newPasswordField() {
     return Padding(
-        padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
+        padding: const EdgeInsets.only(left: 5, right: 15, bottom: 10),
         child: TextFormField(
           obscureText: true,
           onChanged: (value) {
@@ -710,7 +740,7 @@ class HomePageState extends State<RegularHomePage> {
 
   Widget oldPasswordField() {
     return Padding(
-        padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
+        padding: const EdgeInsets.only(left: 5, right: 15, bottom: 10),
         child: TextFormField(
           obscureText: true,
           onChanged: (value) {
@@ -727,14 +757,14 @@ class HomePageState extends State<RegularHomePage> {
             return null;
           },
           decoration: const InputDecoration(
-            hintText: 'Enter a password',
+            hintText: 'Current password',
           ),
         ));
   }
 
   Widget emailField() {
     return Padding(
-        padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
+        padding: const EdgeInsets.only(left: 5, right: 15, bottom: 15),
         child: TextFormField(
           keyboardType: TextInputType.emailAddress,
           validator: (value) {
@@ -757,7 +787,7 @@ class HomePageState extends State<RegularHomePage> {
 
   Widget usernameField() {
     return Padding(
-      padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
+      padding: const EdgeInsets.only(left: 5, right: 15, bottom: 15),
       child: TextFormField(
         validator: (value) {
           if (value!.isNotEmpty && value.trim().length > 25) {

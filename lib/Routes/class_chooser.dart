@@ -11,14 +11,6 @@ class ClassPicker extends StatefulWidget {
 }
 
 class ClassPickerState extends State<ClassPicker> {
-  final classes = [
-    SpeciesClassification(
-        classification: 'Chondrichthyes',
-        description: 'Non-bony sharks and rays'),
-    SpeciesClassification(
-        classification: 'Actinopterygii', description: 'Ray-finned fish'),
-  ];
-
   String? selectedClass;
 
   @override

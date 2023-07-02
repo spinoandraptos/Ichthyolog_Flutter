@@ -45,24 +45,19 @@ class GalleryPageState extends State<GalleryPage> {
         future: httpHelpers.viewAllPostsRequest(),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
-            if (jwt == '') {
-              return Scaffold(
-                appBar: AppBar(
-                  title: const Text('Gallery Page'),
-                  backgroundColor: const Color.fromARGB(255, 51, 64, 113),
-                ),
-                body: galleryScreen(context, snapshot.data!),
-              );
-            } else {
-              return Scaffold(
-                appBar: AppBar(
-                  title: const Text('Gallery Page'),
-                  backgroundColor: const Color.fromARGB(255, 70, 88, 152),
-                  actions: [logoutButton()],
-                ),
-                body: galleryScreen(context, snapshot.data!),
-              );
-            }
+            return Scaffold(
+              appBar: jwt == ''
+                  ? AppBar(
+                      title: const Text('Gallery'),
+                      backgroundColor: const Color.fromARGB(255, 51, 64, 113),
+                    )
+                  : AppBar(
+                      title: const Text('Gallery Page'),
+                      backgroundColor: const Color.fromARGB(255, 70, 88, 152),
+                      actions: [logoutButton()],
+                    ),
+              body: galleryScreen(context, snapshot.data!),
+            );
           } else if (snapshot.hasError) {
             return const NoticeDialog(
                 content: 'Posts not found! Please try again');
@@ -82,8 +77,11 @@ class GalleryPageState extends State<GalleryPage> {
   }
 
   Widget editPostButton(Post post) {
-    return TextButton(
+    return ElevatedButton(
         style: TextButton.styleFrom(
+            backgroundColor:
+                const Color.fromARGB(255, 254, 255, 255).withOpacity(0.75),
+            foregroundColor: Color.fromARGB(255, 255, 255, 255),
             padding: const EdgeInsets.all(3),
             minimumSize: Size.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap),
@@ -328,8 +326,10 @@ class GalleryPageState extends State<GalleryPage> {
   }
 
   Widget deletePostButton(Post post) {
-    return TextButton(
+    return ElevatedButton(
         style: TextButton.styleFrom(
+            backgroundColor:
+                const Color.fromARGB(255, 254, 255, 255).withOpacity(0.75),
             padding: const EdgeInsets.all(3),
             minimumSize: Size.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap),
@@ -390,19 +390,44 @@ class GalleryPageState extends State<GalleryPage> {
 
   Widget clickableImage(Post post) {
     return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(6),
-        child: InkWell(
-            child: Ink.image(image: NetworkImage(post.pic), fit: BoxFit.cover),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => PostPage(postid: post.postid)),
-              );
-            }),
-      ),
-    );
+        child: Padding(
+            padding: const EdgeInsets.only(left: 6, right: 6),
+            child: decodedJWT['username'] == post.authorname
+                ? Stack(children: [
+                    InkWell(
+                        child: Ink.image(
+                            image: NetworkImage(post.pic), fit: BoxFit.cover),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    PostPage(postid: post.postid)),
+                          );
+                        }),
+                    Positioned(
+                        top: 8,
+                        right: 6,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            editPostButton(post),
+                            const SizedBox(width: 3),
+                            deletePostButton(post),
+                          ],
+                        ))
+                  ])
+                : InkWell(
+                    child: Ink.image(
+                        image: NetworkImage(post.pic), fit: BoxFit.cover),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                PostPage(postid: post.postid)),
+                      );
+                    })));
   }
 
   Widget galleryLegend() {
@@ -485,18 +510,14 @@ class GalleryPageState extends State<GalleryPage> {
             childAspectRatio: 0.85,
           ),
           itemBuilder: (context, index) {
-            if (decodedJWT['username'] == posts[index].authorname) {
-              return ownPostCard(posts[index]);
-            } else {
-              return otherPostCard(posts[index]);
-            }
+            return postCard(posts[index]);
           },
           shrinkWrap: true,
           padding: const EdgeInsets.all(12.0))
     ])));
   }
 
-  Widget ownPostCard(Post post) {
+  Widget postCard(Post post) {
     return Card(
         color: const Color.fromARGB(255, 253, 254, 255),
         elevation: 4.5,
@@ -509,79 +530,12 @@ class GalleryPageState extends State<GalleryPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Padding(
-                  padding: const EdgeInsets.only(left: 9, top: 5, right: 9),
-                  child: Row(children: [
-                    Container(
-                        padding: const EdgeInsets.only(right: 4),
-                        width: MediaQuery.of(context).size.width * 1 / 2.85,
-                        child: Text(
-                          post.title,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                              color: Color.fromARGB(255, 33, 53, 88)),
-                        )),
-                    CircleAvatar(
-                      radius: 9,
-                      backgroundColor: post.verified
-                          ? const Color.fromARGB(255, 73, 155, 109)
-                          : post.flagged
-                              ? const Color.fromARGB(255, 152, 72, 85)
-                              : const Color.fromARGB(255, 175, 103, 51),
-                      child: Icon(
-                        post.verified
-                            ? Icons.verified
-                            : post.flagged
-                                ? Icons.priority_high
-                                : Icons.pending,
-                        size: 10,
-                        color: Colors.white,
-                      ),
-                    )
-                  ])),
-
-              //Post Image
-              clickableImage(post),
-
-              //Clickable Buttons
-              Container(
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 4, bottom: 2),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      editPostButton(post),
-                      deletePostButton(post),
-                    ],
-                  )),
-              Container(
-                  padding: const EdgeInsets.only(left: 6, bottom: 5, right: 8),
-                  child: Text('Sighted at ${post.sightingLocation}',
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(
-                          fontSize: 9,
-                          color: Color.fromARGB(255, 33, 53, 88)))),
-            ]));
-  }
-
-  Widget otherPostCard(Post post) {
-    return Card(
-        color: const Color.fromARGB(255, 253, 254, 255),
-        elevation: 4.5,
-        shadowColor: const Color.fromARGB(255, 113, 165, 255),
-        clipBehavior: Clip.hardEdge,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(3),
-        ),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Padding(
-                  padding: const EdgeInsets.only(left: 9, top: 5, right: 9),
+                  padding: const EdgeInsets.only(
+                      left: 12, top: 10, right: 9, bottom: 8),
                   child: Row(children: [
                     Container(
                         padding: const EdgeInsets.only(right: 5),
-                        width: MediaQuery.of(context).size.width * 1 / 2.85,
+                        width: MediaQuery.of(context).size.width * 1 / 2.9,
                         child: Text(
                           post.title,
                           style: const TextStyle(
@@ -590,7 +544,7 @@ class GalleryPageState extends State<GalleryPage> {
                               color: Color.fromARGB(255, 33, 53, 88)),
                         )),
                     CircleAvatar(
-                      radius: 9,
+                      radius: 7,
                       backgroundColor: post.verified
                           ? const Color.fromARGB(255, 73, 155, 109)
                           : post.flagged
@@ -607,14 +561,27 @@ class GalleryPageState extends State<GalleryPage> {
                       ),
                     )
                   ])),
+              //Post Image
               clickableImage(post),
-              Container(
-                  padding: const EdgeInsets.only(left: 6, bottom: 5, right: 8),
-                  child: Text('Sighted at ${post.sightingLocation}',
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(
-                          fontSize: 9,
-                          color: Color.fromARGB(255, 33, 53, 88)))),
+              Padding(
+                  padding: const EdgeInsets.only(
+                      left: 12, top: 8, right: 9, bottom: 8),
+                  child: Row(children: [
+                    const Padding(
+                        padding: EdgeInsets.only(right: 8),
+                        child: Icon(
+                          Icons.pin_drop,
+                          size: 14,
+                          color: Color.fromARGB(255, 51, 64, 113),
+                        )),
+                    Expanded(
+                      child: Text(post.sightingLocation,
+                          style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                              color: Color.fromARGB(255, 33, 53, 88))),
+                    ),
+                  ])),
             ]));
   }
 }
