@@ -186,7 +186,7 @@ class CommentPageState extends State<CommentPage> {
                                               ? const Color.fromARGB(
                                                   255, 79, 142, 112)
                                               : const Color.fromARGB(
-                                                  255, 155, 96, 92)),
+                                                  255, 154, 85, 85)),
                                       child: suggestingID
                                           ? const Text('ID Suggestion Mode: On',
                                               style: TextStyle(fontSize: 15))

@@ -756,10 +756,12 @@ class HttpHelpers {
         'Authorisation': jwt
       },
     );
-    if (response.statusCode == 200) {
-      return json.decode(response.body)[0]['exists'];
-    } else {
+    if (response.body == 'Invalid search') {
+      return false;
+    } else if (response.statusCode != 200) {
       return Future.error('Server error');
+    } else {
+      return true;
     }
   }
 
@@ -774,10 +776,12 @@ class HttpHelpers {
         'Authorisation': jwt
       },
     );
-    if (response.statusCode == 200) {
-      return json.decode(response.body)[0]['exists'];
-    } else {
+    if (response.body == 'Invalid search') {
+      return false;
+    } else if (response.statusCode != 200) {
       return Future.error('Server error');
+    } else {
+      return true;
     }
   }
 
