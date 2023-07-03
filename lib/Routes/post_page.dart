@@ -43,7 +43,10 @@ class PostPageState extends State<PostPage> {
           if (snapshot.hasData) {
             return Scaffold(
               appBar: AppBar(
-                title: Text(snapshot.data!.title),
+                title: snapshot.data!.species == null
+                    ? Text(snapshot.data!.title)
+                    : Text(
+                        '${snapshot.data!.title} (${snapshot.data!.species})'),
                 backgroundColor: const Color.fromARGB(255, 51, 64, 113),
               ),
               body: SizedBox(

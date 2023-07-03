@@ -9,12 +9,14 @@ class OwnComment extends StatefulWidget {
   final String jwt;
   final Function updateCallBack;
   final int userid;
+  final int postid;
   const OwnComment(
       {Key? key,
       required this.comment,
       required this.jwt,
       required this.updateCallBack,
-      required this.userid})
+      required this.userid,
+      required this.postid})
       : super(key: key);
 
   @override
@@ -25,6 +27,16 @@ class OwnCommentState extends State<OwnComment> {
   final httpHelpers = HttpHelpers();
   String updatedContent = '';
   bool upvoted = false;
+  bool isExpert = false;
+
+  @override
+  void initState() {
+    super.initState();
+    httpHelpers
+        .viewOwnUserProfileRequest(widget.jwt)
+        .then((user) => isExpert = user.expert);
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -50,19 +62,70 @@ class OwnCommentState extends State<OwnComment> {
                         padding: const EdgeInsets.only(bottom: 3),
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                  padding: const EdgeInsets.only(bottom: 2),
-                                  child: Text(
-                                    widget.comment.authorName,
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        color:
-                                            Color.fromARGB(255, 51, 64, 113)),
-                                  )),
-                              Text(widget.comment.content)
-                            ])),
+                            children: widget.comment.idSuggestion
+                                ? [
+                                    Row(
+                                      children: [
+                                        Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 2),
+                                            child: Text(
+                                              widget.comment.authorName,
+                                              style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color.fromARGB(
+                                                      255, 51, 64, 113)),
+                                            )),
+                                        Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 2),
+                                            child: widget
+                                                    .comment.suggestionApproved
+                                                ? widget.comment.idReplaced
+                                                    ? const Text(
+                                                        '’s ID is revoked',
+                                                        style: TextStyle(
+                                                            fontSize: 13),
+                                                      )
+                                                    : const Text(
+                                                        '’s ID is approved',
+                                                        style: TextStyle(
+                                                            fontSize: 13),
+                                                      )
+                                                : const Text(
+                                                    ' suggested an ID:',
+                                                    style:
+                                                        TextStyle(fontSize: 13),
+                                                  )),
+                                      ],
+                                    ),
+                                    Container(
+                                        padding: const EdgeInsets.all(2),
+                                        color: widget.comment.suggestionApproved
+                                            ? widget.comment.idReplaced
+                                                ? const Color.fromARGB(
+                                                    255, 243, 243, 243)
+                                                : const Color.fromARGB(
+                                                    255, 231, 250, 237)
+                                            : const Color.fromARGB(
+                                                255, 231, 237, 250),
+                                        child: Text(widget.comment.content))
+                                  ]
+                                : [
+                                    Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 2),
+                                        child: Text(
+                                          widget.comment.authorName,
+                                          style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color.fromARGB(
+                                                  255, 51, 64, 113)),
+                                        )),
+                                    Text(widget.comment.content)
+                                  ])),
                     subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -76,208 +139,513 @@ class OwnCommentState extends State<OwnComment> {
                               padding: const EdgeInsets.only(top: 4, bottom: 4),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  TextButton(
-                                      style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.all(3),
-                                          minimumSize: Size.zero,
-                                          tapTargetSize:
-                                              MaterialTapTargetSize.shrinkWrap),
-                                      onPressed: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return AlertDialog(
-                                                  title: const Text(
-                                                      "Edit Comment"),
-                                                  content: TextFormField(
-                                                    initialValue:
-                                                        widget.comment.content,
-                                                    minLines: 1,
-                                                    maxLines: 10,
-                                                    decoration:
-                                                        const InputDecoration(
-                                                      hintText: "Edit Comment",
-                                                    ),
-                                                    onChanged: (value) {
-                                                      setState(() {
-                                                        updatedContent = value;
-                                                      });
-                                                    },
-                                                  ),
-                                                  actions: [
-                                                    ElevatedButton(
-                                                        style: ElevatedButton
-                                                            .styleFrom(
-                                                                backgroundColor:
-                                                                    const Color
-                                                                            .fromARGB(
-                                                                        255,
-                                                                        80,
-                                                                        170,
-                                                                        121)),
-                                                        child: const Text(
-                                                            "Confirm"),
-                                                        onPressed: () {
-                                                          httpHelpers
-                                                              .editCommentRequest(
-                                                                  widget.comment
-                                                                      .commentId,
-                                                                  updatedContent,
-                                                                  widget.jwt)
-                                                              .then((response) {
-                                                            if (response ==
-                                                                'Comment Edited') {
-                                                              widget
-                                                                  .updateCallBack(
-                                                                      response);
-                                                              Navigator.pop(
-                                                                  context);
-                                                              Fluttertoast
-                                                                  .showToast(
-                                                                msg:
-                                                                    'Comment Edited',
-                                                                toastLength: Toast
-                                                                    .LENGTH_SHORT,
-                                                                gravity:
-                                                                    ToastGravity
-                                                                        .BOTTOM,
-                                                                timeInSecForIosWeb:
-                                                                    1,
-                                                              );
-                                                            } else {
-                                                              Fluttertoast
-                                                                  .showToast(
-                                                                msg:
-                                                                    'Comment Edit Failed :(',
-                                                                toastLength: Toast
-                                                                    .LENGTH_SHORT,
-                                                                gravity:
-                                                                    ToastGravity
-                                                                        .BOTTOM,
-                                                                timeInSecForIosWeb:
-                                                                    1,
-                                                              );
-                                                            }
-                                                          });
-                                                        }),
-                                                    ElevatedButton(
-                                                        style: ElevatedButton.styleFrom(
-                                                            backgroundColor:
-                                                                const Color
-                                                                        .fromARGB(
-                                                                    255,
-                                                                    170,
-                                                                    80,
-                                                                    80)),
-                                                        child: const Text(
-                                                            "Cancel"),
-                                                        onPressed: () {
-                                                          Navigator.pop(
-                                                              context);
-                                                        })
-                                                  ]);
-                                            });
-                                      },
-                                      child: const Text('Edit Comment',
-                                          style: TextStyle(
-                                              fontSize: 10,
-                                              color: Color.fromARGB(
-                                                  255, 68, 95, 143)))),
-                                  TextButton(
-                                      style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.all(3),
-                                          minimumSize: Size.zero,
-                                          tapTargetSize:
-                                              MaterialTapTargetSize.shrinkWrap),
-                                      onPressed: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return AlertDialog(
-                                                  title: const Text("Warning"),
-                                                  content: const Text(
-                                                      'Are you sure? This action is irreversible!'),
-                                                  actions: [
-                                                    ElevatedButton(
-                                                        style: ElevatedButton
-                                                            .styleFrom(
-                                                                backgroundColor:
-                                                                    const Color
-                                                                            .fromARGB(
-                                                                        255,
-                                                                        80,
-                                                                        170,
-                                                                        121)),
-                                                        child:
-                                                            const Text("Yes"),
-                                                        onPressed: () {
-                                                          httpHelpers
-                                                              .deleteCommentRequest(
-                                                                  widget.comment
-                                                                      .commentId,
-                                                                  widget.jwt)
-                                                              .then(
-                                                            (response) {
-                                                              Navigator.pop(
-                                                                  context);
-                                                              if (response ==
-                                                                  'Comment Deleted') {
-                                                                widget.updateCallBack(
-                                                                    response);
-                                                                Fluttertoast
-                                                                    .showToast(
-                                                                  msg:
-                                                                      'Comment deleted',
-                                                                  toastLength: Toast
-                                                                      .LENGTH_SHORT,
-                                                                  gravity:
-                                                                      ToastGravity
-                                                                          .BOTTOM,
-                                                                  timeInSecForIosWeb:
-                                                                      1,
+                                children: widget.comment.idSuggestion &&
+                                        isExpert
+                                    ? [
+                                        TextButton(
+                                            style: TextButton.styleFrom(
+                                                padding:
+                                                    const EdgeInsets.all(3),
+                                                minimumSize: Size.zero,
+                                                tapTargetSize:
+                                                    MaterialTapTargetSize
+                                                        .shrinkWrap),
+                                            onPressed: () {
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                        title: const Text(
+                                                            "Edit Comment"),
+                                                        content: TextFormField(
+                                                          initialValue: widget
+                                                              .comment.content,
+                                                          minLines: 1,
+                                                          maxLines: 10,
+                                                          decoration:
+                                                              const InputDecoration(
+                                                            hintText:
+                                                                "Edit Comment",
+                                                          ),
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              updatedContent =
+                                                                  value;
+                                                            });
+                                                          },
+                                                        ),
+                                                        actions: [
+                                                          ElevatedButton(
+                                                              style: ElevatedButton.styleFrom(
+                                                                  backgroundColor:
+                                                                      const Color
+                                                                              .fromARGB(
+                                                                          255,
+                                                                          80,
+                                                                          170,
+                                                                          121)),
+                                                              child: const Text(
+                                                                  "Confirm"),
+                                                              onPressed: () {
+                                                                httpHelpers
+                                                                    .editCommentRequest(
+                                                                        widget
+                                                                            .comment
+                                                                            .commentId,
+                                                                        updatedContent,
+                                                                        widget
+                                                                            .jwt)
+                                                                    .then(
+                                                                        (response) {
+                                                                  if (response ==
+                                                                      'Comment Edited') {
+                                                                    widget.updateCallBack(
+                                                                        response);
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                    Fluttertoast
+                                                                        .showToast(
+                                                                      msg:
+                                                                          'Comment Edited',
+                                                                      toastLength:
+                                                                          Toast
+                                                                              .LENGTH_SHORT,
+                                                                      gravity:
+                                                                          ToastGravity
+                                                                              .BOTTOM,
+                                                                      timeInSecForIosWeb:
+                                                                          1,
+                                                                    );
+                                                                  } else {
+                                                                    Fluttertoast
+                                                                        .showToast(
+                                                                      msg:
+                                                                          'Comment Edit Failed :(',
+                                                                      toastLength:
+                                                                          Toast
+                                                                              .LENGTH_SHORT,
+                                                                      gravity:
+                                                                          ToastGravity
+                                                                              .BOTTOM,
+                                                                      timeInSecForIosWeb:
+                                                                          1,
+                                                                    );
+                                                                  }
+                                                                });
+                                                              }),
+                                                          ElevatedButton(
+                                                              style: ElevatedButton.styleFrom(
+                                                                  backgroundColor:
+                                                                      const Color
+                                                                              .fromARGB(
+                                                                          255,
+                                                                          170,
+                                                                          80,
+                                                                          80)),
+                                                              child: const Text(
+                                                                  "Cancel"),
+                                                              onPressed: () {
+                                                                Navigator.pop(
+                                                                    context);
+                                                              })
+                                                        ]);
+                                                  });
+                                            },
+                                            child: const Text('Edit',
+                                                style: TextStyle(
+                                                    fontSize: 10,
+                                                    color: Color.fromARGB(
+                                                        255, 68, 95, 143)))),
+                                        TextButton(
+                                            style: TextButton.styleFrom(
+                                                padding:
+                                                    const EdgeInsets.all(3),
+                                                minimumSize: Size.zero,
+                                                tapTargetSize:
+                                                    MaterialTapTargetSize
+                                                        .shrinkWrap),
+                                            onPressed: () {
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                        title: const Text(
+                                                            "Warning"),
+                                                        content: const Text(
+                                                            'Are you sure? This action is irreversible!'),
+                                                        actions: [
+                                                          ElevatedButton(
+                                                              style: ElevatedButton.styleFrom(
+                                                                  backgroundColor:
+                                                                      const Color
+                                                                              .fromARGB(
+                                                                          255,
+                                                                          80,
+                                                                          170,
+                                                                          121)),
+                                                              child: const Text(
+                                                                  "Yes"),
+                                                              onPressed: () {
+                                                                httpHelpers
+                                                                    .deleteCommentRequest(
+                                                                        widget
+                                                                            .comment
+                                                                            .commentId,
+                                                                        widget
+                                                                            .jwt)
+                                                                    .then(
+                                                                  (response) {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                    if (response ==
+                                                                        'Comment Deleted') {
+                                                                      widget.updateCallBack(
+                                                                          response);
+                                                                      Fluttertoast
+                                                                          .showToast(
+                                                                        msg:
+                                                                            'Comment deleted',
+                                                                        toastLength:
+                                                                            Toast.LENGTH_SHORT,
+                                                                        gravity:
+                                                                            ToastGravity.BOTTOM,
+                                                                        timeInSecForIosWeb:
+                                                                            1,
+                                                                      );
+                                                                    } else {
+                                                                      Fluttertoast
+                                                                          .showToast(
+                                                                        msg:
+                                                                            'Comment failed to delete :(',
+                                                                        toastLength:
+                                                                            Toast.LENGTH_SHORT,
+                                                                        gravity:
+                                                                            ToastGravity.BOTTOM,
+                                                                        timeInSecForIosWeb:
+                                                                            1,
+                                                                      );
+                                                                    }
+                                                                  },
                                                                 );
-                                                              } else {
-                                                                Fluttertoast
-                                                                    .showToast(
-                                                                  msg:
-                                                                      'Comment failed to delete :(',
-                                                                  toastLength: Toast
-                                                                      .LENGTH_SHORT,
-                                                                  gravity:
-                                                                      ToastGravity
-                                                                          .BOTTOM,
-                                                                  timeInSecForIosWeb:
-                                                                      1,
-                                                                );
-                                                              }
-                                                            },
+                                                              }),
+                                                          ElevatedButton(
+                                                              style: ElevatedButton.styleFrom(
+                                                                  backgroundColor:
+                                                                      const Color
+                                                                              .fromARGB(
+                                                                          255,
+                                                                          170,
+                                                                          80,
+                                                                          80)),
+                                                              child: const Text(
+                                                                  "Cancel"),
+                                                              onPressed: () {
+                                                                Navigator.pop(
+                                                                    context);
+                                                              })
+                                                        ]);
+                                                  });
+                                            },
+                                            child: const Text('Delete',
+                                                style: TextStyle(
+                                                    fontSize: 10,
+                                                    color: Color.fromARGB(
+                                                        255, 68, 95, 143)))),
+                                        TextButton(
+                                            style: TextButton.styleFrom(
+                                                padding:
+                                                    const EdgeInsets.all(3),
+                                                minimumSize: Size.zero,
+                                                tapTargetSize:
+                                                    MaterialTapTargetSize
+                                                        .shrinkWrap),
+                                            onPressed: () {
+                                              widget.comment.suggestionApproved
+                                                  ? null
+                                                  : httpHelpers
+                                                      .acceptIdSuggestionRequest(
+                                                          widget.postid,
+                                                          widget.comment
+                                                              .commentId,
+                                                          widget
+                                                              .comment.content,
+                                                          widget.jwt)
+                                                      .then(
+                                                      (response) {
+                                                        if (response ==
+                                                            'ID Accepted') {
+                                                          widget.updateCallBack(
+                                                              response);
+                                                          Fluttertoast
+                                                              .showToast(
+                                                            msg: 'ID Accepted',
+                                                            toastLength: Toast
+                                                                .LENGTH_SHORT,
+                                                            gravity:
+                                                                ToastGravity
+                                                                    .BOTTOM,
+                                                            timeInSecForIosWeb:
+                                                                1,
                                                           );
-                                                        }),
-                                                    ElevatedButton(
-                                                        style: ElevatedButton.styleFrom(
-                                                            backgroundColor:
-                                                                const Color
-                                                                        .fromARGB(
-                                                                    255,
-                                                                    170,
-                                                                    80,
-                                                                    80)),
-                                                        child: const Text(
-                                                            "Cancel"),
-                                                        onPressed: () {
-                                                          Navigator.pop(
-                                                              context);
-                                                        })
-                                                  ]);
-                                            });
-                                      },
-                                      child: const Text('Delete Comment',
-                                          style: TextStyle(
-                                              fontSize: 10,
-                                              color: Color.fromARGB(
-                                                  255, 68, 95, 143)))),
-                                ],
+                                                        } else if (response ==
+                                                            'Approved ID Already Exists') {
+                                                          showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return const NoticeDialog(
+                                                                    content:
+                                                                        'Sighting ID already approved! To challenge existing ID, please submit a dispute.');
+                                                              });
+                                                        } else {
+                                                          Fluttertoast
+                                                              .showToast(
+                                                            msg:
+                                                                'ID Acceptance Failed :(',
+                                                            toastLength: Toast
+                                                                .LENGTH_SHORT,
+                                                            gravity:
+                                                                ToastGravity
+                                                                    .BOTTOM,
+                                                            timeInSecForIosWeb:
+                                                                1,
+                                                          );
+                                                        }
+                                                      },
+                                                    );
+                                            },
+                                            child: widget
+                                                    .comment.suggestionApproved
+                                                ? const Text('Dispute Approval',
+                                                    style: TextStyle(
+                                                        fontSize: 10,
+                                                        color: Color.fromARGB(
+                                                            255, 68, 95, 143)))
+                                                : const Text('Accept ID',
+                                                    style: TextStyle(
+                                                        fontSize: 10,
+                                                        color: Color.fromARGB(
+                                                            255,
+                                                            68,
+                                                            95,
+                                                            143)))),
+                                      ]
+                                    : [
+                                        TextButton(
+                                            style: TextButton.styleFrom(
+                                                padding:
+                                                    const EdgeInsets.all(3),
+                                                minimumSize: Size.zero,
+                                                tapTargetSize:
+                                                    MaterialTapTargetSize
+                                                        .shrinkWrap),
+                                            onPressed: () {
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                        title: const Text(
+                                                            "Edit Comment"),
+                                                        content: TextFormField(
+                                                          initialValue: widget
+                                                              .comment.content,
+                                                          minLines: 1,
+                                                          maxLines: 10,
+                                                          decoration:
+                                                              const InputDecoration(
+                                                            hintText:
+                                                                "Edit Comment",
+                                                          ),
+                                                          onChanged: (value) {
+                                                            setState(() {
+                                                              updatedContent =
+                                                                  value;
+                                                            });
+                                                          },
+                                                        ),
+                                                        actions: [
+                                                          ElevatedButton(
+                                                              style: ElevatedButton.styleFrom(
+                                                                  backgroundColor:
+                                                                      const Color
+                                                                              .fromARGB(
+                                                                          255,
+                                                                          80,
+                                                                          170,
+                                                                          121)),
+                                                              child: const Text(
+                                                                  "Confirm"),
+                                                              onPressed: () {
+                                                                httpHelpers
+                                                                    .editCommentRequest(
+                                                                        widget
+                                                                            .comment
+                                                                            .commentId,
+                                                                        updatedContent,
+                                                                        widget
+                                                                            .jwt)
+                                                                    .then(
+                                                                        (response) {
+                                                                  if (response ==
+                                                                      'Comment Edited') {
+                                                                    widget.updateCallBack(
+                                                                        response);
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                    Fluttertoast
+                                                                        .showToast(
+                                                                      msg:
+                                                                          'Comment Edited',
+                                                                      toastLength:
+                                                                          Toast
+                                                                              .LENGTH_SHORT,
+                                                                      gravity:
+                                                                          ToastGravity
+                                                                              .BOTTOM,
+                                                                      timeInSecForIosWeb:
+                                                                          1,
+                                                                    );
+                                                                  } else {
+                                                                    Fluttertoast
+                                                                        .showToast(
+                                                                      msg:
+                                                                          'Comment Edit Failed :(',
+                                                                      toastLength:
+                                                                          Toast
+                                                                              .LENGTH_SHORT,
+                                                                      gravity:
+                                                                          ToastGravity
+                                                                              .BOTTOM,
+                                                                      timeInSecForIosWeb:
+                                                                          1,
+                                                                    );
+                                                                  }
+                                                                });
+                                                              }),
+                                                          ElevatedButton(
+                                                              style: ElevatedButton.styleFrom(
+                                                                  backgroundColor:
+                                                                      const Color
+                                                                              .fromARGB(
+                                                                          255,
+                                                                          170,
+                                                                          80,
+                                                                          80)),
+                                                              child: const Text(
+                                                                  "Cancel"),
+                                                              onPressed: () {
+                                                                Navigator.pop(
+                                                                    context);
+                                                              })
+                                                        ]);
+                                                  });
+                                            },
+                                            child: const Text('Edit',
+                                                style: TextStyle(
+                                                    fontSize: 10,
+                                                    color: Color.fromARGB(
+                                                        255, 68, 95, 143)))),
+                                        TextButton(
+                                            style: TextButton.styleFrom(
+                                                padding:
+                                                    const EdgeInsets.all(3),
+                                                minimumSize: Size.zero,
+                                                tapTargetSize:
+                                                    MaterialTapTargetSize
+                                                        .shrinkWrap),
+                                            onPressed: () {
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                        title: const Text(
+                                                            "Warning"),
+                                                        content: const Text(
+                                                            'Are you sure? This action is irreversible!'),
+                                                        actions: [
+                                                          ElevatedButton(
+                                                              style: ElevatedButton.styleFrom(
+                                                                  backgroundColor:
+                                                                      const Color
+                                                                              .fromARGB(
+                                                                          255,
+                                                                          80,
+                                                                          170,
+                                                                          121)),
+                                                              child: const Text(
+                                                                  "Yes"),
+                                                              onPressed: () {
+                                                                httpHelpers
+                                                                    .deleteCommentRequest(
+                                                                        widget
+                                                                            .comment
+                                                                            .commentId,
+                                                                        widget
+                                                                            .jwt)
+                                                                    .then(
+                                                                  (response) {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                    if (response ==
+                                                                        'Comment Deleted') {
+                                                                      widget.updateCallBack(
+                                                                          response);
+                                                                      Fluttertoast
+                                                                          .showToast(
+                                                                        msg:
+                                                                            'Comment deleted',
+                                                                        toastLength:
+                                                                            Toast.LENGTH_SHORT,
+                                                                        gravity:
+                                                                            ToastGravity.BOTTOM,
+                                                                        timeInSecForIosWeb:
+                                                                            1,
+                                                                      );
+                                                                    } else {
+                                                                      Fluttertoast
+                                                                          .showToast(
+                                                                        msg:
+                                                                            'Comment failed to delete :(',
+                                                                        toastLength:
+                                                                            Toast.LENGTH_SHORT,
+                                                                        gravity:
+                                                                            ToastGravity.BOTTOM,
+                                                                        timeInSecForIosWeb:
+                                                                            1,
+                                                                      );
+                                                                    }
+                                                                  },
+                                                                );
+                                                              }),
+                                                          ElevatedButton(
+                                                              style: ElevatedButton.styleFrom(
+                                                                  backgroundColor:
+                                                                      const Color
+                                                                              .fromARGB(
+                                                                          255,
+                                                                          170,
+                                                                          80,
+                                                                          80)),
+                                                              child: const Text(
+                                                                  "Cancel"),
+                                                              onPressed: () {
+                                                                Navigator.pop(
+                                                                    context);
+                                                              })
+                                                        ]);
+                                                  });
+                                            },
+                                            child: const Text('Delete ',
+                                                style: TextStyle(
+                                                    fontSize: 10,
+                                                    color: Color.fromARGB(
+                                                        255, 68, 95, 143)))),
+                                      ],
                               )),
                         ]),
                     trailing: Row(
@@ -479,12 +847,14 @@ class OtherComment extends StatefulWidget {
   final String jwt;
   final Function updateCallBack;
   final int userid;
+  final int postid;
   const OtherComment(
       {Key? key,
       required this.comment,
       required this.jwt,
       required this.updateCallBack,
-      required this.userid})
+      required this.userid,
+      required this.postid})
       : super(key: key);
 
   @override
@@ -495,6 +865,16 @@ class OtherCommentState extends State<OtherComment> {
   final httpHelpers = HttpHelpers();
   bool upvoted = false;
   late List<int> upvoterIDs;
+  bool isExpert = false;
+
+  @override
+  void initState() {
+    super.initState();
+    httpHelpers
+        .viewOwnUserProfileRequest(widget.jwt)
+        .then((user) => isExpert = user.expert);
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -518,24 +898,214 @@ class OtherCommentState extends State<OtherComment> {
                       padding: const EdgeInsets.only(bottom: 3),
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          children: widget.comment.idSuggestion
+                              ? [
+                                  Row(
+                                    children: [
+                                      Padding(
+                                          padding:
+                                              const EdgeInsets.only(bottom: 2),
+                                          child: Text(
+                                            widget.comment.authorName,
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
+                                                color: Color.fromARGB(
+                                                    255, 51, 64, 113)),
+                                          )),
+                                      Padding(
+                                          padding:
+                                              const EdgeInsets.only(bottom: 2),
+                                          child: widget
+                                                  .comment.suggestionApproved
+                                              ? widget.comment.idReplaced
+                                                  ? const Text(
+                                                      '’s ID is revoked',
+                                                      style: TextStyle(
+                                                          fontSize: 13),
+                                                    )
+                                                  : const Text(
+                                                      '’s ID is approved',
+                                                      style: TextStyle(
+                                                          fontSize: 13),
+                                                    )
+                                              : const Text(
+                                                  ' suggested an ID:',
+                                                  style:
+                                                      TextStyle(fontSize: 13),
+                                                )),
+                                    ],
+                                  ),
+                                  Container(
+                                      padding: const EdgeInsets.all(2),
+                                      color: widget.comment.suggestionApproved
+                                          ? widget.comment.idReplaced
+                                              ? const Color.fromARGB(
+                                                  255, 243, 243, 243)
+                                              : const Color.fromARGB(
+                                                  255, 231, 250, 237)
+                                          : const Color.fromARGB(
+                                              255, 231, 237, 250),
+                                      child: Text(widget.comment.content))
+                                ]
+                              : [
+                                  Padding(
+                                      padding: const EdgeInsets.only(bottom: 2),
+                                      child: Text(
+                                        widget.comment.authorName,
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: Color.fromARGB(
+                                                255, 51, 64, 113)),
+                                      )),
+                                  Text(widget.comment.content)
+                                ])),
+                  subtitle: widget.comment.idSuggestion && isExpert
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Padding(
-                                padding: const EdgeInsets.only(bottom: 2),
-                                child: Text(
-                                  widget.comment.authorName,
-                                  style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: Color.fromARGB(255, 51, 64, 113)),
-                                )),
-                            Text(widget.comment.content)
-                          ])),
-                  subtitle: Text(
-                    widget.comment.edited
-                        ? 'Posted at ${widget.comment.editedTime}'
-                        : 'Posted at ${widget.comment.postedTime}',
-                    style: const TextStyle(fontSize: 11),
-                  ),
+                              Text(
+                                widget.comment.edited
+                                    ? 'Posted at ${widget.comment.editedTime}'
+                                    : 'Posted at ${widget.comment.postedTime}',
+                                style: const TextStyle(fontSize: 11),
+                              ),
+                              Container(
+                                  padding:
+                                      const EdgeInsets.only(top: 4, bottom: 4),
+                                  child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: widget
+                                              .comment.suggestionApproved
+                                          ? [
+                                              TextButton(
+                                                  style: TextButton.styleFrom(
+                                                      padding: const EdgeInsets.all(
+                                                          3),
+                                                      minimumSize: Size.zero,
+                                                      tapTargetSize:
+                                                          MaterialTapTargetSize
+                                                              .shrinkWrap),
+                                                  onPressed: () {},
+                                                  child: widget.comment.idReplaced
+                                                      ? const Text('Re-approve ID',
+                                                          style: TextStyle(
+                                                              fontSize: 10,
+                                                              color: Color.fromARGB(
+                                                                  255, 68, 95, 143)))
+                                                      : const Text(
+                                                          'Dispute Approval',
+                                                          style: TextStyle(
+                                                              fontSize: 10,
+                                                              color: Color.fromARGB(
+                                                                  255, 68, 95, 143)))),
+                                            ]
+                                          : [
+                                              TextButton(
+                                                  style: TextButton.styleFrom(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              3),
+                                                      minimumSize: Size.zero,
+                                                      tapTargetSize:
+                                                          MaterialTapTargetSize
+                                                              .shrinkWrap),
+                                                  onPressed: () {
+                                                    widget.comment
+                                                            .suggestionApproved
+                                                        ? null
+                                                        : httpHelpers
+                                                            .acceptIdSuggestionRequest(
+                                                                widget.postid,
+                                                                widget.comment
+                                                                    .commentId,
+                                                                widget.comment
+                                                                    .content,
+                                                                widget.jwt)
+                                                            .then(
+                                                            (response) {
+                                                              if (response ==
+                                                                  'ID Accepted') {
+                                                                widget.updateCallBack(
+                                                                    response);
+                                                                Fluttertoast
+                                                                    .showToast(
+                                                                  msg:
+                                                                      'ID Accepted',
+                                                                  toastLength: Toast
+                                                                      .LENGTH_SHORT,
+                                                                  gravity:
+                                                                      ToastGravity
+                                                                          .BOTTOM,
+                                                                  timeInSecForIosWeb:
+                                                                      1,
+                                                                );
+                                                              } else if (response ==
+                                                                  'Approved ID Already Exists') {
+                                                                showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (BuildContext
+                                                                            context) {
+                                                                      return const NoticeDialog(
+                                                                          content:
+                                                                              'Sighting ID already approved! To challenge existing ID, please submit a dispute.');
+                                                                    });
+                                                              } else {
+                                                                Fluttertoast
+                                                                    .showToast(
+                                                                  msg:
+                                                                      'ID Acceptance Failed :(',
+                                                                  toastLength: Toast
+                                                                      .LENGTH_SHORT,
+                                                                  gravity:
+                                                                      ToastGravity
+                                                                          .BOTTOM,
+                                                                  timeInSecForIosWeb:
+                                                                      1,
+                                                                );
+                                                              }
+                                                            },
+                                                          );
+                                                  },
+                                                  child: const Text(
+                                                      'Approve ID',
+                                                      style: TextStyle(
+                                                          fontSize: 10,
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              68,
+                                                              95,
+                                                              143)))),
+                                              TextButton(
+                                                  style: TextButton.styleFrom(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              3),
+                                                      minimumSize: Size.zero,
+                                                      tapTargetSize:
+                                                          MaterialTapTargetSize
+                                                              .shrinkWrap),
+                                                  onPressed: () {},
+                                                  child: const Text(
+                                                      'Dispute ID',
+                                                      style: TextStyle(
+                                                          fontSize: 10,
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              68,
+                                                              95,
+                                                              143))))
+                                            ]))
+                            ])
+                      : Text(
+                          widget.comment.edited
+                              ? 'Posted at ${widget.comment.editedTime}'
+                              : 'Posted at ${widget.comment.postedTime}',
+                          style: const TextStyle(fontSize: 11),
+                        ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

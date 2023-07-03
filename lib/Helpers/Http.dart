@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:ichthyolog/Models/comment.dart';
-import 'package:ichthyolog/Models/post.dart';
-import 'package:ichthyolog/Models/user.dart';
+import '../Models/comment.dart';
+import '../Models/post.dart';
+import '../Models/user.dart';
+import '../Models/species.dart';
 
 //class which stores the functions responsible for backend communication
 class HttpHelpers {
@@ -459,6 +460,99 @@ class HttpHelpers {
       return ('Comment Posted');
     } else {
       return ('Comment Post Failed');
+    }
+  }
+
+  Future<String> addIdSuggestionRequest(
+      int postid, String content, String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/comment/idsuggestion';
+    var response = await http.post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+      body:
+          json.encode(<String, dynamic>{'postid': postid, 'content': content}),
+    );
+    if (response.statusCode == 201) {
+      return ('Comment Posted');
+    } else {
+      return ('Comment Post Failed');
+    }
+  }
+
+  Future<String> acceptIdSuggestionRequest(
+    int postid,
+    int commentid,
+    String content,
+    String jwt,
+  ) async {
+    String class_ = '';
+    String order = '';
+    String family = '';
+    String genus = '';
+    String species = '';
+
+    final splitNames = content.split(', ');
+    final speciesRecord = singaporeRecords
+        .singleWhere((record) => record.commonNames == content, orElse: () {
+      return SpeciesRecord(
+          class_: '',
+          order: '',
+          family: '',
+          genus: '',
+          species: '',
+          commonNames: '');
+    });
+    content = splitNames[0];
+
+    if (speciesRecord.class_ != '' &&
+        speciesRecord.order != '' &&
+        speciesRecord.family != '' &&
+        speciesRecord.genus != '') {
+      class_ = speciesRecord.class_;
+      order = speciesRecord.order;
+      family = speciesRecord.family;
+      genus = speciesRecord.genus;
+      species = speciesRecord.species;
+    }
+
+    String urlComment =
+        'https://ichthyolog-nodejs.onrender.com/comment/$commentid/idsuggestion';
+    String urlClassification =
+        'https://ichthyolog-nodejs.onrender.com/post/$postid/classification';
+    var responseComment = await http.put(
+      Uri.parse(urlComment),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+      body:
+          json.encode(<String, dynamic>{'postid': postid, 'content': content}),
+    );
+    var responseClassification = await http.put(Uri.parse(urlClassification),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorisation': jwt
+        },
+        body: json.encode(<String, dynamic>{
+          '_class': class_,
+          'order': order,
+          'family': family,
+          'genus': genus,
+          'species': species
+        }));
+    if (responseComment.body == 'Approved ID already exists') {
+      return ('Approved ID Already Exists');
+    } else if (responseComment.body == 'Post not found' ||
+        responseClassification.body == 'Post not found') {
+      return ('Post Not Found');
+    } else if (responseComment.statusCode != 200 ||
+        responseClassification.statusCode != 200) {
+      return ('Error');
+    } else {
+      return ('ID Accepted');
     }
   }
 

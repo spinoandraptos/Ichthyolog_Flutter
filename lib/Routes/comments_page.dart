@@ -5,6 +5,8 @@ import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'comments.dart';
+import '../Models/species.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class CommentPage extends StatefulWidget {
   final int postid;
@@ -17,9 +19,10 @@ class CommentPageState extends State<CommentPage> {
   String jwt = '';
   Map<String, dynamic> decodedJWT = {};
   final contentText = TextEditingController();
-
+  bool suggestingID = false;
   final httpHelpers = HttpHelpers();
   final helpers = Helpers();
+  List<String> allSpecies = <String>[];
 
   @override
   void initState() {
@@ -33,6 +36,9 @@ class CommentPageState extends State<CommentPage> {
         setState(() {
           jwt = token;
           decodedJWT = JwtDecoder.decode(token);
+          for (var record in singaporeRecords) {
+            allSpecies.add(record.commonNames);
+          }
         });
       }
     });
@@ -43,6 +49,12 @@ class CommentPageState extends State<CommentPage> {
     // Clean up the controller when the widget is removed from the widget tree
     contentText.dispose();
     super.dispose();
+  }
+
+  clearCallback() {
+    setState(() {
+      contentText.clear();
+    });
   }
 
   @override
@@ -76,10 +88,12 @@ class CommentPageState extends State<CommentPage> {
                                     itemCount: snapshot.data!.length,
                                     itemBuilder: (context, index) {
                                       return OtherComment(
-                                          comment: snapshot.data![index],
-                                          jwt: jwt,
-                                          updateCallBack: updateCommentCallback,
-                                          userid: decodedJWT['userid'] ?? -1);
+                                        comment: snapshot.data![index],
+                                        jwt: jwt,
+                                        updateCallBack: updateCommentCallback,
+                                        userid: decodedJWT['userid'] ?? -1,
+                                        postid: widget.postid,
+                                      );
                                     },
                                   ))
                             ]))))
@@ -108,81 +122,158 @@ class CommentPageState extends State<CommentPage> {
                                         if (snapshot.data![index].authorName ==
                                             decodedJWT['username']) {
                                           return OwnComment(
-                                              comment: snapshot.data![index],
-                                              jwt: jwt,
-                                              updateCallBack:
-                                                  updateCommentCallback,
-                                              userid: decodedJWT['userid']);
+                                            comment: snapshot.data![index],
+                                            jwt: jwt,
+                                            updateCallBack:
+                                                updateCommentCallback,
+                                            userid: decodedJWT['userid'],
+                                            postid: widget.postid,
+                                          );
                                         } else {
                                           return OtherComment(
-                                              comment: snapshot.data![index],
-                                              jwt: jwt,
-                                              updateCallBack:
-                                                  updateCommentCallback,
-                                              userid: decodedJWT['userid']);
+                                            comment: snapshot.data![index],
+                                            jwt: jwt,
+                                            updateCallBack:
+                                                updateCommentCallback,
+                                            userid: decodedJWT['userid'],
+                                            postid: widget.postid,
+                                          );
                                         }
                                       },
                                     )),
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                      top: 5, left: 25, right: 25),
-                                  child: TextFormField(
-                                    controller: contentText,
-                                    decoration: InputDecoration(
-                                      hintText: 'Reply',
-                                      suffixIcon: IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            contentText.clear();
-                                          });
-                                        },
-                                        icon: const Icon(Icons.clear),
-                                      ),
-                                    ),
-                                    onFieldSubmitted: (value) {
-                                      setState(() {
-                                        contentText.text = value;
-                                      });
-                                    },
-                                  ),
+                                      left: 20, right: 20),
+                                  child: suggestingID
+                                      ? selectableTextForm(
+                                          contentText,
+                                          'Suggest an ID',
+                                          allSpecies,
+                                          clearCallback)
+                                      : TextFormField(
+                                          controller: contentText,
+                                          decoration: InputDecoration(
+                                            hintText: 'Reply',
+                                            suffixIcon: IconButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  contentText.clear();
+                                                });
+                                              },
+                                              icon: const Icon(Icons.clear),
+                                            ),
+                                          ),
+                                          onFieldSubmitted: (value) {
+                                            setState(() {
+                                              contentText.text = value;
+                                            });
+                                          },
+                                        ),
                                 ),
                                 Container(
-                                    alignment: Alignment.centerRight,
-                                    margin: const EdgeInsets.only(
-                                        top: 6, right: 25, bottom: 10),
-                                    child: ElevatedButton(
+                                  alignment: Alignment.centerRight,
+                                  margin: const EdgeInsets.only(
+                                      top: 6, left: 20, right: 20, bottom: 10),
+                                  child: Wrap(spacing: 10, children: [
+                                    ElevatedButton(
                                       onPressed: () {
-                                        httpHelpers
-                                            .addCommentRequest(widget.postid,
-                                                contentText.text, jwt)
-                                            .then((response) {
-                                          if (response == 'Comment Posted') {
-                                            Fluttertoast.showToast(
-                                              msg:
-                                                  'Comment posted successfully!',
-                                              toastLength: Toast.LENGTH_SHORT,
-                                              gravity: ToastGravity.BOTTOM,
-                                              timeInSecForIosWeb: 1,
-                                            );
-                                            setState(() {
-                                              contentText.clear();
-                                            });
-                                          } else {
-                                            Fluttertoast.showToast(
-                                              msg: 'Comment failed to post :(',
-                                              toastLength: Toast.LENGTH_SHORT,
-                                              gravity: ToastGravity.BOTTOM,
-                                              timeInSecForIosWeb: 1,
-                                            );
-                                          }
+                                        setState(() {
+                                          suggestingID = !suggestingID;
                                         });
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: suggestingID
+                                              ? const Color.fromARGB(
+                                                  255, 79, 142, 112)
+                                              : const Color.fromARGB(
+                                                  255, 155, 96, 92)),
+                                      child: suggestingID
+                                          ? const Text('ID Suggestion Mode: On',
+                                              style: TextStyle(fontSize: 15))
+                                          : const Text(
+                                              'ID Suggestion Mode: Off',
+                                              style: TextStyle(fontSize: 15)),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        suggestingID
+                                            ? httpHelpers
+                                                .addIdSuggestionRequest(
+                                                    widget.postid,
+                                                    contentText.text,
+                                                    jwt)
+                                                .then((response) {
+                                                if (response ==
+                                                    'Comment Posted') {
+                                                  updateCommentCallback(
+                                                      response);
+                                                  Fluttertoast.showToast(
+                                                    msg:
+                                                        'ID suggestion posted successfully!',
+                                                    toastLength:
+                                                        Toast.LENGTH_SHORT,
+                                                    gravity:
+                                                        ToastGravity.BOTTOM,
+                                                    timeInSecForIosWeb: 1,
+                                                  );
+                                                  setState(() {
+                                                    contentText.clear();
+                                                  });
+                                                } else {
+                                                  Fluttertoast.showToast(
+                                                    msg:
+                                                        'ID suggestion failed to post :(',
+                                                    toastLength:
+                                                        Toast.LENGTH_SHORT,
+                                                    gravity:
+                                                        ToastGravity.BOTTOM,
+                                                    timeInSecForIosWeb: 1,
+                                                  );
+                                                }
+                                              })
+                                            : httpHelpers
+                                                .addCommentRequest(
+                                                    widget.postid,
+                                                    contentText.text,
+                                                    jwt)
+                                                .then((response) {
+                                                if (response ==
+                                                    'Comment Posted') {
+                                                  updateCommentCallback(
+                                                      response);
+                                                  Fluttertoast.showToast(
+                                                    msg:
+                                                        'Comment posted successfully!',
+                                                    toastLength:
+                                                        Toast.LENGTH_SHORT,
+                                                    gravity:
+                                                        ToastGravity.BOTTOM,
+                                                    timeInSecForIosWeb: 1,
+                                                  );
+                                                  setState(() {
+                                                    contentText.clear();
+                                                  });
+                                                } else {
+                                                  Fluttertoast.showToast(
+                                                    msg:
+                                                        'Comment failed to post :(',
+                                                    toastLength:
+                                                        Toast.LENGTH_SHORT,
+                                                    gravity:
+                                                        ToastGravity.BOTTOM,
+                                                    timeInSecForIosWeb: 1,
+                                                  );
+                                                }
+                                              });
                                       },
                                       style: ElevatedButton.styleFrom(
                                           backgroundColor: const Color.fromARGB(
                                               255, 68, 86, 148)),
                                       child: const Text('Post',
                                           style: TextStyle(fontSize: 15)),
-                                    )),
+                                    )
+                                  ]),
+                                ),
                               ],
                             ))));
           } else if (snapshot.hasError) {
@@ -201,8 +292,54 @@ class CommentPageState extends State<CommentPage> {
         response == 'Comment Downvoted' ||
         response == 'Comment Un-upvoted' ||
         response == 'Comment Un-downvoted' ||
-        response == 'Comment Edited') {
+        response == 'Comment Edited' ||
+        response == 'ID Accepted') {
       setState(() {});
     }
+  }
+
+  Widget selectableTextForm(TextEditingController controller, String hintText,
+      List<String> options, Function callback) {
+    return TypeAheadFormField(
+      hideOnLoading: true,
+      hideOnEmpty: true,
+      textFieldConfiguration: TextFieldConfiguration(
+          controller: controller,
+          decoration: InputDecoration(
+            focusColor: const Color.fromARGB(255, 51, 64, 113),
+            hintText: hintText,
+            suffixIcon: IconButton(
+              onPressed: () {
+                callback();
+              },
+              icon: const Icon(Icons.clear),
+            ),
+          ),
+          autofocus: true,
+          style: const TextStyle(color: Color.fromARGB(255, 51, 64, 113))),
+      itemBuilder: (context, suggestion) {
+        return ListTile(
+          title: Text(suggestion),
+        );
+      },
+      errorBuilder: (context, error) {
+        return NoticeDialog(content: '$error');
+      },
+      suggestionsCallback: (pattern) {
+        List<String> matches = [];
+        if (pattern == '') {
+          return matches;
+        } else {
+          matches.addAll(options);
+          matches.retainWhere((matches) {
+            return matches.toLowerCase().contains(pattern.toLowerCase());
+          });
+          return matches;
+        }
+      },
+      onSuggestionSelected: (suggestion) {
+        controller.text = suggestion;
+      },
+    );
   }
 }
