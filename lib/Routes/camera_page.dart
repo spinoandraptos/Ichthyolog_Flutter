@@ -74,7 +74,7 @@ class CameraPageState extends State<CameraPage> {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Post a sighting'),
-          backgroundColor: const Color.fromARGB(255, 51, 64, 113),
+          backgroundColor: const Color.fromARGB(255, 65, 90, 181),
         ),
         body: SingleChildScrollView(
           child: Center(
@@ -309,7 +309,7 @@ class CameraPageState extends State<CameraPage> {
       return Scaffold(
           appBar: AppBar(
             title: const Text('Post an image'),
-            backgroundColor: const Color.fromARGB(255, 51, 64, 113),
+            backgroundColor: const Color.fromARGB(255, 65, 90, 181),
           ),
           body: SingleChildScrollView(
               child: Center(
@@ -321,7 +321,7 @@ class CameraPageState extends State<CameraPage> {
                   const Icon(
                     Icons.photo,
                     size: 110,
-                    color: Color.fromARGB(255, 51, 64, 113),
+                    color: Color.fromARGB(255, 53, 71, 134),
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(

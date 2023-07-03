@@ -243,7 +243,7 @@ class StatisticsPageState extends State<StatisticsPage>
         backgroundColor: const Color.fromARGB(255, 190, 222, 248),
         appBar: AppBar(
           title: const Text('Search Statistics'),
-          backgroundColor: const Color.fromARGB(255, 70, 88, 152),
+          backgroundColor: const Color.fromARGB(255, 65, 90, 181),
         ),
         body: Center(
             child: Column(
@@ -385,7 +385,7 @@ class StatisticsPageState extends State<StatisticsPage>
           backgroundColor: const Color.fromARGB(255, 190, 222, 248),
           appBar: AppBar(
             title: const Text('Search Statistics'),
-            backgroundColor: const Color.fromARGB(255, 70, 88, 152),
+            backgroundColor: const Color.fromARGB(255, 65, 90, 181),
           ),
           body: SingleChildScrollView(
             child: Column(children: [

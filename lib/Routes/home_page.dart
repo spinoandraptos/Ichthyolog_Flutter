@@ -1064,142 +1064,142 @@ class HomePageState extends State<HomePage> {
                         ),
                       ],
                     ),
-                    Wrap(
-                      children: [
-                        const Text(
-                          'Family: ',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Color.fromARGB(255, 51, 64, 113),
-                              fontSize: 13),
-                        ),
-                        Text(
-                          newFamily == ''
-                              ? '${post.family}   '
-                              : '$newFamily   ',
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        const Text(
-                          'Genus: ',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Color.fromARGB(255, 51, 64, 113),
-                              fontSize: 13),
-                        ),
-                        Text(
-                          newGenus == '' ? '${post.genus}' : newGenus,
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                      ],
-                    ),
+                    Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Wrap(
+                          children: [
+                            const Text(
+                              'Family: ',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Color.fromARGB(255, 51, 64, 113),
+                                  fontSize: 13),
+                            ),
+                            Text(
+                              newFamily == ''
+                                  ? '${post.family}   '
+                                  : '$newFamily   ',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            const Text(
+                              'Genus: ',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Color.fromARGB(255, 51, 64, 113),
+                                  fontSize: 13),
+                            ),
+                            Text(
+                              newGenus == '' ? '${post.genus}' : newGenus,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        )),
                   ])),
                   actions: [
-                    Container(
-                        padding: const EdgeInsets.only(bottom: 5, left: 10),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(content: StatefulBuilder(
-                                    builder: (context, setState) {
-                                      return SpeciesStepper(
-                                        classCallback: classCallback,
-                                        orderCallback: orderCallback,
-                                        familyCallback: familyCallback,
-                                        genusCallback: genusCallback,
-                                      );
-                                    },
-                                  ));
-                                });
-                          },
-                          style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.only(
-                                  left: 10, top: 8, bottom: 8, right: 10),
-                              minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              backgroundColor:
-                                  const Color.fromARGB(255, 102, 154, 217)),
-                          child: const Text(
-                            'Edit Classification',
-                            style: TextStyle(fontSize: 13),
-                          ),
-                        )),
-                    Container(
-                        margin: const EdgeInsets.only(bottom: 5),
-                        child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.only(
-                                    left: 10, top: 8, bottom: 8, right: 10),
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                backgroundColor:
-                                    const Color.fromARGB(255, 80, 170, 121)),
-                            child: const Text(
-                              "Confirm",
-                              style: TextStyle(fontSize: 13),
-                            ),
+                    Padding(
+                        padding: const EdgeInsets.only(
+                            left: 10, right: 10, bottom: 7),
+                        child: Wrap(spacing: 5, children: [
+                          ElevatedButton(
                             onPressed: () {
-                              httpHelpers
-                                  .editPostInfoRequest(
-                                      post.postid,
-                                      jwt,
-                                      newTitle,
-                                      newDescription,
-                                      newLocation,
-                                      newClass,
-                                      newOrder,
-                                      newFamily,
-                                      newGenus,
-                                      newSpecies)
-                                  .then((response) {
-                                if (response == 'Post Edited') {
-                                  Navigator.pop(context);
-                                  setState(() {
-                                    newClass = '';
-                                    newOrder = '';
-                                    newFamily = '';
-                                    newGenus = '';
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(content: StatefulBuilder(
+                                      builder: (context, setState) {
+                                        return SpeciesStepper(
+                                          classCallback: classCallback,
+                                          orderCallback: orderCallback,
+                                          familyCallback: familyCallback,
+                                          genusCallback: genusCallback,
+                                        );
+                                      },
+                                    ));
                                   });
-                                  Fluttertoast.showToast(
-                                    msg: 'Post Edited',
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                } else {
-                                  Fluttertoast.showToast(
-                                    msg: 'Post Edit Failed :(',
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                }
-                              });
-                            })),
-                    Container(
-                        padding: const EdgeInsets.only(bottom: 5, right: 10),
-                        child: ElevatedButton(
+                            },
                             style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.only(
-                                    left: 10, top: 8, bottom: 8, right: 10),
+                                padding: const EdgeInsets.all(8),
                                 minimumSize: Size.zero,
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 backgroundColor:
-                                    const Color.fromARGB(255, 170, 80, 80)),
+                                    const Color.fromARGB(255, 102, 154, 217)),
                             child: const Text(
-                              "Cancel",
-                              style: TextStyle(fontSize: 13),
+                              'Edit Classification',
+                              style: TextStyle(fontSize: 12),
                             ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                              setState(() {
-                                newClass = '';
-                                newOrder = '';
-                                newFamily = '';
-                                newGenus = '';
-                              });
-                            }))
+                          ),
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.all(8),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 80, 170, 121)),
+                              child: const Text(
+                                "Confirm",
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              onPressed: () {
+                                httpHelpers
+                                    .editPostInfoRequest(
+                                        post.postid,
+                                        jwt,
+                                        newTitle,
+                                        newDescription,
+                                        newLocation,
+                                        newClass,
+                                        newOrder,
+                                        newFamily,
+                                        newGenus,
+                                        newSpecies)
+                                    .then((response) {
+                                  if (response == 'Post Edited') {
+                                    Navigator.pop(context);
+                                    setState(() {
+                                      newClass = '';
+                                      newOrder = '';
+                                      newFamily = '';
+                                      newGenus = '';
+                                    });
+                                    Fluttertoast.showToast(
+                                      msg: 'Post Edited',
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      timeInSecForIosWeb: 1,
+                                    );
+                                  } else {
+                                    Fluttertoast.showToast(
+                                      msg: 'Post Edit Failed :(',
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      timeInSecForIosWeb: 1,
+                                    );
+                                  }
+                                });
+                              }),
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.all(8),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 170, 80, 80)),
+                              child: const Text(
+                                "Cancel",
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                                setState(() {
+                                  newClass = '';
+                                  newOrder = '';
+                                  newFamily = '';
+                                  newGenus = '';
+                                });
+                              })
+                        ])),
                   ],
                 );
               });

@@ -190,7 +190,7 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
                   style: ElevatedButton.styleFrom(
                       backgroundColor: suggestingID
                           ? const Color.fromARGB(255, 79, 142, 112)
-                          : const Color.fromARGB(255, 155, 96, 92)),
+                          : Color.fromARGB(255, 170, 99, 117)),
                   child: suggestingID
                       ? const Text('ID Suggestion Mode: On',
                           style: TextStyle(fontSize: 15))
@@ -357,7 +357,7 @@ class PostPageNoCommentState extends State<PostPageNoComment> {
                   style: ElevatedButton.styleFrom(
                       backgroundColor: suggestingID
                           ? const Color.fromARGB(255, 79, 142, 112)
-                          : const Color.fromARGB(255, 155, 96, 92)),
+                          : const Color.fromARGB(255, 170, 99, 117)),
                   child: suggestingID
                       ? const Text('ID Suggestion Mode: On',
                           style: TextStyle(fontSize: 15))

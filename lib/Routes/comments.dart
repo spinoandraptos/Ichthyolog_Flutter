@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../Models/comment.dart';
+import '../Models/species.dart';
 import '../Helpers/http.dart';
 import '../Helpers/standard_widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -108,7 +109,11 @@ class OwnCommentState extends State<OwnComment> {
                                                     255, 231, 250, 237)
                                             : const Color.fromARGB(
                                                 255, 231, 237, 250),
-                                        child: Text(widget.comment.content))
+                                        child: Text(singaporeRecords
+                                            .singleWhere((record) =>
+                                                record.commonNames ==
+                                                widget.comment.content)
+                                            .species))
                                   ]
                                 : [
                                     Padding(
@@ -942,7 +947,11 @@ class OtherCommentState extends State<OtherComment> {
                                                   255, 231, 250, 237)
                                           : const Color.fromARGB(
                                               255, 231, 237, 250),
-                                      child: Text(widget.comment.content))
+                                      child: Text(singaporeRecords
+                                          .singleWhere((record) =>
+                                              record.commonNames ==
+                                              widget.comment.content)
+                                          .species))
                                 ]
                               : [
                                   Padding(

@@ -69,7 +69,7 @@ class CommentPageState extends State<CommentPage> {
                 ? Scaffold(
                     appBar: AppBar(
                       title: const Text('Comments'),
-                      backgroundColor: const Color.fromARGB(255, 51, 64, 113),
+                      backgroundColor: const Color.fromARGB(255, 65, 90, 181),
                     ),
                     body: SingleChildScrollView(
                         child: SizedBox(
@@ -103,7 +103,7 @@ class CommentPageState extends State<CommentPage> {
                 : Scaffold(
                     appBar: AppBar(
                       title: const Text('Comments'),
-                      backgroundColor: const Color.fromARGB(255, 51, 64, 113),
+                      backgroundColor: const Color.fromARGB(255, 65, 90, 181),
                     ),
                     body: SingleChildScrollView(
                         child: SizedBox(
@@ -191,7 +191,7 @@ class CommentPageState extends State<CommentPage> {
                                               ? const Color.fromARGB(
                                                   255, 79, 142, 112)
                                               : const Color.fromARGB(
-                                                  255, 154, 85, 85)),
+                                                  255, 170, 99, 117)),
                                       child: suggestingID
                                           ? const Text('ID Suggestion Mode: On',
                                               style: TextStyle(fontSize: 15))
