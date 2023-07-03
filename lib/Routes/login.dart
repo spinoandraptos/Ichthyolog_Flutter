@@ -5,6 +5,7 @@ import 'login_background.dart';
 import 'signup.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
+import '../Models/user.dart';
 import 'gallery_page.dart';
 import 'home_page.dart';
 
@@ -20,6 +21,16 @@ class LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final httpHelpers = HttpHelpers();
   final helpers = Helpers();
+  final User guestUser = User(
+      userid: -1,
+      username: 'username',
+      password: 'password',
+      email: 'email',
+      profilepic: 'profilepic',
+      level: 0,
+      speciescount: 0,
+      totalposts: 0,
+      expert: false);
 
   void validateForm() {
     final bool? isValid = _formKey.currentState?.validate();
@@ -176,7 +187,8 @@ class LoginPageState extends State<LoginPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const GalleryPage()),
+            MaterialPageRoute(
+                builder: (context) => GalleryPage(currUser: guestUser)),
           );
         },
         child: const Text('Use this app without an account',

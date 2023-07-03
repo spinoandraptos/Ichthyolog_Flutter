@@ -11,7 +11,8 @@ import '../Helpers/standard_widgets.dart';
 import 'stepper.dart';
 
 class WaitingListPage extends StatefulWidget {
-  const WaitingListPage({super.key});
+  final bool isExpert;
+  const WaitingListPage({super.key, required this.isExpert});
   @override
   WaitingListPageState createState() => WaitingListPageState();
 }
@@ -217,7 +218,10 @@ class WaitingListPageState extends State<WaitingListPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => PostPage(postid: post.postid)),
+                    builder: (context) => PostPage(
+                          postid: post.postid,
+                          isExpert: widget.isExpert,
+                        )),
               );
             }),
       ),

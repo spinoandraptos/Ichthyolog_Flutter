@@ -64,14 +64,17 @@ class HomePageState extends State<HomePage> {
     } else {
       return FutureBuilder(
           future: httpHelpers.viewOwnUserProfileRequest(jwt),
-          builder: ((context, snapshot) {
-            if (snapshot.hasData) {
+          builder: ((context, snapshotUser) {
+            if (snapshotUser.hasData) {
               return Scaffold(
                   appBar: AppBar(
                     leading: const Icon(Icons.menu),
                     title: const Text('Home Page'),
                     backgroundColor: const Color.fromARGB(255, 65, 90, 181),
-                    actions: [settingsButton(snapshot.data!), logoutButton()],
+                    actions: [
+                      settingsButton(snapshotUser.data!),
+                      logoutButton()
+                    ],
                   ),
                   body: SingleChildScrollView(
                       physics: const ScrollPhysics(),
@@ -99,14 +102,14 @@ class HomePageState extends State<HomePage> {
                                           MediaQuery.of(context).size.height *
                                               1 /
                                               18),
-                                  profilePicture(snapshot.data!),
+                                  profilePicture(snapshotUser.data!),
                                   SizedBox(
                                       height:
                                           MediaQuery.of(context).size.height *
                                               1 /
                                               36),
                                   Text(
-                                    snapshot.data!.username,
+                                    snapshotUser.data!.username,
                                     style: const TextStyle(
                                         fontSize: 28,
                                         fontWeight: FontWeight.bold,
@@ -118,7 +121,7 @@ class HomePageState extends State<HomePage> {
                                               1 /
                                               80),
                                   Text(
-                                    '${snapshot.data!.totalposts} sightings  |  ${snapshot.data!.speciescount} species',
+                                    '${snapshotUser.data!.totalposts} sightings  |  ${snapshotUser.data!.speciescount} species',
                                     style: const TextStyle(
                                         fontSize: 16, color: Colors.white),
                                   ),
@@ -127,7 +130,7 @@ class HomePageState extends State<HomePage> {
                           SizedBox(
                               height:
                                   MediaQuery.of(context).size.height * 1 / 30),
-                          userLevel(snapshot.data!),
+                          userLevel(snapshotUser.data!),
                           SizedBox(
                               height:
                                   MediaQuery.of(context).size.height * 1 / 45),
@@ -135,7 +138,8 @@ class HomePageState extends State<HomePage> {
                               future: httpHelpers.viewOwnPostsRequest(jwt),
                               builder: ((context, snapshot) {
                                 return snapshot.hasData
-                                    ? galleryScreen(context, snapshot.data!)
+                                    ? galleryScreen(context, snapshot.data!,
+                                        snapshotUser.data!)
                                     : snapshot.hasError &&
                                             snapshot.error == 'Posts not found'
                                         ? const Center(
@@ -151,19 +155,19 @@ class HomePageState extends State<HomePage> {
                               })),
                         ],
                       )),
-                  bottomNavigationBar: snapshot.data!.expert
+                  bottomNavigationBar: snapshotUser.data!.expert
                       ? BottomAppBar(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               //Visit camera page to post sighting
-                              cameraPageButton(),
+                              cameraPageButton(snapshotUser.data!),
                               //Visit gallery page to view sightings
-                              galleryPageButton(),
+                              galleryPageButton(snapshotUser.data!),
                               //Visit statistics page to access sighting data
                               statsPageButton(),
                               //Visit waiting list page to verify/flag posts
-                              waitingListPageButton()
+                              waitingListPageButton(snapshotUser.data!)
                             ],
                           ),
                         )
@@ -172,15 +176,15 @@ class HomePageState extends State<HomePage> {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               //Visit camera page to post sighting
-                              cameraPageButton(),
+                              cameraPageButton(snapshotUser.data!),
                               //Visit gallery page to view sightings
-                              galleryPageButton(),
+                              galleryPageButton(snapshotUser.data!),
                               //Visit statistics page to access sighting data
                               statsPageButton(),
                             ],
                           ),
                         ));
-            } else if (snapshot.hasError) {
+            } else if (snapshotUser.hasError) {
               return const NoticeDialog(
                   content: 'User not found! Please try again');
             } else {
@@ -660,14 +664,14 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget cameraPageButton() {
+  Widget cameraPageButton(User user) {
     return IconButton(
       icon: const Icon(Icons.add_a_photo_rounded,
           color: Color.fromARGB(255, 52, 66, 117)),
       onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const CameraPage()),
+          MaterialPageRoute(builder: (context) => CameraPage(currUser: user)),
         );
       },
     );
@@ -685,20 +689,20 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget galleryPageButton() {
+  Widget galleryPageButton(User user) {
     return IconButton(
       icon: const Icon(Icons.photo_library,
           color: Color.fromARGB(255, 52, 66, 117)),
       onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const GalleryPage()),
+          MaterialPageRoute(builder: (context) => GalleryPage(currUser: user)),
         );
       },
     );
   }
 
-  Widget waitingListPageButton() {
+  Widget waitingListPageButton(User user) {
     return IconButton(
       icon: const Icon(
         Icons.feedback,
@@ -707,7 +711,10 @@ class HomePageState extends State<HomePage> {
       onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const WaitingListPage()),
+          MaterialPageRoute(
+              builder: (context) => WaitingListPage(
+                    isExpert: user.expert,
+                  )),
         );
       },
     );
@@ -1266,7 +1273,7 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget clickableImage(Post post) {
+  Widget clickableImage(Post post, User user) {
     return Expanded(
         child: Padding(
             padding: const EdgeInsets.only(left: 6, right: 6),
@@ -1278,7 +1285,10 @@ class HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => PostPage(postid: post.postid)),
+                          builder: (context) => PostPage(
+                                postid: post.postid,
+                                isExpert: user.expert,
+                              )),
                     );
                   }),
               Positioned(
@@ -1288,7 +1298,7 @@ class HomePageState extends State<HomePage> {
             ])));
   }
 
-  Widget galleryScreen(BuildContext context, List<Post> posts) {
+  Widget galleryScreen(BuildContext context, List<Post> posts, User user) {
     return Column(children: [
       GridView.builder(
           itemCount: posts.length,
@@ -1300,14 +1310,14 @@ class HomePageState extends State<HomePage> {
             childAspectRatio: 0.85,
           ),
           itemBuilder: (context, index) {
-            return postCard(posts[index]);
+            return postCard(posts[index], user);
           },
           shrinkWrap: true,
           padding: const EdgeInsets.all(12.0))
     ]);
   }
 
-  Widget postCard(Post post) {
+  Widget postCard(Post post, User user) {
     return Card(
         color: const Color.fromARGB(255, 253, 254, 255),
         elevation: 4.5,
@@ -1368,7 +1378,7 @@ class HomePageState extends State<HomePage> {
                     ),
                   )),
               //Post Image
-              clickableImage(post),
+              clickableImage(post, user),
               Padding(
                   padding: const EdgeInsets.only(
                       left: 12, top: 8, right: 9, bottom: 8),

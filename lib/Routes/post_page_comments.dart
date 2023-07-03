@@ -13,11 +13,13 @@ class PostPageMultiComment extends StatelessWidget {
   final httpHelpers = HttpHelpers();
   final String jwt;
   final int postid;
+  final bool isExpert;
   PostPageMultiComment(
       {Key? key,
       required this.comments,
       required this.jwt,
-      required this.postid})
+      required this.postid,
+      required this.isExpert})
       : super(key: key);
 
   @override
@@ -53,7 +55,8 @@ class PostPageMultiComment extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => CommentPage(postid: postid)),
+                builder: (context) =>
+                    CommentPage(postid: postid, isExpert: isExpert)),
           );
         },
         child: Text(
@@ -68,8 +71,8 @@ class PostPageMultiComment extends StatelessWidget {
 class PostPageSingleComment extends StatefulWidget {
   final List<Comment> comments;
   final String jwt;
-
   final int postid;
+  final bool isExpert;
   final Map<String, dynamic> decodedJWT;
   final Function updateCallBack;
 
@@ -79,7 +82,8 @@ class PostPageSingleComment extends StatefulWidget {
       required this.jwt,
       required this.postid,
       required this.decodedJWT,
-      required this.updateCallBack})
+      required this.updateCallBack,
+      required this.isExpert})
       : super(key: key);
 
   @override
@@ -126,6 +130,7 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
               updateCallBack: widget.updateCallBack,
               userid: widget.decodedJWT['userid'] ?? -1,
               postid: widget.postid,
+              isExpert: widget.isExpert,
             ))
         : Column(children: [
             widget.comments[widget.comments.length - 1].authorId ==
@@ -136,6 +141,7 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
                     updateCallBack: widget.updateCallBack,
                     userid: widget.decodedJWT['userid'],
                     postid: widget.postid,
+                    isExpert: widget.isExpert,
                   )
                 : OtherComment(
                     comment: widget.comments[widget.comments.length - 1],
@@ -143,6 +149,7 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
                     updateCallBack: widget.updateCallBack,
                     userid: widget.decodedJWT['userid'],
                     postid: widget.postid,
+                    isExpert: widget.isExpert,
                   ),
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20),

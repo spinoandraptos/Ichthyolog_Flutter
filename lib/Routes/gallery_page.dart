@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../Helpers/standard_widgets.dart';
 import '../Models/post.dart';
+import '../Models/user.dart';
 import 'post_page.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import '../Helpers/helper.dart';
@@ -15,7 +16,8 @@ import 'waiting_list_page.dart';
 import '../Models/species.dart';
 
 class GalleryPage extends StatefulWidget {
-  const GalleryPage({super.key});
+  final User currUser;
+  const GalleryPage({super.key, required this.currUser});
   @override
   GalleryPageState createState() => GalleryPageState();
 }
@@ -27,7 +29,6 @@ class GalleryPageState extends State<GalleryPage> {
   final helpers = Helpers();
 
   String newDescription = '';
-  bool expert = false;
 
   @override
   void initState() {
@@ -41,9 +42,6 @@ class GalleryPageState extends State<GalleryPage> {
         setState(() {
           jwt = token;
           decodedJWT = JwtDecoder.decode(token);
-        });
-        httpHelpers.viewOwnUserProfileRequest(jwt).then((response) {
-          expert = response.expert;
         });
       }
     });
@@ -70,7 +68,7 @@ class GalleryPageState extends State<GalleryPage> {
               bottomNavigationBar: BottomAppBar(
                 child: jwt == ''
                     ? null
-                    : expert
+                    : widget.currUser.expert
                         ? Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
@@ -134,7 +132,10 @@ class GalleryPageState extends State<GalleryPage> {
       onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const CameraPage()),
+          MaterialPageRoute(
+              builder: (context) => CameraPage(
+                    currUser: widget.currUser,
+                  )),
         );
       },
     );
@@ -152,19 +153,6 @@ class GalleryPageState extends State<GalleryPage> {
     );
   }
 
-  Widget galleryPageButton() {
-    return IconButton(
-      icon: const Icon(Icons.photo_library,
-          color: Color.fromARGB(255, 52, 66, 117)),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const GalleryPage()),
-        );
-      },
-    );
-  }
-
   Widget waitingListPageButton() {
     return IconButton(
       icon: const Icon(
@@ -174,7 +162,10 @@ class GalleryPageState extends State<GalleryPage> {
       onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const WaitingListPage()),
+          MaterialPageRoute(
+              builder: (context) => WaitingListPage(
+                    isExpert: widget.currUser.expert,
+                  )),
         );
       },
     );
@@ -587,8 +578,10 @@ class GalleryPageState extends State<GalleryPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    PostPage(postid: post.postid)),
+                                builder: (context) => PostPage(
+                                      postid: post.postid,
+                                      isExpert: widget.currUser.expert,
+                                    )),
                           );
                         }),
                     Positioned(
@@ -605,8 +598,10 @@ class GalleryPageState extends State<GalleryPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                PostPage(postid: post.postid)),
+                            builder: (context) => PostPage(
+                                  postid: post.postid,
+                                  isExpert: widget.currUser.expert,
+                                )),
                       );
                     })));
   }

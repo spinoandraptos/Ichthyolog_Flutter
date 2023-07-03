@@ -10,7 +10,9 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class CommentPage extends StatefulWidget {
   final int postid;
-  const CommentPage({Key? key, required this.postid}) : super(key: key);
+  final bool isExpert;
+  const CommentPage({Key? key, required this.postid, required this.isExpert})
+      : super(key: key);
   @override
   CommentPageState createState() => CommentPageState();
 }
@@ -93,6 +95,7 @@ class CommentPageState extends State<CommentPage> {
                                         updateCallBack: updateCommentCallback,
                                         userid: decodedJWT['userid'] ?? -1,
                                         postid: widget.postid,
+                                        isExpert: widget.isExpert,
                                       );
                                     },
                                   ))
@@ -128,6 +131,7 @@ class CommentPageState extends State<CommentPage> {
                                                 updateCommentCallback,
                                             userid: decodedJWT['userid'],
                                             postid: widget.postid,
+                                            isExpert: widget.isExpert,
                                           );
                                         } else {
                                           return OtherComment(
@@ -137,6 +141,7 @@ class CommentPageState extends State<CommentPage> {
                                                 updateCommentCallback,
                                             userid: decodedJWT['userid'],
                                             postid: widget.postid,
+                                            isExpert: widget.isExpert,
                                           );
                                         }
                                       },

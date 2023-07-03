@@ -10,13 +10,15 @@ class OwnComment extends StatefulWidget {
   final Function updateCallBack;
   final int userid;
   final int postid;
+  final bool isExpert;
   const OwnComment(
       {Key? key,
       required this.comment,
       required this.jwt,
       required this.updateCallBack,
       required this.userid,
-      required this.postid})
+      required this.postid,
+      required this.isExpert})
       : super(key: key);
 
   @override
@@ -27,14 +29,10 @@ class OwnCommentState extends State<OwnComment> {
   final httpHelpers = HttpHelpers();
   String updatedContent = '';
   bool upvoted = false;
-  bool isExpert = false;
 
   @override
   void initState() {
     super.initState();
-    httpHelpers
-        .viewOwnUserProfileRequest(widget.jwt)
-        .then((user) => isExpert = user.expert);
   }
 
   @override
@@ -140,7 +138,7 @@ class OwnCommentState extends State<OwnComment> {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: widget.comment.idSuggestion &&
-                                        isExpert
+                                        widget.isExpert
                                     ? [
                                         TextButton(
                                             style: TextButton.styleFrom(
@@ -848,13 +846,15 @@ class OtherComment extends StatefulWidget {
   final Function updateCallBack;
   final int userid;
   final int postid;
+  final bool isExpert;
   const OtherComment(
       {Key? key,
       required this.comment,
       required this.jwt,
       required this.updateCallBack,
       required this.userid,
-      required this.postid})
+      required this.postid,
+      required this.isExpert})
       : super(key: key);
 
   @override
@@ -865,14 +865,10 @@ class OtherCommentState extends State<OtherComment> {
   final httpHelpers = HttpHelpers();
   bool upvoted = false;
   late List<int> upvoterIDs;
-  bool isExpert = false;
 
   @override
   void initState() {
     super.initState();
-    httpHelpers
-        .viewOwnUserProfileRequest(widget.jwt)
-        .then((user) => isExpert = user.expert);
   }
 
   @override
@@ -961,7 +957,7 @@ class OtherCommentState extends State<OtherComment> {
                                       )),
                                   Text(widget.comment.content)
                                 ])),
-                  subtitle: widget.comment.idSuggestion && isExpert
+                  subtitle: widget.comment.idSuggestion && widget.isExpert
                       ? Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

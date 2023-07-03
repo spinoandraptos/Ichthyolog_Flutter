@@ -10,6 +10,7 @@ import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
 import '../Helpers/standard_widgets.dart';
 import '../Models/species.dart';
+import '../Models/user.dart';
 import 'package:intl/intl.dart';
 import 'gallery_page.dart';
 import 'Stepper.dart';
@@ -22,7 +23,8 @@ class Utils {
 }
 
 class CameraPage extends StatefulWidget {
-  const CameraPage({Key? key}) : super(key: key);
+  final User currUser;
+  const CameraPage({Key? key, required this.currUser}) : super(key: key);
   @override
   CameraPageState createState() => CameraPageState();
 }
@@ -390,7 +392,10 @@ class CameraPageState extends State<CameraPage> {
           ).then((value) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const GalleryPage()),
+              MaterialPageRoute(
+                  builder: (context) => GalleryPage(
+                        currUser: widget.currUser,
+                      )),
             );
           });
         } else {

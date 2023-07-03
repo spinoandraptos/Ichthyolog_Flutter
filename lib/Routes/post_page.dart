@@ -7,7 +7,9 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 
 class PostPage extends StatefulWidget {
   final int postid;
-  const PostPage({Key? key, required this.postid}) : super(key: key);
+  final bool isExpert;
+  const PostPage({Key? key, required this.postid, required this.isExpert})
+      : super(key: key);
   @override
   PostPageState createState() => PostPageState();
 }
@@ -196,7 +198,8 @@ class PostPageState extends State<PostPage> {
                                 return PostPageMultiComment(
                                     comments: snapshot.data!,
                                     jwt: jwt,
-                                    postid: widget.postid);
+                                    postid: widget.postid,
+                                    isExpert: widget.isExpert);
                               } else if (snapshot.hasData &&
                                   snapshot.data!.length == 1) {
                                 return PostPageSingleComment(
@@ -204,7 +207,8 @@ class PostPageState extends State<PostPage> {
                                     jwt: jwt,
                                     decodedJWT: decodedJWT,
                                     postid: widget.postid,
-                                    updateCallBack: changeCommentCallback);
+                                    updateCallBack: changeCommentCallback,
+                                    isExpert: widget.isExpert);
                               } else {
                                 return PostPageNoComment(
                                     jwt: jwt,
