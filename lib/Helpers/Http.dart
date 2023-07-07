@@ -343,38 +343,98 @@ class HttpHelpers {
       String family,
       String genus,
       String species) async {
-    String urlInfo = 'https://ichthyolog-nodejs.onrender.com/post/$postid/info';
-    String urlClassification =
-        'https://ichthyolog-nodejs.onrender.com/post/$postid/classification';
-    var responseInfo = await http.put(Uri.parse(urlInfo),
+    String urlTitle =
+        'https://ichthyolog-nodejs.onrender.com/post/$postid/title';
+    String urlDescription =
+        'https://ichthyolog-nodejs.onrender.com/post/$postid/description';
+    String urlSightingLocation =
+        'https://ichthyolog-nodejs.onrender.com/post/$postid/sightinglocation';
+    String urlClass =
+        'https://ichthyolog-nodejs.onrender.com/post/$postid/class';
+    String urlOrder =
+        'https://ichthyolog-nodejs.onrender.com/post/$postid/order';
+    String urlFamily =
+        'https://ichthyolog-nodejs.onrender.com/post/$postid/family';
+    String urlGenus =
+        'https://ichthyolog-nodejs.onrender.com/post/$postid/genus';
+    String urlSpecies =
+        'https://ichthyolog-nodejs.onrender.com/post/$postid/species';
+    var responseTitle = await http.put(Uri.parse(urlTitle),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorisation': jwt
         },
-        body: json.encode(<String, dynamic>{
-          'title': title,
-          'description': description,
-          'sightingLocation': location
-        }));
+        body: json.encode(<String, dynamic>{'title': title}));
+    var responseDescription = await http.put(Uri.parse(urlDescription),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorisation': jwt
+        },
+        body: json.encode(<String, dynamic>{'description': description}));
+    var responseSightingLocation = await http.put(
+        Uri.parse(urlSightingLocation),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorisation': jwt
+        },
+        body: json.encode(<String, dynamic>{'sightingLocation': location}));
 
-    var responseClassification = await http.put(Uri.parse(urlClassification),
+    var responseClass = await http.put(Uri.parse(urlClass),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorisation': jwt
         },
-        body: json.encode(<String, dynamic>{
-          '_class': class_,
-          'order': order,
-          'family': family,
-          'genus': genus,
-          'species': species
-        }));
-    if (responseInfo.body == 'Post not found' ||
-        responseClassification.body == 'Post not found') {
-      return ('Post Not Found');
-    } else if (responseInfo.statusCode != 200 ||
-        responseClassification.statusCode != 200) {
-      return ('Error');
+        body: json.encode(<String, dynamic>{'_class': class_}));
+    var responseOrder = await http.put(Uri.parse(urlOrder),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorisation': jwt
+        },
+        body: json.encode(<String, dynamic>{'order': order}));
+    var responseFamily = await http.put(Uri.parse(urlFamily),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorisation': jwt
+        },
+        body: json.encode(<String, dynamic>{'family': family}));
+    var responseGenus = await http.put(Uri.parse(urlGenus),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorisation': jwt
+        },
+        body: json.encode(<String, dynamic>{'genus': genus}));
+    var responseSpecies = await http.put(Uri.parse(urlSpecies),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorisation': jwt
+        },
+        body: json.encode(<String, dynamic>{'species': species}));
+
+    if (responseTitle.body == 'Post not found' ||
+        responseDescription.body == 'Post not found' ||
+        responseSightingLocation.body == 'Post not found' ||
+        responseClass.body == 'Post not found' ||
+        responseOrder.body == 'Post not found' ||
+        responseFamily.body == 'Post not found' ||
+        responseGenus.body == 'Post not found' ||
+        responseSpecies.body == 'Post not found') {
+      return ('Post Not Found :(');
+    } else if (responseTitle.statusCode != 200) {
+      return ('Title Edit Error :(');
+    } else if (responseDescription.statusCode != 200) {
+      return ('Description Edit Error :(');
+    } else if (responseSightingLocation.statusCode != 200) {
+      return ('Location Edit Error :(');
+    } else if (responseClass.statusCode != 200) {
+      return ('Class Edit Error :(');
+    } else if (responseOrder.statusCode != 200) {
+      return ('Order Edit Error :(');
+    } else if (responseFamily.statusCode != 200) {
+      return ('Family Edit Error :(');
+    } else if (responseGenus.statusCode != 200) {
+      return ('Genus Edit Error :(');
+    } else if (responseSpecies.statusCode != 200) {
+      return ('Species Edit Error :(');
     } else {
       return ('Post Edited');
     }

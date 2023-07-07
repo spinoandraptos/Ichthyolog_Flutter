@@ -1125,7 +1125,7 @@ class HomePageState extends State<HomePage> {
                                     const Color.fromARGB(255, 102, 154, 217)),
                             child: const Text(
                               'Edit Classification',
-                              style: TextStyle(fontSize: 12),
+                              style: TextStyle(fontSize: 11),
                             ),
                           ),
                           ElevatedButton(
@@ -1138,7 +1138,7 @@ class HomePageState extends State<HomePage> {
                                       const Color.fromARGB(255, 80, 170, 121)),
                               child: const Text(
                                 "Confirm",
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 11),
                               ),
                               onPressed: () {
                                 httpHelpers
@@ -1154,6 +1154,12 @@ class HomePageState extends State<HomePage> {
                                         newGenus,
                                         newSpecies)
                                     .then((response) {
+                                  Fluttertoast.showToast(
+                                    msg: response,
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    timeInSecForIosWeb: 1,
+                                  );
                                   if (response == 'Post Edited') {
                                     Navigator.pop(context);
                                     setState(() {
@@ -1162,19 +1168,6 @@ class HomePageState extends State<HomePage> {
                                       newFamily = '';
                                       newGenus = '';
                                     });
-                                    Fluttertoast.showToast(
-                                      msg: 'Post Edited',
-                                      toastLength: Toast.LENGTH_SHORT,
-                                      gravity: ToastGravity.BOTTOM,
-                                      timeInSecForIosWeb: 1,
-                                    );
-                                  } else {
-                                    Fluttertoast.showToast(
-                                      msg: 'Post Edit Failed :(',
-                                      toastLength: Toast.LENGTH_SHORT,
-                                      gravity: ToastGravity.BOTTOM,
-                                      timeInSecForIosWeb: 1,
-                                    );
                                   }
                                 });
                               }),
@@ -1188,7 +1181,7 @@ class HomePageState extends State<HomePage> {
                                       const Color.fromARGB(255, 170, 80, 80)),
                               child: const Text(
                                 "Cancel",
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 11),
                               ),
                               onPressed: () {
                                 Navigator.pop(context);

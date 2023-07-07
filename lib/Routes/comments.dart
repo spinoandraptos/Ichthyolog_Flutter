@@ -839,7 +839,7 @@ class OwnCommentState extends State<OwnComment> {
           } else if (snapshot.hasError) {
             return Text('ERROR: ${snapshot.error}');
           } else {
-            return const LoadingComment();
+            return loadingComment();
           }
         }));
   }
@@ -1290,7 +1290,7 @@ class OtherCommentState extends State<OtherComment> {
           } else if (snapshot.hasError) {
             return Text('ERROR: ${snapshot.error}');
           } else {
-            return const LoadingComment();
+            return loadingComment();
           }
         }));
   }

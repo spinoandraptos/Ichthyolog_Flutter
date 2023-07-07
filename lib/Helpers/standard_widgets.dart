@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoadingScreen extends StatelessWidget {
   const LoadingScreen({super.key});
@@ -45,25 +46,20 @@ class NoticeDialog extends StatelessWidget {
   }
 }
 
-class LoadingComment extends StatelessWidget {
-  const LoadingComment({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(top: 10, bottom: 10),
-      color: const Color.fromARGB(255, 236, 249, 255),
-      child: const Center(
-        child: SizedBox(
-          height: 15.0,
-          width: 15.0,
-          child: CircularProgressIndicator(
-              backgroundColor: Color.fromARGB(255, 91, 170, 255),
-              valueColor: AlwaysStoppedAnimation<Color>(
-                  Color.fromARGB(255, 184, 218, 255)),
-              strokeWidth: 4),
-        ),
+Widget loadingComment() {
+  return Container(
+    padding: const EdgeInsets.only(top: 10, bottom: 10),
+    color: const Color.fromARGB(255, 236, 249, 255),
+    child: const Center(
+      child: SizedBox(
+        height: 15.0,
+        width: 15.0,
+        child: CircularProgressIndicator(
+            backgroundColor: Color.fromARGB(255, 91, 170, 255),
+            valueColor: AlwaysStoppedAnimation<Color>(
+                Color.fromARGB(255, 184, 218, 255)),
+            strokeWidth: 4),
       ),
-    );
-  }
+    ),
+  );
 }
