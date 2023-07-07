@@ -161,13 +161,16 @@ class HomePageState extends State<HomePage> {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               //Visit camera page to post sighting
-                              cameraPageButton(snapshotUser.data!),
+                              cameraPageButton(
+                                  snapshotUser.data!, refreshCallback),
                               //Visit gallery page to view sightings
-                              galleryPageButton(snapshotUser.data!),
+                              galleryPageButton(
+                                  snapshotUser.data!, refreshCallback),
                               //Visit statistics page to access sighting data
-                              statsPageButton(),
+                              statsPageButton(refreshCallback),
                               //Visit waiting list page to verify/flag posts
-                              waitingListPageButton(snapshotUser.data!)
+                              waitingListPageButton(
+                                  snapshotUser.data!, refreshCallback)
                             ],
                           ),
                         )
@@ -176,11 +179,13 @@ class HomePageState extends State<HomePage> {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               //Visit camera page to post sighting
-                              cameraPageButton(snapshotUser.data!),
+                              cameraPageButton(
+                                  snapshotUser.data!, refreshCallback),
                               //Visit gallery page to view sightings
-                              galleryPageButton(snapshotUser.data!),
+                              galleryPageButton(
+                                  snapshotUser.data!, refreshCallback),
                               //Visit statistics page to access sighting data
-                              statsPageButton(),
+                              statsPageButton(refreshCallback),
                             ],
                           ),
                         ));
@@ -258,24 +263,17 @@ class HomePageState extends State<HomePage> {
                                       "https://ichthyolog175756-dev.s3.ap-southeast-1.amazonaws.com/public/$key",
                                       jwt)
                                   .then((String response) {
+                                Fluttertoast.showToast(
+                                  msg: response,
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                );
                                 if (response == 'User Edited') {
                                   Navigator.pop(context);
                                   setState(() {
                                     image = null;
                                   });
-                                  Fluttertoast.showToast(
-                                    msg: 'Profile Picture Edited',
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                } else {
-                                  Fluttertoast.showToast(
-                                    msg: 'Profile Edit Failed :(',
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
                                 }
                               });
                             } catch (error) {
@@ -569,6 +567,12 @@ class HomePageState extends State<HomePage> {
                                                     newPassword,
                                                     jwt)
                                                 .then((response) {
+                                              Fluttertoast.showToast(
+                                                msg: response,
+                                                toastLength: Toast.LENGTH_SHORT,
+                                                gravity: ToastGravity.BOTTOM,
+                                                timeInSecForIosWeb: 1,
+                                              );
                                               if (response == 'User Edited') {
                                                 Navigator.pop(context);
                                                 setState(() {
@@ -576,49 +580,6 @@ class HomePageState extends State<HomePage> {
                                                   newEmail = '';
                                                   newPassword = '';
                                                 });
-                                                Fluttertoast.showToast(
-                                                  msg: 'Profile Edited',
-                                                  toastLength:
-                                                      Toast.LENGTH_SHORT,
-                                                  gravity: ToastGravity.BOTTOM,
-                                                  timeInSecForIosWeb: 1,
-                                                );
-                                              } else if (response ==
-                                                  'Incorrect Password') {
-                                                Fluttertoast.showToast(
-                                                  msg: 'Incorrect Password',
-                                                  toastLength:
-                                                      Toast.LENGTH_SHORT,
-                                                  gravity: ToastGravity.BOTTOM,
-                                                  timeInSecForIosWeb: 1,
-                                                );
-                                              } else if (response ==
-                                                  'Email Already Exists') {
-                                                Fluttertoast.showToast(
-                                                  msg: 'Email Already In Use',
-                                                  toastLength:
-                                                      Toast.LENGTH_SHORT,
-                                                  gravity: ToastGravity.BOTTOM,
-                                                  timeInSecForIosWeb: 1,
-                                                );
-                                              } else if (response ==
-                                                  'Username Already Exists') {
-                                                Fluttertoast.showToast(
-                                                  msg:
-                                                      'Username Already In Use',
-                                                  toastLength:
-                                                      Toast.LENGTH_SHORT,
-                                                  gravity: ToastGravity.BOTTOM,
-                                                  timeInSecForIosWeb: 1,
-                                                );
-                                              } else {
-                                                Fluttertoast.showToast(
-                                                  msg: 'Profile Edit Failed :(',
-                                                  toastLength:
-                                                      Toast.LENGTH_SHORT,
-                                                  gravity: ToastGravity.BOTTOM,
-                                                  timeInSecForIosWeb: 1,
-                                                );
                                               }
                                             });
                                           }),
@@ -664,7 +625,7 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget cameraPageButton(User user) {
+  Widget cameraPageButton(User user, Function refreshCallback) {
     return IconButton(
       icon: const Icon(Icons.add_a_photo_rounded,
           color: Color.fromARGB(255, 52, 66, 117)),
@@ -672,24 +633,24 @@ class HomePageState extends State<HomePage> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => CameraPage(currUser: user)),
-        );
+        ).then((value) => refreshCallback());
       },
     );
   }
 
-  Widget statsPageButton() {
+  Widget statsPageButton(Function refreshCallback) {
     return IconButton(
       icon: const Icon(Icons.search, color: Color.fromARGB(255, 52, 66, 117)),
       onPressed: () {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const StatisticsPage()),
-        );
+        ).then((value) => refreshCallback());
       },
     );
   }
 
-  Widget galleryPageButton(User user) {
+  Widget galleryPageButton(User user, Function refreshCallback) {
     return IconButton(
       icon: const Icon(Icons.photo_library,
           color: Color.fromARGB(255, 52, 66, 117)),
@@ -697,12 +658,12 @@ class HomePageState extends State<HomePage> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => GalleryPage(currUser: user)),
-        );
+        ).then((value) => refreshCallback());
       },
     );
   }
 
-  Widget waitingListPageButton(User user) {
+  Widget waitingListPageButton(User user, Function refreshCallback) {
     return IconButton(
       icon: const Icon(
         Icons.feedback,
@@ -715,7 +676,7 @@ class HomePageState extends State<HomePage> {
               builder: (context) => WaitingListPage(
                     isExpert: user.expert,
                   )),
-        );
+        ).then((value) => refreshCallback());
       },
     );
   }
@@ -907,7 +868,7 @@ class HomePageState extends State<HomePage> {
                   TextEditingController();
               List<String> allSpecies = <String>[];
               for (var record in singaporeRecords) {
-                allSpecies.add(record.commonNames);
+                allSpecies.add('${record.commonNames} (${record.species})');
               }
               return StatefulBuilder(builder: (context, setState) {
                 classCallback(newValue) {
@@ -1233,22 +1194,14 @@ class HomePageState extends State<HomePage> {
                           httpHelpers.deletePostRequest(post.postid, jwt).then(
                             (response) {
                               Navigator.pop(context);
-                              if (response == 'Post Deleted') {
-                                setState(() {});
-                                Fluttertoast.showToast(
-                                  msg: 'Post deleted',
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIosWeb: 1,
-                                );
-                              } else {
-                                Fluttertoast.showToast(
-                                  msg: 'Post failed to delete :(',
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIosWeb: 1,
-                                );
-                              }
+                              Fluttertoast.showToast(
+                                msg: response,
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+
+                              setState(() {});
                             },
                           );
                         }),
@@ -1442,5 +1395,9 @@ class HomePageState extends State<HomePage> {
             controller.text = suggestion;
           },
         ));
+  }
+
+  refreshCallback() {
+    setState(() {});
   }
 }

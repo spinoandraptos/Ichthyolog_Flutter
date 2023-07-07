@@ -199,7 +199,9 @@ class PostPageState extends State<PostPage> {
                                     comments: snapshot.data!,
                                     jwt: jwt,
                                     postid: widget.postid,
-                                    isExpert: widget.isExpert);
+                                    isExpert: widget.isExpert,
+                                    decodedJWT: decodedJWT,
+                                    updateCallBack: changeCommentCallback);
                               } else if (snapshot.hasData &&
                                   snapshot.data!.length == 1) {
                                 return PostPageSingleComment(
@@ -237,7 +239,8 @@ class PostPageState extends State<PostPage> {
         response == 'Comment Upvoted' ||
         response == 'Comment Downvoted' ||
         response == 'Comment Un-upvoted' ||
-        response == 'Comment Un-downvoted') {
+        response == 'Comment Un-downvoted' ||
+        response == 'Refreshed') {
       setState(() {});
     }
   }

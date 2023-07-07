@@ -63,7 +63,7 @@ class CameraPageState extends State<CameraPage> {
       }
     });
     for (var record in singaporeRecords) {
-      allSpecies.add(record.commonNames);
+      allSpecies.add('${record.commonNames} (${record.species})');
     }
   }
 

@@ -64,7 +64,7 @@ class GalleryPageState extends State<GalleryPage> {
                       backgroundColor: const Color.fromARGB(255, 65, 90, 181),
                       actions: [logoutButton()],
                     ),
-              body: galleryScreen(context, snapshot.data!),
+              body: galleryScreen(context, snapshot.data!, refreshCallback),
               bottomNavigationBar: BottomAppBar(
                 child: jwt == ''
                     ? null
@@ -73,24 +73,24 @@ class GalleryPageState extends State<GalleryPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               //Visit home page to view profile
-                              homePageButton(),
+                              homePageButton(refreshCallback),
                               //Visit camera page to post sighting
-                              cameraPageButton(),
+                              cameraPageButton(refreshCallback),
                               //Visit statistics page to access sighting data
-                              statsPageButton(),
+                              statsPageButton(refreshCallback),
                               //Visit waiting list page to verify/flag posts
-                              waitingListPageButton()
+                              waitingListPageButton(refreshCallback)
                             ],
                           )
                         : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               //Visit home page to view profile
-                              homePageButton(),
+                              homePageButton(refreshCallback),
                               //Visit camera page to post sighting
-                              cameraPageButton(),
+                              cameraPageButton(refreshCallback),
                               //Visit statistics page to access sighting data
-                              statsPageButton(),
+                              statsPageButton(refreshCallback),
                             ],
                           ),
               ),
@@ -113,19 +113,19 @@ class GalleryPageState extends State<GalleryPage> {
     );
   }
 
-  Widget homePageButton() {
+  Widget homePageButton(Function refreshCallback) {
     return IconButton(
       icon: const Icon(Icons.home, color: Color.fromARGB(255, 52, 66, 117)),
       onPressed: () {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const HomePage()),
-        );
+        ).then((value) => refreshCallback());
       },
     );
   }
 
-  Widget cameraPageButton() {
+  Widget cameraPageButton(Function refreshCallback) {
     return IconButton(
       icon: const Icon(Icons.add_a_photo_rounded,
           color: Color.fromARGB(255, 52, 66, 117)),
@@ -136,24 +136,24 @@ class GalleryPageState extends State<GalleryPage> {
               builder: (context) => CameraPage(
                     currUser: widget.currUser,
                   )),
-        );
+        ).then((value) => refreshCallback());
       },
     );
   }
 
-  Widget statsPageButton() {
+  Widget statsPageButton(Function refreshCallback) {
     return IconButton(
       icon: const Icon(Icons.search, color: Color.fromARGB(255, 52, 66, 117)),
       onPressed: () {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const StatisticsPage()),
-        );
+        ).then((value) => refreshCallback());
       },
     );
   }
 
-  Widget waitingListPageButton() {
+  Widget waitingListPageButton(Function refreshCallback) {
     return IconButton(
       icon: const Icon(
         Icons.feedback,
@@ -166,7 +166,7 @@ class GalleryPageState extends State<GalleryPage> {
               builder: (context) => WaitingListPage(
                     isExpert: widget.currUser.expert,
                   )),
-        );
+        ).then((value) => refreshCallback());
       },
     );
   }
@@ -199,7 +199,7 @@ class GalleryPageState extends State<GalleryPage> {
                   TextEditingController();
               List<String> allSpecies = <String>[];
               for (var record in singaporeRecords) {
-                allSpecies.add(record.commonNames);
+                allSpecies.add('${record.commonNames} (${record.species})');
               }
               return StatefulBuilder(builder: (context, setState) {
                 classCallback(newValue) {
@@ -525,22 +525,14 @@ class GalleryPageState extends State<GalleryPage> {
                           httpHelpers.deletePostRequest(post.postid, jwt).then(
                             (response) {
                               Navigator.pop(context);
-                              if (response == 'Post Deleted') {
-                                setState(() {});
-                                Fluttertoast.showToast(
-                                  msg: 'Post deleted',
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIosWeb: 1,
-                                );
-                              } else {
-                                Fluttertoast.showToast(
-                                  msg: 'Post failed to delete :(',
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIosWeb: 1,
-                                );
-                              }
+                              Fluttertoast.showToast(
+                                msg: response,
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+
+                              setState(() {});
                             },
                           );
                         }),
@@ -558,7 +550,7 @@ class GalleryPageState extends State<GalleryPage> {
     );
   }
 
-  Widget clickableImage(Post post) {
+  Widget clickableImage(Post post, Function refreshCallback) {
     return Expanded(
         child: Padding(
             padding: const EdgeInsets.only(left: 6, right: 6),
@@ -595,7 +587,7 @@ class GalleryPageState extends State<GalleryPage> {
                                   postid: post.postid,
                                   isExpert: widget.currUser.expert,
                                 )),
-                      );
+                      ).then((value) => refreshCallback());
                     })));
   }
 
@@ -664,7 +656,8 @@ class GalleryPageState extends State<GalleryPage> {
         ]));
   }
 
-  Widget galleryScreen(BuildContext context, List<Post> posts) {
+  Widget galleryScreen(
+      BuildContext context, List<Post> posts, Function refreshCallback) {
     return SingleChildScrollView(
         child: SizedBox(
             child: Column(children: [
@@ -679,14 +672,14 @@ class GalleryPageState extends State<GalleryPage> {
             childAspectRatio: 0.85,
           ),
           itemBuilder: (context, index) {
-            return postCard(posts[index]);
+            return postCard(posts[index], refreshCallback);
           },
           shrinkWrap: true,
           padding: const EdgeInsets.all(12.0))
     ])));
   }
 
-  Widget postCard(Post post) {
+  Widget postCard(Post post, Function refreshCallback) {
     return Card(
         color: const Color.fromARGB(255, 253, 254, 255),
         elevation: 4.5,
@@ -747,7 +740,7 @@ class GalleryPageState extends State<GalleryPage> {
                     ),
                   )),
               //Post Image
-              clickableImage(post),
+              clickableImage(post, refreshCallback),
               Padding(
                   padding: const EdgeInsets.only(
                       left: 12, top: 8, right: 9, bottom: 8),
@@ -818,5 +811,9 @@ class GalleryPageState extends State<GalleryPage> {
             controller.text = suggestion;
           },
         ));
+  }
+
+  refreshCallback() {
+    setState(() {});
   }
 }

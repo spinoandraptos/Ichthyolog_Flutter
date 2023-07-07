@@ -111,33 +111,55 @@ class HttpHelpers {
 
   Future<String> editUserProfileRequest(String email, String username,
       String oldPassword, String newPassword, String jwt) async {
-    String url = 'https://ichthyolog-nodejs.onrender.com/user/profile';
-    var response = await http.put(
-      Uri.parse(url),
+    String urlUsername = 'https://ichthyolog-nodejs.onrender.com/user/username';
+    String urlEmail = 'https://ichthyolog-nodejs.onrender.com/user/email';
+    String urlPassword = 'https://ichthyolog-nodejs.onrender.com/user/password';
+    var responseUsername = await http.put(
+      Uri.parse(urlUsername),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+      body: json.encode(
+          <String, String>{'username': username, 'oldPassword': oldPassword}),
+    );
+    var responseEmail = await http.put(
+      Uri.parse(urlEmail),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+      body: json
+          .encode(<String, String>{'email': email, 'oldPassword': oldPassword}),
+    );
+    var responsePassword = await http.put(
+      Uri.parse(urlPassword),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorisation': jwt
       },
       body: json.encode(<String, String>{
-        'username': username,
-        'oldPassword': oldPassword,
         'newPassword': newPassword,
-        'email': email
+        'oldPassword': oldPassword
       }),
     );
-    print(response.body);
-    print(response.statusCode);
-    if (response.body == 'User not found') {
+    if (responseUsername.body == 'User not found' ||
+        responseEmail.body == 'User not found' ||
+        responsePassword.body == 'User not found') {
       return ('User Not Found');
-    } else if (response.body == 'Incorrect password') {
+    } else if (responseUsername.body == 'Incorrect password' ||
+        responseEmail.body == 'Incorrect password' ||
+        responsePassword.body == 'Incorrect password') {
       return ('Incorrect Password');
-    } else if (response.body ==
+    } else if (responseEmail.body ==
         'duplicate key value violates unique constraint "users_email_key"') {
-      return 'Email Already Exists';
-    } else if (response.body ==
+      return 'Email Already In Use';
+    } else if (responseUsername.body ==
         'duplicate key value violates unique constraint "users_username_key"') {
-      return ('Username Already Exists');
-    } else if (response.statusCode != 200) {
+      return ('Username Already In Use');
+    } else if (responseUsername.statusCode != 200 ||
+        responseEmail.statusCode != 200 ||
+        responsePassword.statusCode != 200) {
       return ('Error');
     } else {
       return ('User Edited');
@@ -665,7 +687,7 @@ class HttpHelpers {
     if (response.statusCode == 200) {
       return ('Post Deleted');
     } else {
-      return ('Post Deletion Failed');
+      return ('Post Failed to Delete :(');
     }
   }
 

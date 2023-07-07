@@ -310,7 +310,7 @@ class WaitingListPageState extends State<WaitingListPage> {
                   TextEditingController();
               List<String> allSpecies = <String>[];
               for (var record in singaporeRecords) {
-                allSpecies.add(record.commonNames);
+                allSpecies.add('${record.commonNames} (${record.species})');
               }
               return StatefulBuilder(builder: (context, setState) {
                 classCallback(newValue) {
@@ -663,22 +663,13 @@ class WaitingListPageState extends State<WaitingListPage> {
                           httpHelpers.deletePostRequest(post.postid, jwt).then(
                             (response) {
                               Navigator.pop(context);
-                              if (response == 'Post Deleted') {
-                                setState(() {});
-                                Fluttertoast.showToast(
-                                  msg: 'Post deleted',
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIosWeb: 1,
-                                );
-                              } else {
-                                Fluttertoast.showToast(
-                                  msg: 'Post failed to delete :(',
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                  timeInSecForIosWeb: 1,
-                                );
-                              }
+                              Fluttertoast.showToast(
+                                msg: response,
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                              );
+                              setState(() {});
                             },
                           );
                         }),

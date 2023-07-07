@@ -8,59 +8,62 @@ import '../Models/species.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import '../Helpers/standard_widgets.dart';
 
-class PostPageMultiComment extends StatelessWidget {
+class PostPageMultiComment extends StatefulWidget {
   final List<Comment> comments;
   final httpHelpers = HttpHelpers();
   final String jwt;
   final int postid;
   final bool isExpert;
+  final Map<String, dynamic> decodedJWT;
+  final Function updateCallBack;
+
   PostPageMultiComment(
       {Key? key,
       required this.comments,
       required this.jwt,
       required this.postid,
-      required this.isExpert})
+      required this.isExpert,
+      required this.decodedJWT,
+      required this.updateCallBack})
       : super(key: key);
 
   @override
+  PostPageMultiCommentState createState() => PostPageMultiCommentState();
+}
+
+class PostPageMultiCommentState extends State<PostPageMultiComment> {
+  @override
   Widget build(BuildContext context) {
     return Column(children: [
-      ListTile(
-        horizontalTitleGap: 10,
-        contentPadding: const EdgeInsets.only(left: 20, right: 20),
-        leading: CircleAvatar(
-            radius: 18, backgroundImage: NetworkImage(comments[0].authorPic)),
-        title: Padding(
-            padding: const EdgeInsets.only(bottom: 3),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Padding(
-                  padding: const EdgeInsets.only(bottom: 2),
-                  child: Text(
-                    comments[0].authorName,
-                    style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Color.fromARGB(255, 51, 64, 113)),
-                  )),
-              Text(comments[comments.length - 1].content)
-            ])),
-        subtitle: Text(
-          'Posted at ${comments[0].postedTime}',
-          style: const TextStyle(fontSize: 11),
-        ),
-      ),
+      widget.comments[widget.comments.length - 1].authorId ==
+              widget.decodedJWT['userid']
+          ? OwnComment(
+              comment: widget.comments[0],
+              jwt: widget.jwt,
+              updateCallBack: widget.updateCallBack,
+              userid: widget.decodedJWT['userid'],
+              postid: widget.postid,
+              isExpert: widget.isExpert,
+            )
+          : OtherComment(
+              comment: widget.comments[0],
+              jwt: widget.jwt,
+              updateCallBack: widget.updateCallBack,
+              userid: widget.decodedJWT['userid'],
+              postid: widget.postid,
+              isExpert: widget.isExpert,
+            ),
       TextButton(
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    CommentPage(postid: postid, isExpert: isExpert)),
-          );
+                builder: (context) => CommentPage(
+                    postid: widget.postid, isExpert: widget.isExpert)),
+          ).then((value) => widget.updateCallBack('Refreshed'));
         },
         child: Text(
-          'View ${comments.length - 1} other replies',
+          'View ${widget.comments.length - 1} other replies',
           style: const TextStyle(color: Color.fromARGB(255, 51, 64, 113)),
         ),
       ),
