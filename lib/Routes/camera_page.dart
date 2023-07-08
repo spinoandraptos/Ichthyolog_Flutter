@@ -265,13 +265,6 @@ class CameraPageState extends State<CameraPage> {
                                     family,
                                     genus,
                                     species);
-                                setState(() {
-                                  image = null;
-                                  class_ = '';
-                                  order = '';
-                                  family = '';
-                                  genus = '';
-                                });
                               },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor:
@@ -381,30 +374,28 @@ class CameraPageState extends State<CameraPage> {
               genus,
               species)
           .then((String response) {
+        Fluttertoast.showToast(
+          msg: response,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+        );
         if (response == 'Post Uploaded') {
           titleController.text = '';
           locationController.text = '';
-          Fluttertoast.showToast(
-            msg: 'Post uploaded successfully!',
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-          ).then((value) {
-            Navigator.push(
+          Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => GalleryPage(
                         currUser: widget.currUser,
-                      )),
-            );
+                      )));
+          setState(() {
+            image = null;
+            class_ = '';
+            order = '';
+            family = '';
+            genus = '';
           });
-        } else {
-          Fluttertoast.showToast(
-            msg: 'Post upload failed!',
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-          );
         }
       });
     } catch (error) {
@@ -469,12 +460,12 @@ class CameraPageState extends State<CameraPage> {
   }
 
   titleCallback(newValue) {
-    final splitNames = newValue.split(', ');
     setState(() {
-      title = splitNames[0];
+      title = newValue.split('(')[0].split(', ')[0];
     });
-    final speciesRecord = singaporeRecords
-        .singleWhere((record) => record.commonNames == newValue, orElse: () {
+    final speciesRecord = singaporeRecords.singleWhere(
+        (record) => '${record.commonNames} (${record.species})' == newValue,
+        orElse: () {
       return SpeciesRecord(
           class_: '',
           order: '',
@@ -518,6 +509,7 @@ class CameraPageState extends State<CameraPage> {
           hideOnLoading: true,
           hideOnEmpty: true,
           textFieldConfiguration: TextFieldConfiguration(
+              onSubmitted: (value) => controller.text = value,
               controller: controller,
               decoration: InputDecoration(
                 focusColor: const Color.fromARGB(255, 51, 64, 113),

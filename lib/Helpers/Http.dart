@@ -557,10 +557,12 @@ class HttpHelpers {
       body:
           json.encode(<String, dynamic>{'postid': postid, 'content': content}),
     );
+    print(response.statusCode);
+    print(response.body);
     if (response.statusCode == 201) {
-      return ('Comment Posted');
+      return ('ID suggestion posted successfully!');
     } else {
-      return ('Comment Post Failed');
+      return ('ID suggestion failed to post :(');
     }
   }
 
@@ -576,9 +578,9 @@ class HttpHelpers {
     String genus = '';
     String species = '';
 
-    final splitNames = content.split(', ');
-    final speciesRecord = singaporeRecords
-        .singleWhere((record) => record.commonNames == content, orElse: () {
+    final speciesRecord = singaporeRecords.singleWhere(
+        (record) => '${record.commonNames} (${record.species})' == content,
+        orElse: () {
       return SpeciesRecord(
           class_: '',
           order: '',
@@ -587,7 +589,7 @@ class HttpHelpers {
           species: '',
           commonNames: '');
     });
-    content = splitNames[0];
+    content = content.split('(')[0].split(', ')[0];
 
     if (speciesRecord.class_ != '' &&
         speciesRecord.order != '' &&
@@ -602,8 +604,48 @@ class HttpHelpers {
 
     String urlComment =
         'https://ichthyolog-nodejs.onrender.com/comment/$commentid/idsuggestion';
-    String urlClassification =
-        'https://ichthyolog-nodejs.onrender.com/post/$postid/classification';
+    String urlClass =
+        'https://ichthyolog-nodejs.onrender.com/post/$postid/class';
+    String urlOrder =
+        'https://ichthyolog-nodejs.onrender.com/post/$postid/order';
+    String urlFamily =
+        'https://ichthyolog-nodejs.onrender.com/post/$postid/family';
+    String urlGenus =
+        'https://ichthyolog-nodejs.onrender.com/post/$postid/genus';
+    String urlSpecies =
+        'https://ichthyolog-nodejs.onrender.com/post/$postid/species';
+
+    var responseClass = await http.put(Uri.parse(urlClass),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorisation': jwt
+        },
+        body: json.encode(<String, dynamic>{'_class': class_}));
+    var responseOrder = await http.put(Uri.parse(urlOrder),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorisation': jwt
+        },
+        body: json.encode(<String, dynamic>{'order': order}));
+    var responseFamily = await http.put(Uri.parse(urlFamily),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorisation': jwt
+        },
+        body: json.encode(<String, dynamic>{'family': family}));
+    var responseGenus = await http.put(Uri.parse(urlGenus),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorisation': jwt
+        },
+        body: json.encode(<String, dynamic>{'genus': genus}));
+    var responseSpecies = await http.put(Uri.parse(urlSpecies),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorisation': jwt
+        },
+        body: json.encode(<String, dynamic>{'species': species}));
+
     var responseComment = await http.put(
       Uri.parse(urlComment),
       headers: <String, String>{
@@ -613,26 +655,28 @@ class HttpHelpers {
       body:
           json.encode(<String, dynamic>{'postid': postid, 'content': content}),
     );
-    var responseClassification = await http.put(Uri.parse(urlClassification),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorisation': jwt
-        },
-        body: json.encode(<String, dynamic>{
-          '_class': class_,
-          'order': order,
-          'family': family,
-          'genus': genus,
-          'species': species
-        }));
+
     if (responseComment.body == 'Approved ID already exists') {
       return ('Approved ID Already Exists');
     } else if (responseComment.body == 'Post not found' ||
-        responseClassification.body == 'Post not found') {
+        responseClass.body == 'Post not found' ||
+        responseOrder.body == 'Post not found' ||
+        responseFamily.body == 'Post not found' ||
+        responseGenus.body == 'Post not found' ||
+        responseSpecies.body == 'Post not found') {
       return ('Post Not Found');
-    } else if (responseComment.statusCode != 200 ||
-        responseClassification.statusCode != 200) {
-      return ('Error');
+    } else if (responseComment.statusCode != 200) {
+      return ('SUggestion Edit Error :(');
+    } else if (responseClass.statusCode != 200) {
+      return ('Class Edit Error :(');
+    } else if (responseOrder.statusCode != 200) {
+      return ('Order Edit Error :(');
+    } else if (responseFamily.statusCode != 200) {
+      return ('Family Edit Error :(');
+    } else if (responseGenus.statusCode != 200) {
+      return ('Genus Edit Error :(');
+    } else if (responseSpecies.statusCode != 200) {
+      return ('Species Edit Error :(');
     } else {
       return ('ID Accepted');
     }

@@ -240,7 +240,7 @@ class PostPageState extends State<PostPage> {
         response == 'Comment Downvoted' ||
         response == 'Comment Un-upvoted' ||
         response == 'Comment Un-downvoted' ||
-        response == 'Refreshed') {
+        response == 'ID suggestion posted successfully!') {
       setState(() {});
     }
   }

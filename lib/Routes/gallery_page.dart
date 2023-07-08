@@ -30,6 +30,10 @@ class GalleryPageState extends State<GalleryPage> {
 
   String newDescription = '';
 
+  refreshCallback() {
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
@@ -227,12 +231,13 @@ class GalleryPageState extends State<GalleryPage> {
                 }
 
                 titleCallback(newValue) {
-                  final splitNames = newValue.split(', ');
                   setState(() {
-                    newTitle = splitNames[0];
+                    newTitle = newValue;
                   });
                   final speciesRecord = singaporeRecords.singleWhere(
-                      (record) => record.commonNames == newValue, orElse: () {
+                      (record) =>
+                          '${record.commonNames} (${record.species})' ==
+                          newValue, orElse: () {
                     return SpeciesRecord(
                         class_: '',
                         order: '',
@@ -619,7 +624,7 @@ class GalleryPageState extends State<GalleryPage> {
                 fontSize: 11,
                 color: Color.fromARGB(255, 73, 155, 109)),
           ),
-          SizedBox(width: 14),
+          SizedBox(width: 10),
           CircleAvatar(
               radius: 7,
               backgroundColor: Color.fromARGB(255, 175, 103, 51),
@@ -636,7 +641,7 @@ class GalleryPageState extends State<GalleryPage> {
                 fontSize: 11,
                 color: Color.fromARGB(255, 175, 103, 51)),
           ),
-          SizedBox(width: 14),
+          SizedBox(width: 10),
           CircleAvatar(
               radius: 7,
               backgroundColor: Color.fromARGB(255, 152, 72, 85),
@@ -732,9 +737,15 @@ class GalleryPageState extends State<GalleryPage> {
                     radius: 8,
                     backgroundColor: post.flagged
                         ? const Color.fromARGB(255, 152, 72, 85)
-                        : const Color.fromARGB(255, 175, 103, 51),
+                        : post.verified
+                            ? const Color.fromARGB(255, 73, 155, 109)
+                            : const Color.fromARGB(255, 175, 103, 51),
                     child: Icon(
-                      post.flagged ? Icons.priority_high : Icons.pending,
+                      post.flagged
+                          ? Icons.priority_high
+                          : post.verified
+                              ? Icons.verified
+                              : Icons.pending,
                       size: 10,
                       color: Colors.white,
                     ),
@@ -778,6 +789,7 @@ class GalleryPageState extends State<GalleryPage> {
           hideOnLoading: true,
           hideOnEmpty: true,
           textFieldConfiguration: TextFieldConfiguration(
+              onSubmitted: (value) => controller.text = value,
               controller: controller,
               decoration: InputDecoration(
                 hintText: hintText,
@@ -811,9 +823,5 @@ class GalleryPageState extends State<GalleryPage> {
             controller.text = suggestion;
           },
         ));
-  }
-
-  refreshCallback() {
-    setState(() {});
   }
 }

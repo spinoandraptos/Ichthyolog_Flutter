@@ -39,7 +39,7 @@ class CommentPageState extends State<CommentPage> {
           jwt = token;
           decodedJWT = JwtDecoder.decode(token);
           for (var record in singaporeRecords) {
-            allSpecies.add(record.commonNames);
+            allSpecies.add('${record.commonNames} (${record.species})');
           }
         });
       }
@@ -205,35 +205,24 @@ class CommentPageState extends State<CommentPage> {
                                             ? httpHelpers
                                                 .addIdSuggestionRequest(
                                                     widget.postid,
-                                                    contentText.text,
+                                                    contentText.text
+                                                        .split('(')[0],
                                                     jwt)
                                                 .then((response) {
+                                                Fluttertoast.showToast(
+                                                  msg: response,
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  timeInSecForIosWeb: 1,
+                                                );
                                                 if (response ==
-                                                    'Comment Posted') {
+                                                    'ID suggestion posted successfully!') {
                                                   updateCommentCallback(
                                                       response);
-                                                  Fluttertoast.showToast(
-                                                    msg:
-                                                        'ID suggestion posted successfully!',
-                                                    toastLength:
-                                                        Toast.LENGTH_SHORT,
-                                                    gravity:
-                                                        ToastGravity.BOTTOM,
-                                                    timeInSecForIosWeb: 1,
-                                                  );
                                                   setState(() {
                                                     contentText.clear();
                                                   });
-                                                } else {
-                                                  Fluttertoast.showToast(
-                                                    msg:
-                                                        'ID suggestion failed to post :(',
-                                                    toastLength:
-                                                        Toast.LENGTH_SHORT,
-                                                    gravity:
-                                                        ToastGravity.BOTTOM,
-                                                    timeInSecForIosWeb: 1,
-                                                  );
                                                 }
                                               })
                                             : httpHelpers
@@ -309,6 +298,7 @@ class CommentPageState extends State<CommentPage> {
       hideOnLoading: true,
       hideOnEmpty: true,
       textFieldConfiguration: TextFieldConfiguration(
+          onSubmitted: (value) => controller.text = value,
           controller: controller,
           decoration: InputDecoration(
             focusColor: const Color.fromARGB(255, 51, 64, 113),

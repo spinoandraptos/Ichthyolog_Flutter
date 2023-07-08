@@ -896,12 +896,13 @@ class HomePageState extends State<HomePage> {
                 }
 
                 titleCallback(newValue) {
-                  final splitNames = newValue.split(', ');
                   setState(() {
-                    newTitle = splitNames[0];
+                    newTitle = newValue;
                   });
                   final speciesRecord = singaporeRecords.singleWhere(
-                      (record) => record.commonNames == newValue, orElse: () {
+                      (record) =>
+                          '${record.commonNames} (${record.species})' ==
+                          newValue, orElse: () {
                     return SpeciesRecord(
                         class_: '',
                         order: '',
@@ -1316,9 +1317,15 @@ class HomePageState extends State<HomePage> {
                     radius: 8,
                     backgroundColor: post.flagged
                         ? const Color.fromARGB(255, 152, 72, 85)
-                        : const Color.fromARGB(255, 175, 103, 51),
+                        : post.verified
+                            ? const Color.fromARGB(255, 73, 155, 109)
+                            : const Color.fromARGB(255, 175, 103, 51),
                     child: Icon(
-                      post.flagged ? Icons.priority_high : Icons.pending,
+                      post.flagged
+                          ? Icons.priority_high
+                          : post.verified
+                              ? Icons.verified
+                              : Icons.pending,
                       size: 10,
                       color: Colors.white,
                     ),

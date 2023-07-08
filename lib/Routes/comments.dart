@@ -111,7 +111,7 @@ class OwnCommentState extends State<OwnComment> {
                                                 255, 231, 237, 250),
                                         child: Text(singaporeRecords
                                             .singleWhere((record) =>
-                                                record.commonNames ==
+                                                '${record.commonNames} (${record.species})' ==
                                                 widget.comment.content)
                                             .species))
                                   ]
@@ -949,7 +949,7 @@ class OtherCommentState extends State<OtherComment> {
                                               255, 231, 237, 250),
                                       child: Text(singaporeRecords
                                           .singleWhere((record) =>
-                                              record.commonNames ==
+                                              '${record.commonNames} (${record.species})' ==
                                               widget.comment.content)
                                           .species))
                                 ]
@@ -972,7 +972,7 @@ class OtherCommentState extends State<OtherComment> {
                           children: [
                               Text(
                                 widget.comment.edited
-                                    ? 'Posted at ${widget.comment.editedTime}'
+                                    ? 'Edited at ${widget.comment.editedTime}'
                                     : 'Posted at ${widget.comment.postedTime}',
                                 style: const TextStyle(fontSize: 11),
                               ),

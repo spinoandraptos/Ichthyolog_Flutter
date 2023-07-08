@@ -338,12 +338,13 @@ class WaitingListPageState extends State<WaitingListPage> {
                 }
 
                 titleCallback(newValue) {
-                  final splitNames = newValue.split(', ');
                   setState(() {
-                    newTitle = splitNames[0];
+                    newTitle = newValue.split('(')[0].split(', ')[0];
                   });
                   final speciesRecord = singaporeRecords.singleWhere(
-                      (record) => record.commonNames == newValue, orElse: () {
+                      (record) =>
+                          '${record.commonNames} (${record.species})' ==
+                          newValue, orElse: () {
                     return SpeciesRecord(
                         class_: '',
                         order: '',
@@ -708,6 +709,7 @@ class WaitingListPageState extends State<WaitingListPage> {
           hideOnLoading: true,
           hideOnEmpty: true,
           textFieldConfiguration: TextFieldConfiguration(
+              onSubmitted: (value) => controller.text = value,
               controller: controller,
               decoration: InputDecoration(
                 hintText: hintText,

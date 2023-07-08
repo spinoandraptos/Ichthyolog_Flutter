@@ -1,59 +1,44 @@
 import 'package:intl/intl.dart';
 
-class Comment {
-  final int commentId;
+class Dispute {
+  final int disputeId;
   final int authorId;
-  final int postId;
+  final int commentId;
   final String authorName;
   final String content;
   final String authorPic;
   final String postedTime;
-  final int upvotes;
   final bool edited;
   final String editedTime;
-  final bool idSuggestion;
-  final bool suggestionApproved;
-  final bool suggestionRejected;
-  final bool idReplaced;
-  final bool disputed;
+  final bool disputeApproved;
 
-  Comment(
-      {required this.commentId,
+  Dispute(
+      {required this.disputeId,
       required this.authorId,
-      required this.postId,
+      required this.commentId,
       required this.authorName,
       required this.authorPic,
       required this.content,
       required this.postedTime,
-      required this.upvotes,
       required this.edited,
       required this.editedTime,
-      required this.idSuggestion,
-      required this.suggestionApproved,
-      required this.suggestionRejected,
-      required this.idReplaced,
-      required this.disputed});
+      required this.disputeApproved});
 
-  factory Comment.fromJson(Map<String, dynamic> json) {
-    return Comment(
+  factory Dispute.fromJson(Map<String, dynamic> json) {
+    return Dispute(
+        disputeId: json['disputeid'],
         commentId: json['commentid'],
         authorId: json['authorid'],
-        postId: json['postid'],
         authorName: json['authorname'],
         content: json['content'],
         authorPic: json['authorpic'],
         postedTime: DateFormat("hh:mm a, dd/MM/yyyy")
             .format(DateTime.parse(json['postedtime'])),
-        upvotes: json['upvotes'],
         edited: json['edited'],
         editedTime: json['editedtime'] == null
             ? 'Null'
             : DateFormat("hh:mm a, dd/MM/yyyy")
                 .format(DateTime.parse(json['editedtime'])),
-        idSuggestion: json['idsuggestion'],
-        suggestionApproved: json['suggestionapproved'],
-        suggestionRejected: json['suggestionrejected'],
-        idReplaced: json['idreplaced'],
-        disputed: json['disputed']);
+        disputeApproved: json['disputeapproved']);
   }
 }
