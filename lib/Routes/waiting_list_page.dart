@@ -709,7 +709,7 @@ class WaitingListPageState extends State<WaitingListPage> {
           hideOnLoading: true,
           hideOnEmpty: true,
           textFieldConfiguration: TextFieldConfiguration(
-              onSubmitted: (value) => controller.text = value,
+              onChanged: (value) => callback(value),
               controller: controller,
               decoration: InputDecoration(
                 hintText: hintText,

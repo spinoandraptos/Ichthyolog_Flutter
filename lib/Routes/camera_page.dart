@@ -46,6 +46,7 @@ class CameraPageState extends State<CameraPage> {
   final httpHelpers = HttpHelpers();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
   List<String> allSpecies = <String>[];
 
   @override
@@ -92,7 +93,8 @@ class CameraPageState extends State<CameraPage> {
                           color: Color.fromARGB(255, 51, 64, 113),
                         ),
                         allSpecies,
-                        titleCallback),
+                        titleCallback,
+                        titleClearCallback),
                     Container(
                         margin:
                             const EdgeInsets.only(top: 10, left: 12, right: 12),
@@ -105,11 +107,21 @@ class CameraPageState extends State<CameraPage> {
                         child: TextFormField(
                           minLines: 1,
                           maxLines: 3,
-                          decoration: const InputDecoration(
-                            icon: Icon(Icons.description,
+                          controller: descriptionController,
+                          decoration: InputDecoration(
+                            icon: const Icon(Icons.description,
                                 color: Color.fromARGB(255, 51, 64, 113)),
                             border: InputBorder.none,
                             labelText: 'Enter species description',
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  description = '';
+                                  descriptionController.clear();
+                                });
+                              },
+                              icon: const Icon(Icons.clear),
+                            ),
                           ),
                           onChanged: (value) {
                             setState(() {
@@ -125,7 +137,8 @@ class CameraPageState extends State<CameraPage> {
                           color: Color.fromARGB(255, 51, 64, 113),
                         ),
                         locations,
-                        locationCallback),
+                        locationCallback,
+                        locationClearCallback),
                     Container(
                         alignment: Alignment.center,
                         width: double.infinity,
@@ -365,7 +378,9 @@ class CameraPageState extends State<CameraPage> {
               title,
               description,
               sightingLocation,
-              sightingTime,
+              sightingTime == ' '
+                  ? DateFormat("yyyy-MM-dd hh:mm:ss").format(DateTime.now())
+                  : sightingTime,
               "https://ichthyolog175756-dev.s3.ap-southeast-1.amazonaws.com/public/$key",
               jwt,
               class_,
@@ -494,8 +509,27 @@ class CameraPageState extends State<CameraPage> {
     });
   }
 
-  Widget selectableTextForm(TextEditingController controller, String labelText,
-      Icon leadingIcon, List<String> options, Function callback) {
+  titleClearCallback() {
+    setState(() {
+      title = '';
+      titleController.clear();
+    });
+  }
+
+  locationClearCallback() {
+    setState(() {
+      sightingLocation = '';
+      locationController.clear();
+    });
+  }
+
+  Widget selectableTextForm(
+      TextEditingController controller,
+      String labelText,
+      Icon leadingIcon,
+      List<String> options,
+      Function updateCallback,
+      Function clearCallback) {
     return Container(
         margin: const EdgeInsets.only(top: 12, left: 12, right: 12),
         padding: const EdgeInsets.only(
@@ -509,13 +543,19 @@ class CameraPageState extends State<CameraPage> {
           hideOnLoading: true,
           hideOnEmpty: true,
           textFieldConfiguration: TextFieldConfiguration(
-              onSubmitted: (value) => controller.text = value,
+              onChanged: (value) => updateCallback(value),
               controller: controller,
               decoration: InputDecoration(
                 focusColor: const Color.fromARGB(255, 51, 64, 113),
                 icon: leadingIcon,
                 border: InputBorder.none,
                 labelText: labelText,
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    clearCallback();
+                  },
+                  icon: const Icon(Icons.clear),
+                ),
               ),
               autofocus: true,
               style: const TextStyle(color: Color.fromARGB(255, 51, 64, 113))),
@@ -540,7 +580,7 @@ class CameraPageState extends State<CameraPage> {
             }
           },
           onSuggestionSelected: (suggestion) {
-            callback(suggestion);
+            updateCallback(suggestion);
             controller.text = suggestion;
           },
         ));

@@ -378,21 +378,6 @@ class OwnCommentState extends State<OwnComment> {
                                                       .then(
                                                       (response) {
                                                         if (response ==
-                                                            'ID Accepted') {
-                                                          widget.updateCallBack(
-                                                              response);
-                                                          Fluttertoast
-                                                              .showToast(
-                                                            msg: 'ID Accepted',
-                                                            toastLength: Toast
-                                                                .LENGTH_SHORT,
-                                                            gravity:
-                                                                ToastGravity
-                                                                    .BOTTOM,
-                                                            timeInSecForIosWeb:
-                                                                1,
-                                                          );
-                                                        } else if (response ==
                                                             'Approved ID Already Exists') {
                                                           showDialog(
                                                               context: context,
@@ -406,8 +391,7 @@ class OwnCommentState extends State<OwnComment> {
                                                         } else {
                                                           Fluttertoast
                                                               .showToast(
-                                                            msg:
-                                                                'ID Acceptance Failed :(',
+                                                            msg: response,
                                                             toastLength: Toast
                                                                 .LENGTH_SHORT,
                                                             gravity:
@@ -416,6 +400,12 @@ class OwnCommentState extends State<OwnComment> {
                                                             timeInSecForIosWeb:
                                                                 1,
                                                           );
+                                                          if (response ==
+                                                              'ID Suggestion Accepted') {
+                                                            widget
+                                                                .updateCallBack(
+                                                                    response);
+                                                          }
                                                         }
                                                       },
                                                     );
@@ -1031,22 +1021,6 @@ class OtherCommentState extends State<OtherComment> {
                                                             .then(
                                                             (response) {
                                                               if (response ==
-                                                                  'ID Accepted') {
-                                                                widget.updateCallBack(
-                                                                    response);
-                                                                Fluttertoast
-                                                                    .showToast(
-                                                                  msg:
-                                                                      'ID Accepted',
-                                                                  toastLength: Toast
-                                                                      .LENGTH_SHORT,
-                                                                  gravity:
-                                                                      ToastGravity
-                                                                          .BOTTOM,
-                                                                  timeInSecForIosWeb:
-                                                                      1,
-                                                                );
-                                                              } else if (response ==
                                                                   'Approved ID Already Exists') {
                                                                 showDialog(
                                                                     context:
@@ -1061,8 +1035,7 @@ class OtherCommentState extends State<OtherComment> {
                                                               } else {
                                                                 Fluttertoast
                                                                     .showToast(
-                                                                  msg:
-                                                                      'ID Acceptance Failed :(',
+                                                                  msg: response,
                                                                   toastLength: Toast
                                                                       .LENGTH_SHORT,
                                                                   gravity:
@@ -1071,6 +1044,11 @@ class OtherCommentState extends State<OtherComment> {
                                                                   timeInSecForIosWeb:
                                                                       1,
                                                                 );
+                                                                if (response ==
+                                                                    'ID Suggestion Accepted') {
+                                                                  widget.updateCallBack(
+                                                                      response);
+                                                                }
                                                               }
                                                             },
                                                           );

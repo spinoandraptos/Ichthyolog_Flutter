@@ -346,7 +346,7 @@ class HttpHelpers {
         'species': species
       }),
     );
-
+    print(response.body);
     if (response.statusCode == 201) {
       return ('Post Uploaded');
     } else {
@@ -678,7 +678,7 @@ class HttpHelpers {
     } else if (responseSpecies.statusCode != 200) {
       return ('Species Edit Error :(');
     } else {
-      return ('ID Accepted');
+      return ('ID Suggestion Accepted');
     }
   }
 

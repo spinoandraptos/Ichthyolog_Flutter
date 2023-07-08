@@ -1369,6 +1369,7 @@ class HomePageState extends State<HomePage> {
           hideOnLoading: true,
           hideOnEmpty: true,
           textFieldConfiguration: TextFieldConfiguration(
+              onChanged: (value) => callback(value),
               controller: controller,
               decoration: InputDecoration(
                 hintText: hintText,

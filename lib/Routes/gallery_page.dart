@@ -201,6 +201,7 @@ class GalleryPageState extends State<GalleryPage> {
                   TextEditingController();
               final TextEditingController locationController =
                   TextEditingController();
+
               List<String> allSpecies = <String>[];
               for (var record in singaporeRecords) {
                 allSpecies.add('${record.commonNames} (${record.species})');
@@ -310,8 +311,9 @@ class GalleryPageState extends State<GalleryPage> {
                           minLines: 1,
                           maxLines: 8,
                           decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Edit Description'),
+                            border: InputBorder.none,
+                            hintText: 'Edit Description',
+                          ),
                           onChanged: (value) {
                             setState(() {
                               newDescription = value;
@@ -789,7 +791,7 @@ class GalleryPageState extends State<GalleryPage> {
           hideOnLoading: true,
           hideOnEmpty: true,
           textFieldConfiguration: TextFieldConfiguration(
-              onSubmitted: (value) => controller.text = value,
+              onChanged: (value) => callback(value),
               controller: controller,
               decoration: InputDecoration(
                 hintText: hintText,

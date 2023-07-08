@@ -423,7 +423,7 @@ Widget selectableTextForm(TextEditingController controller, String hintText,
     hideOnLoading: true,
     hideOnEmpty: true,
     textFieldConfiguration: TextFieldConfiguration(
-        onSubmitted: (value) => controller.text = value,
+        onChanged: (value) => callback(value),
         controller: controller,
         decoration: InputDecoration(
           focusColor: const Color.fromARGB(255, 51, 64, 113),
