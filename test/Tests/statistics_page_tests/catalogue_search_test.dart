@@ -1,4 +1,4 @@
-import 'package:ichthyolog/Helpers/Http.dart';
+import 'package:ichthyolog/Helpers/http.dart';
 import 'package:test/test.dart';
 
 void main() {
