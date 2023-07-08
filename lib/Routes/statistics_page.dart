@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
+import '../Helpers/standard_widgets.dart';
 import 'date_time_picker.dart';
 import 'Stepper.dart';
 import 'stats_result_page.dart';
 import 'search_result_page.dart';
 import 'catalogue_page.dart';
 import 'catalogue_mux_page.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import '../Models/species.dart';
 
 class ErrorPage extends StatelessWidget {
   const ErrorPage({super.key});
@@ -56,6 +58,7 @@ class StatisticsPageState extends State<StatisticsPage>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  List<String> allSpecies = <String>[];
 
   @override
   void initState() {
@@ -71,6 +74,9 @@ class StatisticsPageState extends State<StatisticsPage>
             CurvedAnimation(
                 parent: _animationController, curve: Curves.easeInOut));
     _animationController.forward();
+    for (var record in singaporeRecords) {
+      allSpecies.add('${record.commonNames} (${record.species})');
+    }
   }
 
   @override
@@ -393,19 +399,14 @@ class StatisticsPageState extends State<StatisticsPage>
                   ? blueBox(
                       "1. Choose species",
                       Padding(
-                        padding:
-                            const EdgeInsets.only(top: 5, left: 15, right: 15),
-                        child: TextFormField(
-                          controller: speciesController,
-                          decoration: const InputDecoration(
-                            hintText: 'Enter species name',
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              species = value;
-                            });
-                          },
-                        ),
+                        padding: const EdgeInsets.only(left: 10, right: 10),
+                        child: selectableTextForm(
+                            speciesController,
+                            'Enter species name',
+                            const Icon(Icons.search),
+                            allSpecies,
+                            titleCallback,
+                            titleClearCallback),
                       ))
                   : blueBox(
                       "1. Choose classification",
@@ -414,7 +415,7 @@ class StatisticsPageState extends State<StatisticsPage>
                           Container(
                               width: double.infinity,
                               margin: const EdgeInsets.only(
-                                  top: 10, left: 12, right: 12, bottom: 10),
+                                  top: 10, left: 12, right: 12),
                               child: ElevatedButton(
                                 onPressed: () {
                                   showDialog(
@@ -448,32 +449,31 @@ class StatisticsPageState extends State<StatisticsPage>
                                     style: TextStyle(fontSize: 16)),
                               )),
                           Container(
-                              margin: const EdgeInsets.only(bottom: 5),
-                              padding:
-                                  const EdgeInsets.only(left: 12, right: 12),
-                              alignment: Alignment.center,
-                              width: double.infinity,
-                              color: const Color.fromARGB(255, 224, 228, 238),
-                              child: Text(
-                                  'Class: $class_, Order: $order, Family: $family, Genus: $genus')),
+                            margin: const EdgeInsets.only(bottom: 5),
+                            padding: const EdgeInsets.only(left: 12, right: 12),
+                            alignment: Alignment.center,
+                            width: double.infinity,
+                            color: const Color.fromARGB(255, 190, 222, 248),
+                            child: Text(
+                                'Class: $class_\nOrder: $order\nFamily: $family\nGenus: $genus',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    color: Color.fromARGB(255, 51, 64, 113))),
+                          )
                         ],
                       )),
               blueBox(
                   "2. Choose sighting location",
                   Padding(
-                      padding: const EdgeInsets.only(
-                          left: 15, right: 15, bottom: 16),
-                      child: TextFormField(
-                        controller: locationController,
-                        decoration: const InputDecoration(
-                          hintText: 'Enter the location of sighting',
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            sightingLocation = value;
-                          });
-                        },
-                      ))),
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      child: selectableTextForm(
+                          locationController,
+                          'Enter location',
+                          const Icon(Icons.location_on),
+                          locations,
+                          locationCallback,
+                          locationClearCallback))),
               blueBox(
                   "3. Choose range of sighting time",
                   Column(
@@ -596,5 +596,117 @@ class StatisticsPageState extends State<StatisticsPage>
     setState(() {
       genus = newValue;
     });
+  }
+
+  titleCallback(newValue) {
+    setState(() {
+      species = newValue.split('(')[0].split(', ')[0];
+    });
+    final speciesRecord = singaporeRecords.singleWhere(
+        (record) => '${record.commonNames} (${record.species})' == newValue,
+        orElse: () {
+      return SpeciesRecord(
+          class_: '',
+          order: '',
+          family: '',
+          genus: '',
+          species: '',
+          commonNames: '');
+    });
+    if (speciesRecord.class_ != '' &&
+        speciesRecord.order != '' &&
+        speciesRecord.family != '' &&
+        speciesRecord.genus != '') {
+      setState(() {
+        class_ = speciesRecord.class_;
+        order = speciesRecord.order;
+        family = speciesRecord.family;
+        genus = speciesRecord.genus;
+        species = speciesRecord.species;
+      });
+    }
+  }
+
+  locationCallback(newValue) {
+    setState(() {
+      sightingLocation = newValue;
+    });
+  }
+
+  titleClearCallback() {
+    setState(() {
+      species = '';
+      speciesController.clear();
+    });
+  }
+
+  locationClearCallback() {
+    setState(() {
+      sightingLocation = '';
+      locationController.clear();
+    });
+  }
+
+  Widget selectableTextForm(
+      TextEditingController controller,
+      String labelText,
+      Icon leadingIcon,
+      List<String> options,
+      Function updateCallback,
+      Function clearCallback) {
+    return Container(
+        margin: const EdgeInsets.only(top: 5, bottom: 10),
+        padding: const EdgeInsets.only(
+          left: 5,
+          right: 5,
+        ),
+        decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 225, 235, 248),
+            borderRadius: BorderRadius.circular(16)),
+        child: TypeAheadFormField(
+          hideOnLoading: true,
+          hideOnEmpty: true,
+          textFieldConfiguration: TextFieldConfiguration(
+              onChanged: (value) => updateCallback(value),
+              controller: controller,
+              decoration: InputDecoration(
+                focusColor: const Color.fromARGB(255, 51, 64, 113),
+                icon: leadingIcon,
+                border: InputBorder.none,
+                labelText: labelText,
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    clearCallback();
+                  },
+                  icon: const Icon(Icons.clear),
+                ),
+              ),
+              autofocus: true,
+              style: const TextStyle(color: Color.fromARGB(255, 51, 64, 113))),
+          itemBuilder: (context, suggestion) {
+            return ListTile(
+              title: Text(suggestion),
+            );
+          },
+          errorBuilder: (context, error) {
+            return NoticeDialog(content: '$error');
+          },
+          suggestionsCallback: (pattern) {
+            List<String> matches = [];
+            if (pattern == '') {
+              return matches;
+            } else {
+              matches.addAll(options);
+              matches.retainWhere((matches) {
+                return matches.toLowerCase().contains(pattern.toLowerCase());
+              });
+              return matches;
+            }
+          },
+          onSuggestionSelected: (suggestion) {
+            updateCallback(suggestion);
+            controller.text = suggestion;
+          },
+        ));
   }
 }
