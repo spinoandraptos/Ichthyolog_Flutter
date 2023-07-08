@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ichthyolog/Helpers/Http.dart';
+import 'package:ichthyolog/Helpers/http.dart';
 
 void main() {
   final httpHelpers = HttpHelpers();

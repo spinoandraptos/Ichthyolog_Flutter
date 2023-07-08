@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
 import '../Models/post.dart';
+import '../Models/user.dart';
 import '../Models/species.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,8 +12,8 @@ import '../Helpers/standard_widgets.dart';
 import 'stepper.dart';
 
 class WaitingListPage extends StatefulWidget {
-  final bool isExpert;
-  const WaitingListPage({super.key, required this.isExpert});
+  final User currUser;
+  const WaitingListPage({super.key, required this.currUser});
   @override
   WaitingListPageState createState() => WaitingListPageState();
 }
@@ -220,7 +221,7 @@ class WaitingListPageState extends State<WaitingListPage> {
                 MaterialPageRoute(
                     builder: (context) => PostPage(
                           postid: post.postid,
-                          isExpert: widget.isExpert,
+                          currUser: widget.currUser,
                         )),
               );
             }),

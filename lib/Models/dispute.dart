@@ -31,7 +31,7 @@ class Dispute {
         authorId: json['authorid'],
         authorName: json['authorname'],
         content: json['content'],
-        authorPic: json['authorpic'],
+        authorPic: json['authorpicurl'],
         postedTime: DateFormat("hh:mm a, dd/MM/yyyy")
             .format(DateTime.parse(json['postedtime'])),
         edited: json['edited'],

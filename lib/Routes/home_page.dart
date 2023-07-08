@@ -674,7 +674,7 @@ class HomePageState extends State<HomePage> {
           context,
           MaterialPageRoute(
               builder: (context) => WaitingListPage(
-                    isExpert: user.expert,
+                    currUser: user,
                   )),
         ).then((value) => refreshCallback());
       },
@@ -1234,7 +1234,7 @@ class HomePageState extends State<HomePage> {
                       MaterialPageRoute(
                           builder: (context) => PostPage(
                                 postid: post.postid,
-                                isExpert: user.expert,
+                                currUser: user,
                               )),
                     );
                   }),

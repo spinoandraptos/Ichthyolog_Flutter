@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../Helpers/Http.dart';
+import '../Helpers/http.dart';
 import 'catalogue_page.dart';
 
 class CatalogueMuxPage extends StatelessWidget {

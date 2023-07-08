@@ -4,6 +4,7 @@ import '../Models/comment.dart';
 import '../Models/post.dart';
 import '../Models/user.dart';
 import '../Models/species.dart';
+import '../Models/dispute.dart';
 
 //class which stores the functions responsible for backend communication
 class HttpHelpers {
@@ -557,8 +558,6 @@ class HttpHelpers {
       body:
           json.encode(<String, dynamic>{'postid': postid, 'content': content}),
     );
-    print(response.statusCode);
-    print(response.body);
     if (response.statusCode == 201) {
       return ('ID suggestion posted successfully!');
     } else {
@@ -908,6 +907,88 @@ class HttpHelpers {
       return Future.error('Server error');
     } else {
       return true;
+    }
+  }
+
+  Future<List<Dispute>> viewDisputesRequest(int commentid) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/disputes/$commentid';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.body == 'Disputes not found') {
+      return Future.error('Disputes not found');
+    } else if (response.statusCode != 200) {
+      return Future.error('Error, pleae try again');
+    } else {
+      List<Dispute> disputes = [];
+      var responseData = json.decode(response.body);
+      for (var everydispute in responseData) {
+        Dispute dispute = Dispute.fromJson(everydispute);
+        disputes.add(dispute);
+      }
+      return disputes;
+    }
+  }
+
+  Future<String> addDisputeRequest(
+      int commentid, String content, String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/disputes';
+    var response = await http.post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+      body: json.encode(
+          <String, dynamic>{'commentid': commentid, 'content': content}),
+    );
+    print(response.body);
+    print(response.statusCode);
+    if (response.statusCode == 201) {
+      return ('Dispute added successfully!');
+    } else {
+      return ('Dispute failed to add :(');
+    }
+  }
+
+  Future<String> editDisputeRequest(
+      int disputeid, String content, String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/disputes/$disputeid';
+    var response = await http.put(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+      body: json.encode(<String, dynamic>{'content': content}),
+    );
+    print(response.body);
+    if (response.body == 'Dispute not found') {
+      return ('Dispute Not Found');
+    } else if (response.statusCode != 200) {
+      return ('Error, please try again');
+    } else {
+      return ('Dispute Edited');
+    }
+  }
+
+  Future<String> deleteDisputeRequest(int disputeid, String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/disputes/$disputeid';
+    var response = await http.delete(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      return ('Dispute Deleted');
+    } else {
+      return ('Dispute Deletion Failed :(');
     }
   }
 

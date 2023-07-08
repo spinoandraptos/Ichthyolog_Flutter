@@ -101,7 +101,7 @@ class GalleryPageState extends State<GalleryPage> {
             );
           } else if (snapshot.hasError) {
             return const NoticeDialog(
-                content: 'Posts not found! Please try again');
+                content: 'Error fetching posts. Please try again!');
           } else {
             return const LoadingScreen();
           }
@@ -168,7 +168,7 @@ class GalleryPageState extends State<GalleryPage> {
           context,
           MaterialPageRoute(
               builder: (context) => WaitingListPage(
-                    isExpert: widget.currUser.expert,
+                    currUser: widget.currUser,
                   )),
         ).then((value) => refreshCallback());
       },
@@ -572,7 +572,7 @@ class GalleryPageState extends State<GalleryPage> {
                             MaterialPageRoute(
                                 builder: (context) => PostPage(
                                       postid: post.postid,
-                                      isExpert: widget.currUser.expert,
+                                      currUser: widget.currUser,
                                     )),
                           );
                         }),
@@ -592,7 +592,7 @@ class GalleryPageState extends State<GalleryPage> {
                         MaterialPageRoute(
                             builder: (context) => PostPage(
                                   postid: post.postid,
-                                  isExpert: widget.currUser.expert,
+                                  currUser: widget.currUser,
                                 )),
                       ).then((value) => refreshCallback());
                     })));

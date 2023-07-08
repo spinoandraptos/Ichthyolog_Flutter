@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class LoadingScreen extends StatelessWidget {
   const LoadingScreen({super.key});
@@ -52,13 +51,13 @@ Widget loadingComment() {
     color: const Color.fromARGB(255, 236, 249, 255),
     child: const Center(
       child: SizedBox(
-        height: 15.0,
-        width: 15.0,
+        height: 10.0,
+        width: 10.0,
         child: CircularProgressIndicator(
             backgroundColor: Color.fromARGB(255, 91, 170, 255),
             valueColor: AlwaysStoppedAnimation<Color>(
                 Color.fromARGB(255, 184, 218, 255)),
-            strokeWidth: 4),
+            strokeWidth: 3),
       ),
     ),
   );

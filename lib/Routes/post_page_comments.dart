@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'comments_page.dart';
 import 'comments.dart';
 import '../Models/species.dart';
+import '../Models/user.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import '../Helpers/standard_widgets.dart';
 
@@ -13,7 +14,7 @@ class PostPageMultiComment extends StatefulWidget {
   final httpHelpers = HttpHelpers();
   final String jwt;
   final int postid;
-  final bool isExpert;
+  final User currUser;
   final Map<String, dynamic> decodedJWT;
   final Function updateCallBack;
 
@@ -22,7 +23,7 @@ class PostPageMultiComment extends StatefulWidget {
       required this.comments,
       required this.jwt,
       required this.postid,
-      required this.isExpert,
+      required this.currUser,
       required this.decodedJWT,
       required this.updateCallBack})
       : super(key: key);
@@ -43,7 +44,7 @@ class PostPageMultiCommentState extends State<PostPageMultiComment> {
               updateCallBack: widget.updateCallBack,
               userid: widget.decodedJWT['userid'],
               postid: widget.postid,
-              isExpert: widget.isExpert,
+              currUser: widget.currUser,
             )
           : OtherComment(
               comment: widget.comments[0],
@@ -51,7 +52,7 @@ class PostPageMultiCommentState extends State<PostPageMultiComment> {
               updateCallBack: widget.updateCallBack,
               userid: widget.decodedJWT['userid'],
               postid: widget.postid,
-              isExpert: widget.isExpert,
+              currUser: widget.currUser,
             ),
       TextButton(
         onPressed: () {
@@ -59,7 +60,7 @@ class PostPageMultiCommentState extends State<PostPageMultiComment> {
             context,
             MaterialPageRoute(
                 builder: (context) => CommentPage(
-                    postid: widget.postid, isExpert: widget.isExpert)),
+                    postid: widget.postid, currUser: widget.currUser)),
           ).then((value) => widget.updateCallBack('Refreshed'));
         },
         child: Text(
@@ -75,7 +76,7 @@ class PostPageSingleComment extends StatefulWidget {
   final List<Comment> comments;
   final String jwt;
   final int postid;
-  final bool isExpert;
+  final User currUser;
   final Map<String, dynamic> decodedJWT;
   final Function updateCallBack;
 
@@ -86,7 +87,7 @@ class PostPageSingleComment extends StatefulWidget {
       required this.postid,
       required this.decodedJWT,
       required this.updateCallBack,
-      required this.isExpert})
+      required this.currUser})
       : super(key: key);
 
   @override
@@ -133,7 +134,7 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
               updateCallBack: widget.updateCallBack,
               userid: widget.decodedJWT['userid'] ?? -1,
               postid: widget.postid,
-              isExpert: widget.isExpert,
+              currUser: widget.currUser,
             ))
         : Column(children: [
             widget.comments[widget.comments.length - 1].authorId ==
@@ -144,7 +145,7 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
                     updateCallBack: widget.updateCallBack,
                     userid: widget.decodedJWT['userid'],
                     postid: widget.postid,
-                    isExpert: widget.isExpert,
+                    currUser: widget.currUser,
                   )
                 : OtherComment(
                     comment: widget.comments[widget.comments.length - 1],
@@ -152,7 +153,7 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
                     updateCallBack: widget.updateCallBack,
                     userid: widget.decodedJWT['userid'],
                     postid: widget.postid,
-                    isExpert: widget.isExpert,
+                    currUser: widget.currUser,
                   ),
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20),

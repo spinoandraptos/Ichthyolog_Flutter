@@ -3,12 +3,13 @@ import '../Helpers/standard_widgets.dart';
 import 'post_page_comments.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
+import '../Models/user.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 class PostPage extends StatefulWidget {
   final int postid;
-  final bool isExpert;
-  const PostPage({Key? key, required this.postid, required this.isExpert})
+  final User currUser;
+  const PostPage({Key? key, required this.postid, required this.currUser})
       : super(key: key);
   @override
   PostPageState createState() => PostPageState();
@@ -199,7 +200,7 @@ class PostPageState extends State<PostPage> {
                                     comments: snapshot.data!,
                                     jwt: jwt,
                                     postid: widget.postid,
-                                    isExpert: widget.isExpert,
+                                    currUser: widget.currUser,
                                     decodedJWT: decodedJWT,
                                     updateCallBack: changeCommentCallback);
                               } else if (snapshot.hasData &&
@@ -210,7 +211,7 @@ class PostPageState extends State<PostPage> {
                                     decodedJWT: decodedJWT,
                                     postid: widget.postid,
                                     updateCallBack: changeCommentCallback,
-                                    isExpert: widget.isExpert);
+                                    currUser: widget.currUser);
                               } else {
                                 return PostPageNoComment(
                                     jwt: jwt,
