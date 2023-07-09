@@ -10,12 +10,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 class CommentDisputes extends StatefulWidget {
   final User currUser;
   final Comment comment;
+  final int postid;
   final String jwt;
   final Function updateCallback;
   const CommentDisputes(
       {super.key,
       required this.currUser,
       required this.comment,
+      required this.postid,
       required this.jwt,
       required this.updateCallback});
   @override
@@ -83,8 +85,18 @@ class CommentDisputesState extends State<CommentDisputes> {
                                     widget.updateCallback,
                                     retrieveCallback,
                                     updateCallback,
-                                    context)
-                                : otherDispute(snapshot.data![index]);
+                                    context,
+                                    widget.currUser,
+                                    widget.comment,
+                                    widget.postid)
+                                : otherDispute(
+                                    snapshot.data![index],
+                                    updateCallback,
+                                    widget.jwt,
+                                    context,
+                                    widget.currUser,
+                                    widget.comment,
+                                    widget.postid);
                           }),
                       !expanded
                           ? const SizedBox.shrink()
@@ -168,8 +180,16 @@ class CommentDisputesState extends State<CommentDisputes> {
   }
 }
 
-Widget ownDispute(Dispute dispute, String jwt, Function editCallback,
-    Function updateCallback, Function retrieveCallback, BuildContext context) {
+Widget ownDispute(
+    Dispute dispute,
+    String jwt,
+    Function editCallback,
+    Function updateCallback,
+    Function retrieveCallback,
+    BuildContext context,
+    User currUser,
+    Comment comment,
+    int postid) {
   return ListTile(
       horizontalTitleGap: 0,
       leading: CircleAvatar(
@@ -203,10 +223,15 @@ Widget ownDispute(Dispute dispute, String jwt, Function editCallback,
                             )),
                 ],
               ),
-              Text(
-                dispute.content,
-                style: const TextStyle(fontSize: 13),
-              )
+              Container(
+                  padding: const EdgeInsets.all(2),
+                  color: dispute.disputeApproved
+                      ? const Color.fromARGB(255, 231, 250, 237)
+                      : Colors.white,
+                  child: Text(
+                    dispute.content,
+                    style: const TextStyle(fontSize: 13),
+                  ))
             ],
           )),
       subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -326,11 +351,74 @@ Widget ownDispute(Dispute dispute, String jwt, Function editCallback,
                       style: TextStyle(
                           fontSize: 10,
                           color: Color.fromARGB(255, 68, 95, 143)))),
+              (currUser.expert && currUser.userid != dispute.authorId) ||
+                      currUser.userid == comment.authorId
+                  ? TextButton(
+                      style: TextButton.styleFrom(
+                          padding: const EdgeInsets.all(3),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                  title: const Text("Warning"),
+                                  content: const Text(
+                                      'Are you sure? This action is irreversible!'),
+                                  actions: [
+                                    ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                const Color.fromARGB(
+                                                    255, 80, 170, 121)),
+                                        child: const Text("Yes"),
+                                        onPressed: () {
+                                          httpHelpers
+                                              .approveDisputeRequest(
+                                                  comment.commentId,
+                                                  dispute.disputeId,
+                                                  postid,
+                                                  jwt)
+                                              .then(
+                                            (response) {
+                                              Fluttertoast.showToast(
+                                                msg: response,
+                                                toastLength: Toast.LENGTH_SHORT,
+                                                gravity: ToastGravity.BOTTOM,
+                                                timeInSecForIosWeb: 1,
+                                              );
+                                              Navigator.pop(context);
+                                              if (response ==
+                                                  'Dispute approved successfully') {
+                                                updateCallback();
+                                              }
+                                            },
+                                          );
+                                        }),
+                                    ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                const Color.fromARGB(
+                                                    255, 170, 80, 80)),
+                                        child: const Text("Cancel"),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        })
+                                  ]);
+                            });
+                      },
+                      child: const Text('Accept Dispute',
+                          style: TextStyle(
+                              fontSize: 10,
+                              color: Color.fromARGB(255, 68, 95, 143))))
+                  : const SizedBox.shrink()
             ]))
       ]));
 }
 
-Widget otherDispute(Dispute dispute) {
+Widget otherDispute(Dispute dispute, Function updateCallback, String jwt,
+    BuildContext context, User currUser, Comment comment, int postid) {
   return ListTile(
       horizontalTitleGap: 0,
       leading: CircleAvatar(
@@ -377,5 +465,64 @@ Widget otherDispute(Dispute dispute) {
               : 'Posted at ${dispute.postedTime}',
           style: const TextStyle(fontSize: 11),
         ),
+        (currUser.expert && currUser.userid != dispute.authorId) ||
+                currUser.userid == comment.authorId
+            ? TextButton(
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.all(3),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                            title: const Text("Warning"),
+                            content: const Text(
+                                'Are you sure? This action is irreversible!'),
+                            actions: [
+                              ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 80, 170, 121)),
+                                  child: const Text("Yes"),
+                                  onPressed: () {
+                                    httpHelpers
+                                        .approveDisputeRequest(
+                                            comment.commentId,
+                                            dispute.disputeId,
+                                            postid,
+                                            jwt)
+                                        .then(
+                                      (response) {
+                                        Fluttertoast.showToast(
+                                          msg: response,
+                                          toastLength: Toast.LENGTH_SHORT,
+                                          gravity: ToastGravity.BOTTOM,
+                                          timeInSecForIosWeb: 1,
+                                        );
+                                        Navigator.pop(context);
+                                        if (response ==
+                                            'Dispute approved successfully') {
+                                          updateCallback();
+                                        }
+                                      },
+                                    );
+                                  }),
+                              ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 170, 80, 80)),
+                                  child: const Text("Cancel"),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  })
+                            ]);
+                      });
+                },
+                child: const Text('Accept Dispute',
+                    style: TextStyle(
+                        fontSize: 10, color: Color.fromARGB(255, 68, 95, 143))))
+            : const SizedBox.shrink()
       ]));
 }

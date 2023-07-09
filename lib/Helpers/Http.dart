@@ -51,6 +51,7 @@ class HttpHelpers {
         'password': password
       }),
     );
+    print(response.body);
     if (response.body == 'Password incorrect') {
       return ('Password Incorrect');
     } else if (response.body == 'User not found') {
@@ -602,7 +603,7 @@ class HttpHelpers {
     }
 
     String urlComment =
-        'https://ichthyolog-nodejs.onrender.com/comment/$commentid/idsuggestion';
+        'https://ichthyolog-nodejs.onrender.com/comment/$commentid/idsuggestion/accept';
     String urlClass =
         'https://ichthyolog-nodejs.onrender.com/post/$postid/class';
     String urlOrder =
@@ -681,6 +682,25 @@ class HttpHelpers {
     }
   }
 
+  Future<String> rejectIdSuggestionRequest(int commentid, String jwt) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/comment/$commentid/idsuggestion/reject';
+    var response = await http.put(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.body == 'Suggestion not found') {
+      return ('ID Suggestion Not Found');
+    } else if (response.statusCode != 200) {
+      return ('Error');
+    } else {
+      return ('ID Suggestion Rejected');
+    }
+  }
+
   Future<String> editCommentRequest(
       int commentid, String content, String jwt) async {
     String url = 'https://ichthyolog-nodejs.onrender.com/comment/$commentid';
@@ -692,7 +712,6 @@ class HttpHelpers {
       },
       body: json.encode(<String, dynamic>{'content': content}),
     );
-    print(response.body);
     if (response.body == 'Comment not found') {
       return ('Comment Not Found');
     } else if (response.statusCode != 200) {
@@ -989,6 +1008,29 @@ class HttpHelpers {
       return ('Dispute Deleted');
     } else {
       return ('Dispute Deletion Failed :(');
+    }
+  }
+
+  Future<String> approveDisputeRequest(
+      int commentid, int disputeid, int postid, String jwt) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/$commentid/disputes/:$disputeid/approve';
+    var response = await http.put(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+      body: json.encode(<String, dynamic>{'postid': postid}),
+    );
+    if (response.body == 'Dispute not found' ||
+        response.body == 'ID suggestion not found' ||
+        response.body == 'Post not found') {
+      return response.body;
+    } else if (response.statusCode != 200) {
+      return ('Error, please try again');
+    } else {
+      return ('Dispute approved successfully');
     }
   }
 

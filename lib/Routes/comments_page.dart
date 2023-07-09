@@ -121,6 +121,7 @@ class CommentPageState extends State<CommentPage> {
                                 ? CommentDisputes(
                                     currUser: widget.currUser,
                                     comment: snapshot.data![index],
+                                    postid: widget.postid,
                                     jwt: jwt,
                                     updateCallback: updateCallback)
                                 : const SizedBox.shrink()
