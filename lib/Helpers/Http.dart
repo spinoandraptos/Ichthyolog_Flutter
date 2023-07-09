@@ -929,7 +929,7 @@ class HttpHelpers {
   }
 
   Future<List<Dispute>> viewDisputesRequest(int commentid) async {
-    String url = 'https://ichthyolog-nodejs.onrender.com/disputes/$commentid';
+    String url = 'https://ichthyolog-nodejs.onrender.com/$commentid/disputes';
     var response = await http.get(
       Uri.parse(url),
       headers: <String, String>{
@@ -994,8 +994,10 @@ class HttpHelpers {
     }
   }
 
-  Future<String> deleteDisputeRequest(int disputeid, String jwt) async {
-    String url = 'https://ichthyolog-nodejs.onrender.com/disputes/$disputeid';
+  Future<String> deleteDisputeRequest(
+      int commentid, int disputeid, String jwt) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/$commentid/disputes/$disputeid';
     var response = await http.delete(
       Uri.parse(url),
       headers: <String, String>{

@@ -243,7 +243,7 @@ Widget ownDispute(
                   padding: const EdgeInsets.all(2),
                   color: dispute.disputeApproved
                       ? const Color.fromARGB(255, 231, 250, 237)
-                      : Colors.white,
+                      : null,
                   child: Text(
                     dispute.content,
                     style: const TextStyle(fontSize: 13),
@@ -336,7 +336,9 @@ Widget ownDispute(
                                     onPressed: () {
                                       httpHelpers
                                           .deleteDisputeRequest(
-                                              dispute.disputeId, jwt)
+                                              comment.commentId,
+                                              dispute.disputeId,
+                                              jwt)
                                           .then(
                                         (response) {
                                           Fluttertoast.showToast(
@@ -367,8 +369,9 @@ Widget ownDispute(
                       style: TextStyle(
                           fontSize: 10,
                           color: Color.fromARGB(255, 68, 95, 143)))),
-              (currUser.expert && currUser.userid != dispute.authorId) ||
-                      currUser.userid == comment.authorId
+              ((currUser.expert && currUser.userid != dispute.authorId) ||
+                          currUser.userid == comment.authorId) &&
+                      comment.disputed
                   ? TextButton(
                       style: TextButton.styleFrom(
                           padding: const EdgeInsets.all(3),
@@ -472,7 +475,7 @@ Widget otherDispute(Dispute dispute, Function updateCallback, String jwt,
                   padding: const EdgeInsets.all(2),
                   color: dispute.disputeApproved
                       ? const Color.fromARGB(255, 231, 250, 237)
-                      : Colors.white,
+                      : null,
                   child: Text(
                     dispute.content,
                     style: const TextStyle(fontSize: 13),
@@ -486,8 +489,9 @@ Widget otherDispute(Dispute dispute, Function updateCallback, String jwt,
               : 'Posted at ${dispute.postedTime}',
           style: const TextStyle(fontSize: 11),
         ),
-        (currUser.expert && currUser.userid != dispute.authorId) ||
-                currUser.userid == comment.authorId
+        ((currUser.expert && currUser.userid != dispute.authorId) ||
+                    currUser.userid == comment.authorId) &&
+                comment.disputed
             ? TextButton(
                 style: TextButton.styleFrom(
                     padding: const EdgeInsets.all(3),
