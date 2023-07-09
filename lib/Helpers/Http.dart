@@ -51,7 +51,6 @@ class HttpHelpers {
         'password': password
       }),
     );
-    print(response.body);
     if (response.body == 'Password incorrect') {
       return ('Password Incorrect');
     } else if (response.body == 'User not found') {

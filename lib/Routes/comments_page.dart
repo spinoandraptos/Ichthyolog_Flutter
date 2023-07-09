@@ -255,7 +255,8 @@ class CommentPageState extends State<CommentPage> {
         response == 'Comment Un-upvoted' ||
         response == 'Comment Un-downvoted' ||
         response == 'Comment Edited' ||
-        response == 'ID Accepted') {
+        response == 'ID SUggestion Accepted' ||
+        response == 'ID Suggestion Rejected') {
       setState(() {});
     }
   }

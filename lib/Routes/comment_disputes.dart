@@ -100,72 +100,88 @@ class CommentDisputesState extends State<CommentDisputes> {
                           }),
                       !expanded
                           ? const SizedBox.shrink()
-                          : widget.currUser.expert
-                              ? Row(children: [
-                                  Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          7 /
-                                          11,
-                                      height:
-                                          MediaQuery.of(context).size.height *
+                          : widget.comment.idReplaced
+                              ? const Text(
+                                  'A dispute has been accepted, this thread has been locked',
+                                  style: TextStyle(
+                                      color: Color.fromARGB(255, 51, 64, 113),
+                                      fontSize: 12),
+                                )
+                              : widget.currUser.expert
+                                  ? Row(children: [
+                                      Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              7 /
+                                              11,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
                                               1 /
                                               25,
-                                      padding: const EdgeInsets.only(left: 16),
-                                      margin: const EdgeInsets.only(
-                                        right: 10,
-                                      ),
-                                      child: TextField(
-                                        style: const TextStyle(fontSize: 13),
-                                        controller: disputeController,
-                                        decoration: InputDecoration(
-                                          hintText: 'Add a dispute',
-                                          contentPadding:
-                                              const EdgeInsets.only(left: 5),
-                                          suffixIcon: IconButton(
-                                            onPressed: () {
-                                              disputeController.clear();
-                                            },
-                                            icon: const Icon(Icons.clear,
-                                                size: 16),
+                                          padding:
+                                              const EdgeInsets.only(left: 16),
+                                          margin: const EdgeInsets.only(
+                                            right: 10,
                                           ),
-                                        ),
-                                      )),
-                                  ElevatedButton(
-                                      onPressed: () {
-                                        httpHelpers
-                                            .addDisputeRequest(
-                                                widget.comment.commentId,
-                                                disputeController.text,
-                                                widget.jwt)
-                                            .then(
-                                          (response) {
-                                            Fluttertoast.showToast(
-                                              msg: response,
-                                              toastLength: Toast.LENGTH_SHORT,
-                                              gravity: ToastGravity.BOTTOM,
-                                              timeInSecForIosWeb: 1,
+                                          child: TextField(
+                                            style:
+                                                const TextStyle(fontSize: 13),
+                                            controller: disputeController,
+                                            decoration: InputDecoration(
+                                              hintText: 'Add a dispute',
+                                              contentPadding:
+                                                  const EdgeInsets.only(
+                                                      left: 5),
+                                              suffixIcon: IconButton(
+                                                onPressed: () {
+                                                  disputeController.clear();
+                                                },
+                                                icon: const Icon(Icons.clear,
+                                                    size: 16),
+                                              ),
+                                            ),
+                                          )),
+                                      ElevatedButton(
+                                          onPressed: () {
+                                            httpHelpers
+                                                .addDisputeRequest(
+                                                    widget.comment.commentId,
+                                                    disputeController.text,
+                                                    widget.jwt)
+                                                .then(
+                                              (response) {
+                                                Fluttertoast.showToast(
+                                                  msg: response,
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  timeInSecForIosWeb: 1,
+                                                );
+                                                if (response ==
+                                                    'Dispute added successfully!') {
+                                                  setState(() {});
+                                                  disputeController.clear();
+                                                }
+                                              },
                                             );
-                                            if (response ==
-                                                'Dispute added successfully!') {
-                                              setState(() {});
-                                              disputeController.clear();
-                                            }
                                           },
-                                        );
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.all(6),
-                                          minimumSize: Size.zero,
-                                          tapTargetSize:
-                                              MaterialTapTargetSize.shrinkWrap,
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 80, 170, 121)),
-                                      child: const Text(
-                                        "Submit",
-                                        style: TextStyle(fontSize: 11),
-                                      )),
-                                ])
-                              : const SizedBox.shrink()
+                                          style: ElevatedButton.styleFrom(
+                                              padding: const EdgeInsets.all(6),
+                                              minimumSize: Size.zero,
+                                              tapTargetSize:
+                                                  MaterialTapTargetSize
+                                                      .shrinkWrap,
+                                              backgroundColor:
+                                                  const Color.fromARGB(
+                                                      255, 80, 170, 121)),
+                                          child: const Text(
+                                            "Submit",
+                                            style: TextStyle(fontSize: 11),
+                                          )),
+                                    ])
+                                  : const SizedBox.shrink()
                     ]));
           } else if (snapshot.hasError) {
             if (snapshot.error == 'Disputes not found') {
@@ -452,10 +468,15 @@ Widget otherDispute(Dispute dispute, Function updateCallback, String jwt,
                             )),
                 ],
               ),
-              Text(
-                dispute.content,
-                style: const TextStyle(fontSize: 13),
-              )
+              Container(
+                  padding: const EdgeInsets.all(2),
+                  color: dispute.disputeApproved
+                      ? const Color.fromARGB(255, 231, 250, 237)
+                      : Colors.white,
+                  child: Text(
+                    dispute.content,
+                    style: const TextStyle(fontSize: 13),
+                  ))
             ],
           )),
       subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
