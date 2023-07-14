@@ -237,7 +237,7 @@ class GalleryPageState extends State<GalleryPage> {
 
                 titleCallback(newValue) {
                   setState(() {
-                    newTitle = newValue;
+                    newTitle = newValue.split('(')[0].split(', ')[0];
                   });
                   final speciesRecord = singaporeRecords.singleWhere(
                       (record) =>
