@@ -27,6 +27,8 @@ class GalleryPageState extends State<GalleryPage> {
   Map<String, dynamic> decodedJWT = {};
   final httpHelpers = HttpHelpers();
   final helpers = Helpers();
+  bool editPostRequestProcessing = false;
+  bool deletePostRequestProcessing = false;
 
   String newDescription = '';
 
@@ -60,10 +62,12 @@ class GalleryPageState extends State<GalleryPage> {
             return Scaffold(
               appBar: jwt == ''
                   ? AppBar(
+                      centerTitle: true,
                       title: const Text('Sighting Gallery'),
                       backgroundColor: const Color.fromARGB(255, 65, 90, 181),
                     )
                   : AppBar(
+                      centerTitle: true,
                       title: const Text('Sighting Gallery'),
                       backgroundColor: const Color.fromARGB(255, 65, 90, 181),
                       actions: [logoutButton()],
@@ -175,7 +179,7 @@ class GalleryPageState extends State<GalleryPage> {
     );
   }
 
-  Widget editPostButton(Post post) {
+  Widget editPostButton(Post post, Function editPostRequestProcessingCallback) {
     return IconButton(
       constraints: const BoxConstraints(),
       icon: CircleAvatar(
@@ -440,35 +444,41 @@ class GalleryPageState extends State<GalleryPage> {
                                 style: TextStyle(fontSize: 11),
                               ),
                               onPressed: () {
-                                httpHelpers
-                                    .editPostInfoRequest(
-                                        post.postid,
-                                        jwt,
-                                        newTitle,
-                                        newDescription,
-                                        newLocation,
-                                        newClass,
-                                        newOrder,
-                                        newFamily,
-                                        newGenus,
-                                        newSpecies)
-                                    .then((response) {
-                                  Fluttertoast.showToast(
-                                    msg: response,
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                  if (response == 'Post Edited') {
-                                    Navigator.pop(context);
-                                    setState(() {
-                                      newClass = '';
-                                      newOrder = '';
-                                      newFamily = '';
-                                      newGenus = '';
-                                    });
-                                  }
-                                });
+                                if (editPostRequestProcessing) {
+                                  null;
+                                } else {
+                                  editPostRequestProcessingCallback();
+                                  httpHelpers
+                                      .editPostInfoRequest(
+                                          post.postid,
+                                          jwt,
+                                          newTitle,
+                                          newDescription,
+                                          newLocation,
+                                          newClass,
+                                          newOrder,
+                                          newFamily,
+                                          newGenus,
+                                          newSpecies)
+                                      .then((response) {
+                                    editPostRequestProcessingCallback();
+                                    Fluttertoast.showToast(
+                                      msg: response,
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      timeInSecForIosWeb: 1,
+                                    );
+                                    if (response == 'Post Edited') {
+                                      Navigator.pop(context);
+                                      setState(() {
+                                        newClass = '';
+                                        newOrder = '';
+                                        newFamily = '';
+                                        newGenus = '';
+                                      });
+                                    }
+                                  });
+                                }
                               }),
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
@@ -502,7 +512,8 @@ class GalleryPageState extends State<GalleryPage> {
     );
   }
 
-  Widget deletePostButton(Post post) {
+  Widget deletePostButton(
+      Post post, Function deletePostRequestProcessingCallback) {
     return IconButton(
       constraints: const BoxConstraints(),
       padding: EdgeInsets.zero,
@@ -529,19 +540,27 @@ class GalleryPageState extends State<GalleryPage> {
                                 const Color.fromARGB(255, 80, 170, 121)),
                         child: const Text("Yes"),
                         onPressed: () {
-                          httpHelpers.deletePostRequest(post.postid, jwt).then(
-                            (response) {
-                              Navigator.pop(context);
-                              Fluttertoast.showToast(
-                                msg: response,
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                              );
+                          if (deletePostRequestProcessing) {
+                            null;
+                          } else {
+                            deletePostRequestProcessingCallback();
+                            httpHelpers
+                                .deletePostRequest(post.postid, jwt)
+                                .then(
+                              (response) {
+                                deletePostRequestProcessingCallback();
+                                Navigator.pop(context);
+                                Fluttertoast.showToast(
+                                  msg: response,
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                );
 
-                              setState(() {});
-                            },
-                          );
+                                setState(() {});
+                              },
+                            );
+                          }
                         }),
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -579,8 +598,10 @@ class GalleryPageState extends State<GalleryPage> {
                     Positioned(
                         right: 8,
                         child: Row(children: [
-                          editPostButton(post),
-                          deletePostButton(post)
+                          editPostButton(
+                              post, editPostRequestProcessingCallback),
+                          deletePostButton(
+                              post, deletePostRequestProcessingCallback)
                         ]))
                   ])
                 : InkWell(
@@ -825,5 +846,17 @@ class GalleryPageState extends State<GalleryPage> {
             controller.text = suggestion;
           },
         ));
+  }
+
+  editPostRequestProcessingCallback() {
+    setState(() {
+      editPostRequestProcessing = !editPostRequestProcessing;
+    });
+  }
+
+  deletePostRequestProcessingCallback() {
+    setState(() {
+      deletePostRequestProcessing = !deletePostRequestProcessing;
+    });
   }
 }

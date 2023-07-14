@@ -19,6 +19,7 @@ class ErrorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text('Error'),
       ),
       body: const Center(
@@ -248,6 +249,7 @@ class StatisticsPageState extends State<StatisticsPage>
       return Scaffold(
         backgroundColor: const Color.fromARGB(255, 190, 222, 248),
         appBar: AppBar(
+          centerTitle: true,
           title: const Text('Search Statistics'),
           backgroundColor: const Color.fromARGB(255, 65, 90, 181),
         ),
@@ -390,6 +392,7 @@ class StatisticsPageState extends State<StatisticsPage>
       return Scaffold(
           backgroundColor: const Color.fromARGB(255, 190, 222, 248),
           appBar: AppBar(
+            centerTitle: true,
             title: const Text('Search Statistics'),
             backgroundColor: const Color.fromARGB(255, 65, 90, 181),
           ),

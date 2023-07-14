@@ -21,6 +21,7 @@ class LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final httpHelpers = HttpHelpers();
   final helpers = Helpers();
+  bool loginRequestProcessing = false;
   final User guestUser = User(
       userid: -1,
       username: 'username',
@@ -32,36 +33,48 @@ class LoginPageState extends State<LoginPage> {
       totalposts: 0,
       expert: false);
 
-  void validateForm() {
+  loginProcessingCallback() {
+    setState(() {
+      loginRequestProcessing = !loginRequestProcessing;
+    });
+  }
+
+  void validateForm(Function loginProcessingCallback) {
     final bool? isValid = _formKey.currentState?.validate();
     if (isValid == true) {
-      httpHelpers
-          .loginRequest(emailUsernameController.text,
-              emailUsernameController.text, passwordController.text)
-          .then((String response) async {
-        if (response != 'Password Incorrect' &&
-            response != 'User Not Found' &&
-            response != 'Error') {
-          await storage.write(key: "jwt", value: response);
-          if (context.mounted) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const HomePage()),
-            );
+      if (loginRequestProcessing) {
+        null;
+      } else {
+        loginProcessingCallback();
+        httpHelpers
+            .loginRequest(emailUsernameController.text,
+                emailUsernameController.text, passwordController.text)
+            .then((String response) async {
+          loginProcessingCallback();
+          if (response != 'Password Incorrect' &&
+              response != 'User Not Found' &&
+              response != 'Error') {
+            await storage.write(key: "jwt", value: response);
+            if (context.mounted) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HomePage()),
+              );
+            }
+          } else {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return NoticeDialog(
+                      content: response == 'Error'
+                          ? 'Error. Please try again.'
+                          : response == 'Password Incorrect'
+                              ? 'Incorrect password. Please try again.'
+                              : 'User not found. Please try again.');
+                });
           }
-        } else {
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return NoticeDialog(
-                    content: response == 'Error'
-                        ? 'Error. Please try again.'
-                        : response == 'Password Incorrect'
-                            ? 'Incorrect password. Please try again.'
-                            : 'User not found. Please try again.');
-              });
-        }
-      });
+        });
+      }
     }
   }
 
@@ -155,7 +168,7 @@ class LoginPageState extends State<LoginPage> {
       height: 36,
       child: ElevatedButton(
         onPressed: () {
-          validateForm();
+          validateForm(loginProcessingCallback);
         },
         style: ButtonStyle(
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(

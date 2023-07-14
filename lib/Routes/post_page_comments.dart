@@ -97,13 +97,20 @@ class PostPageSingleComment extends StatefulWidget {
 class PostPageSingleCommentState extends State<PostPageSingleComment> {
   final contentText = TextEditingController();
   final httpHelpers = HttpHelpers();
+  String content = '';
   bool suggestingID = false;
+  bool textfieldclicked = false;
   List<String> allSpecies = <String>[];
+  FocusNode focusNode = FocusNode();
+  bool addIdRequestProcessing = false;
+  bool addCommentRequestProcessing = false;
 
   @override
   void dispose() {
     // Clean up the controller when the widget is removed from the widget tree
     contentText.dispose();
+    focusNode.removeListener(onFocusChange);
+    focusNode.dispose();
     super.dispose();
   }
 
@@ -115,11 +122,37 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
         allSpecies.add('${record.commonNames} (${record.species})');
       }
     }
+    focusNode.addListener(onFocusChange);
+  }
+
+  onFocusChange() {
+    setState(() {
+      textfieldclicked = !textfieldclicked;
+    });
+    print(textfieldclicked);
   }
 
   clearCallback() {
     setState(() {
       contentText.clear();
+    });
+  }
+
+  updateCallback(String value) {
+    setState(() {
+      content = value;
+    });
+  }
+
+  addIdRequestProcessingCallback() {
+    setState(() {
+      addIdRequestProcessing = !addIdRequestProcessing;
+    });
+  }
+
+  addCommentRequestProcessingCallback() {
+    setState(() {
+      addCommentRequestProcessing = !addCommentRequestProcessing;
     });
   }
 
@@ -156,11 +189,15 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
                     currUser: widget.currUser,
                   ),
             Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
+              padding: const EdgeInsets.only(
+                left: 20,
+                right: 20,
+              ),
               child: suggestingID
-                  ? selectableTextForm(
-                      contentText, 'Suggest an ID', allSpecies, clearCallback)
+                  ? selectableTextForm(contentText, 'Suggest an ID', allSpecies,
+                      clearCallback, updateCallback, focusNode)
                   : TextFormField(
+                      focusNode: focusNode,
                       controller: contentText,
                       decoration: InputDecoration(
                         hintText: 'Reply',
@@ -182,8 +219,11 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
             ),
             Container(
               alignment: Alignment.centerRight,
-              margin: const EdgeInsets.only(
-                  top: 6, left: 20, right: 20, bottom: 10),
+              margin: EdgeInsets.only(
+                  top: 6,
+                  left: 20,
+                  right: 20,
+                  bottom: textfieldclicked ? 80 : 10),
               child: Wrap(spacing: 10, children: [
                 ElevatedButton(
                   onPressed: () {
@@ -203,49 +243,61 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    suggestingID
-                        ? httpHelpers
+                    if (suggestingID) {
+                      if (addIdRequestProcessing) {
+                        null;
+                      } else {
+                        addIdRequestProcessingCallback();
+                        httpHelpers
                             .addIdSuggestionRequest(
                                 widget.postid, contentText.text, widget.jwt)
                             .then((response) {
+                          addIdRequestProcessingCallback();
+                          Fluttertoast.showToast(
+                            msg: response,
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                          );
+                          if (response ==
+                              'ID suggestion posted successfully!') {
+                            widget.updateCallBack(response);
+                            setState(() {
+                              contentText.clear();
+                            });
+                          }
+                        });
+                      }
+                    } else {
+                      if (addCommentRequestProcessing) {
+                        null;
+                      } else {
+                        httpHelpers
+                            .addCommentRequest(
+                                widget.postid, contentText.text, widget.jwt)
+                            .then((response) {
+                          if (response == 'Comment Posted') {
+                            widget.updateCallBack(response);
                             Fluttertoast.showToast(
-                              msg: response,
+                              msg: 'Comment posted successfully!',
                               toastLength: Toast.LENGTH_SHORT,
                               gravity: ToastGravity.BOTTOM,
                               timeInSecForIosWeb: 1,
                             );
-                            if (response ==
-                                'ID suggestion posted successfully!') {
-                              widget.updateCallBack(response);
-                              setState(() {
-                                contentText.clear();
-                              });
-                            }
-                          })
-                        : httpHelpers
-                            .addCommentRequest(
-                                widget.postid, contentText.text, widget.jwt)
-                            .then((response) {
-                            if (response == 'Comment Posted') {
-                              widget.updateCallBack(response);
-                              Fluttertoast.showToast(
-                                msg: 'Comment posted successfully!',
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                              );
-                              setState(() {
-                                contentText.clear();
-                              });
-                            } else {
-                              Fluttertoast.showToast(
-                                msg: 'Comment failed to post :(',
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                              );
-                            }
-                          });
+                            setState(() {
+                              contentText.clear();
+                            });
+                          } else {
+                            Fluttertoast.showToast(
+                              msg: 'Comment failed to post :(',
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                            );
+                          }
+                        });
+                      }
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 68, 86, 148)),
@@ -276,13 +328,20 @@ class PostPageNoComment extends StatefulWidget {
 class PostPageNoCommentState extends State<PostPageNoComment> {
   final contentText = TextEditingController();
   final httpHelpers = HttpHelpers();
+  String content = '';
   bool suggestingID = false;
+  bool textfieldclicked = false;
   List<String> allSpecies = <String>[];
+  FocusNode focusNode = FocusNode();
+  bool addIdRequestProcessing = false;
+  bool addCommentRequestProcessing = false;
 
   @override
   void dispose() {
     // Clean up the controller when the widget is removed from the widget tree
     contentText.dispose();
+    focusNode.removeListener(onFocusChange);
+    focusNode.dispose();
     super.dispose();
   }
 
@@ -296,11 +355,36 @@ class PostPageNoCommentState extends State<PostPageNoComment> {
         }
       });
     }
+    focusNode.addListener(onFocusChange);
   }
 
   clearCallback() {
     setState(() {
       contentText.clear();
+    });
+  }
+
+  updateCallback(String value) {
+    setState(() {
+      content = value;
+    });
+  }
+
+  onFocusChange() {
+    setState(() {
+      textfieldclicked = !textfieldclicked;
+    });
+  }
+
+  addIdRequestProcessingCallback() {
+    setState(() {
+      addIdRequestProcessing = !addIdRequestProcessing;
+    });
+  }
+
+  addCommentRequestProcessingCallback() {
+    setState(() {
+      addCommentRequestProcessing = !addCommentRequestProcessing;
     });
   }
 
@@ -317,11 +401,15 @@ class PostPageNoCommentState extends State<PostPageNoComment> {
                 alignment: Alignment.centerLeft,
                 child: const Text('No comments yet')),
             Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
+              padding: const EdgeInsets.only(
+                left: 20,
+                right: 20,
+              ),
               child: suggestingID
-                  ? selectableTextForm(
-                      contentText, 'Suggest an ID', allSpecies, clearCallback)
+                  ? selectableTextForm(contentText, 'Suggest an ID', allSpecies,
+                      clearCallback, updateCallback, focusNode)
                   : TextFormField(
+                      focusNode: focusNode,
                       controller: contentText,
                       decoration: InputDecoration(
                         hintText: 'Reply',
@@ -343,8 +431,11 @@ class PostPageNoCommentState extends State<PostPageNoComment> {
             ),
             Container(
               alignment: Alignment.centerRight,
-              margin: const EdgeInsets.only(
-                  top: 6, left: 20, right: 20, bottom: 10),
+              margin: EdgeInsets.only(
+                  top: 6,
+                  left: 20,
+                  right: 20,
+                  bottom: textfieldclicked ? 80 : 10),
               child: Wrap(spacing: 10, children: [
                 ElevatedButton(
                   onPressed: () {
@@ -364,49 +455,63 @@ class PostPageNoCommentState extends State<PostPageNoComment> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    suggestingID
-                        ? httpHelpers
+                    if (suggestingID) {
+                      if (addIdRequestProcessing) {
+                        null;
+                      } else {
+                        addIdRequestProcessingCallback();
+                        httpHelpers
                             .addIdSuggestionRequest(
                                 widget.postid, contentText.text, widget.jwt)
                             .then((response) {
+                          addIdRequestProcessingCallback();
+                          Fluttertoast.showToast(
+                            msg: response,
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                          );
+                          if (response ==
+                              'ID suggestion posted successfully!') {
+                            widget.addCallBack(response);
+                            setState(() {
+                              contentText.clear();
+                            });
+                          }
+                        });
+                      }
+                    } else {
+                      if (addCommentRequestProcessing) {
+                        null;
+                      } else {
+                        addCommentRequestProcessingCallback();
+                        httpHelpers
+                            .addCommentRequest(
+                                widget.postid, contentText.text, widget.jwt)
+                            .then((response) {
+                          addCommentRequestProcessingCallback();
+                          if (response == 'Comment Posted') {
+                            widget.addCallBack(response);
                             Fluttertoast.showToast(
-                              msg: response,
+                              msg: 'Comment posted successfully!',
                               toastLength: Toast.LENGTH_SHORT,
                               gravity: ToastGravity.BOTTOM,
                               timeInSecForIosWeb: 1,
                             );
-                            if (response ==
-                                'ID suggestion posted successfully!') {
-                              widget.addCallBack(response);
-                              setState(() {
-                                contentText.clear();
-                              });
-                            }
-                          })
-                        : httpHelpers
-                            .addCommentRequest(
-                                widget.postid, contentText.text, widget.jwt)
-                            .then((response) {
-                            if (response == 'Comment Posted') {
-                              widget.addCallBack(response);
-                              Fluttertoast.showToast(
-                                msg: 'Comment posted successfully!',
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                              );
-                              setState(() {
-                                contentText.clear();
-                              });
-                            } else {
-                              Fluttertoast.showToast(
-                                msg: 'Comment failed to post :(',
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                              );
-                            }
-                          });
+                            setState(() {
+                              contentText.clear();
+                            });
+                          } else {
+                            Fluttertoast.showToast(
+                              msg: 'Comment failed to post :(',
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                            );
+                          }
+                        });
+                      }
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 68, 86, 148)),
@@ -418,20 +523,26 @@ class PostPageNoCommentState extends State<PostPageNoComment> {
   }
 }
 
-Widget selectableTextForm(TextEditingController controller, String hintText,
-    List<String> options, Function callback) {
+Widget selectableTextForm(
+    TextEditingController controller,
+    String hintText,
+    List<String> options,
+    Function clearCallback,
+    Function updateCallback,
+    FocusNode focusNode) {
   return TypeAheadFormField(
     hideOnLoading: true,
     hideOnEmpty: true,
     textFieldConfiguration: TextFieldConfiguration(
-        onChanged: (value) => callback(value),
+        focusNode: focusNode,
+        onChanged: (value) => updateCallback(value),
         controller: controller,
         decoration: InputDecoration(
           focusColor: const Color.fromARGB(255, 51, 64, 113),
           hintText: hintText,
           suffixIcon: IconButton(
             onPressed: () {
-              callback();
+              clearCallback();
             },
             icon: const Icon(Icons.clear),
           ),

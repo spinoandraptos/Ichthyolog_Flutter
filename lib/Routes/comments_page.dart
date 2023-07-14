@@ -27,6 +27,8 @@ class CommentPageState extends State<CommentPage> {
   final httpHelpers = HttpHelpers();
   final helpers = Helpers();
   List<String> allSpecies = <String>[];
+  bool addIdRequestProcessing = false;
+  bool addCommentRequestProcessing = false;
 
   @override
   void initState() {
@@ -63,6 +65,18 @@ class CommentPageState extends State<CommentPage> {
 
   updateCallback() {
     setState(() {});
+  }
+
+  addIdRequestProcessingCallback() {
+    setState(() {
+      addIdRequestProcessing = !addIdRequestProcessing;
+    });
+  }
+
+  addCommentRequestProcessingCallback() {
+    setState(() {
+      addCommentRequestProcessing = !addCommentRequestProcessing;
+    });
   }
 
   @override
@@ -181,53 +195,66 @@ class CommentPageState extends State<CommentPage> {
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
-                                    suggestingID
-                                        ? httpHelpers
+                                    if (suggestingID) {
+                                      if (addIdRequestProcessing) {
+                                        null;
+                                      } else {
+                                        addIdRequestProcessingCallback();
+                                        httpHelpers
                                             .addIdSuggestionRequest(
                                                 widget.postid,
                                                 contentText.text,
                                                 jwt)
                                             .then((response) {
+                                          addIdRequestProcessingCallback();
+                                          Fluttertoast.showToast(
+                                            msg: response,
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.BOTTOM,
+                                            timeInSecForIosWeb: 1,
+                                          );
+                                          if (response ==
+                                              'ID suggestion posted successfully!') {
+                                            updateCommentCallback(response);
+                                            setState(() {
+                                              contentText.clear();
+                                            });
+                                          }
+                                        });
+                                      }
+                                    } else {
+                                      if (addCommentRequestProcessing) {
+                                        null;
+                                      } else {
+                                        addCommentRequestProcessingCallback();
+                                        httpHelpers
+                                            .addCommentRequest(widget.postid,
+                                                contentText.text, jwt)
+                                            .then((response) {
+                                          addCommentRequestProcessingCallback();
+                                          if (response == 'Comment Posted') {
+                                            updateCommentCallback(response);
                                             Fluttertoast.showToast(
-                                              msg: response,
+                                              msg:
+                                                  'Comment posted successfully!',
                                               toastLength: Toast.LENGTH_SHORT,
                                               gravity: ToastGravity.BOTTOM,
                                               timeInSecForIosWeb: 1,
                                             );
-                                            if (response ==
-                                                'ID suggestion posted successfully!') {
-                                              updateCommentCallback(response);
-                                              setState(() {
-                                                contentText.clear();
-                                              });
-                                            }
-                                          })
-                                        : httpHelpers
-                                            .addCommentRequest(widget.postid,
-                                                contentText.text, jwt)
-                                            .then((response) {
-                                            if (response == 'Comment Posted') {
-                                              updateCommentCallback(response);
-                                              Fluttertoast.showToast(
-                                                msg:
-                                                    'Comment posted successfully!',
-                                                toastLength: Toast.LENGTH_SHORT,
-                                                gravity: ToastGravity.BOTTOM,
-                                                timeInSecForIosWeb: 1,
-                                              );
-                                              setState(() {
-                                                contentText.clear();
-                                              });
-                                            } else {
-                                              Fluttertoast.showToast(
-                                                msg:
-                                                    'Comment failed to post :(',
-                                                toastLength: Toast.LENGTH_SHORT,
-                                                gravity: ToastGravity.BOTTOM,
-                                                timeInSecForIosWeb: 1,
-                                              );
-                                            }
-                                          });
+                                            setState(() {
+                                              contentText.clear();
+                                            });
+                                          } else {
+                                            Fluttertoast.showToast(
+                                              msg: 'Comment failed to post :(',
+                                              toastLength: Toast.LENGTH_SHORT,
+                                              gravity: ToastGravity.BOTTOM,
+                                              timeInSecForIosWeb: 1,
+                                            );
+                                          }
+                                        });
+                                      }
+                                    }
                                   },
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color.fromARGB(

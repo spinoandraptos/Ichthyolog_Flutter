@@ -42,6 +42,7 @@ class CameraPageState extends State<CameraPage> {
   String family = '';
   String genus = '';
   String species = '';
+  bool picUploadRequestProcessing = false;
   final helpers = Helpers();
   final httpHelpers = HttpHelpers();
   final TextEditingController titleController = TextEditingController();
@@ -68,13 +69,13 @@ class CameraPageState extends State<CameraPage> {
     }
   }
 
-  // ignore: unused_element
   @override
   Widget build(BuildContext context) {
     if (image != null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Post a sighting'),
+          centerTitle: true,
+          title: const Text('Post a Sighting'),
           backgroundColor: const Color.fromARGB(255, 65, 90, 181),
         ),
         body: SingleChildScrollView(
@@ -277,7 +278,8 @@ class CameraPageState extends State<CameraPage> {
                                     order,
                                     family,
                                     genus,
-                                    species);
+                                    species,
+                                    picUploadRequestProcessingCallback);
                               },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor:
@@ -314,7 +316,8 @@ class CameraPageState extends State<CameraPage> {
     } else {
       return Scaffold(
           appBar: AppBar(
-            title: const Text('Post an image'),
+            centerTitle: true,
+            title: const Text('Post a Sighting'),
             backgroundColor: const Color.fromARGB(255, 65, 90, 181),
           ),
           body: SingleChildScrollView(
@@ -359,67 +362,70 @@ class CameraPageState extends State<CameraPage> {
       String order,
       String family,
       String genus,
-      String species) async {
+      String species,
+      Function picUploadRequestProcessingCallback) async {
     final key = const Uuid().v4();
     final file = AWSFile.fromPath(image!.path);
+    if (picUploadRequestProcessing) {
+    } else {
+      try {
+        Amplify.Storage.uploadFile(
+          key: key,
+          localFile: file,
+          options: const StorageUploadFileOptions(
+            accessLevel: StorageAccessLevel.guest,
+          ),
+        );
 
-    try {
-      Amplify.Storage.uploadFile(
-        key: key,
-        localFile: file,
-        options: const StorageUploadFileOptions(
-          accessLevel: StorageAccessLevel.guest,
-        ),
-      );
-
-      //send description and other post information to database
-      httpHelpers
-          .uploadPostRequest(
-              title,
-              description,
-              sightingLocation,
-              sightingTime == ' '
-                  ? DateFormat("yyyy-MM-dd hh:mm:ss").format(DateTime.now())
-                  : sightingTime,
-              "https://ichthyolog175756-dev.s3.ap-southeast-1.amazonaws.com/public/$key",
-              jwt,
-              class_,
-              order,
-              family,
-              genus,
-              species)
-          .then((String response) {
+        //send description and other post information to database
+        httpHelpers
+            .uploadPostRequest(
+                title,
+                description,
+                sightingLocation,
+                sightingTime == ' '
+                    ? DateFormat("yyyy-MM-dd hh:mm:ss").format(DateTime.now())
+                    : sightingTime,
+                "https://ichthyolog175756-dev.s3.ap-southeast-1.amazonaws.com/public/$key",
+                jwt,
+                class_,
+                order,
+                family,
+                genus,
+                species)
+            .then((String response) {
+          Fluttertoast.showToast(
+            msg: response,
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+          );
+          if (response == 'Post Uploaded') {
+            titleController.text = '';
+            locationController.text = '';
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => GalleryPage(
+                          currUser: widget.currUser,
+                        )));
+            setState(() {
+              image = null;
+              class_ = '';
+              order = '';
+              family = '';
+              genus = '';
+            });
+          }
+        });
+      } catch (error) {
         Fluttertoast.showToast(
-          msg: response,
+          msg: error.toString(),
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
         );
-        if (response == 'Post Uploaded') {
-          titleController.text = '';
-          locationController.text = '';
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => GalleryPage(
-                        currUser: widget.currUser,
-                      )));
-          setState(() {
-            image = null;
-            class_ = '';
-            order = '';
-            family = '';
-            genus = '';
-          });
-        }
-      });
-    } catch (error) {
-      Fluttertoast.showToast(
-        msg: error.toString(),
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-      );
+      }
     }
   }
 
@@ -584,5 +590,11 @@ class CameraPageState extends State<CameraPage> {
             controller.text = suggestion;
           },
         ));
+  }
+
+  picUploadRequestProcessingCallback() {
+    setState(() {
+      picUploadRequestProcessing = !picUploadRequestProcessing;
+    });
   }
 }

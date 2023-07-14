@@ -71,7 +71,7 @@ class HttpHelpers {
     if (response.body == 'Valid token') {
       return ('Logged out');
     } else {
-      return ('Logout failed');
+      return ('Logged out with expired token');
     }
   }
 
@@ -86,6 +86,8 @@ class HttpHelpers {
     );
     if (response.body == 'User not found') {
       return Future.error('User Not Found');
+    } else if (response.body == 'jwt expired') {
+      return Future.error('Token expired. Please login again!');
     } else if (response.statusCode != 200) {
       return Future.error('Error');
     } else {
@@ -162,6 +164,10 @@ class HttpHelpers {
         responseEmail.statusCode != 200 ||
         responsePassword.statusCode != 200) {
       return ('Error');
+    } else if (responseUsername.body == 'jwt expired' ||
+        responseEmail.body == 'jwt expired' ||
+        responsePassword.body == 'jwt expired') {
+      return ('Token expired. Please login again!');
     } else {
       return ('User Edited');
     }
@@ -183,6 +189,8 @@ class HttpHelpers {
     print(response.body);
     if (response.body == 'User not found') {
       return ('User Not Found');
+    } else if (response.body == 'jwt expired') {
+      return ('Token expired. Please login again!');
     } else if (response.statusCode != 200) {
       return ('Error');
     } else {
@@ -270,6 +278,8 @@ class HttpHelpers {
     );
     if (response.body == 'Posts not found') {
       return Future.error('Posts Not Found');
+    } else if (response.body == 'jwt expired') {
+      return Future.error('Token expired. Please login again!');
     } else if (response.statusCode != 200) {
       return Future.error('Error');
     } else {
@@ -350,6 +360,8 @@ class HttpHelpers {
     print(response.body);
     if (response.statusCode == 201) {
       return ('Post Uploaded');
+    } else if (response.body == 'jwt expired') {
+      return ('Token expired. Please login again!');
     } else {
       return ('Post Upload Failed');
     }
@@ -442,6 +454,15 @@ class HttpHelpers {
         responseGenus.body == 'Post not found' ||
         responseSpecies.body == 'Post not found') {
       return ('Post Not Found :(');
+    } else if (responseTitle.body == 'jwt expired' ||
+        responseDescription.body == 'jwt expired' ||
+        responseSightingLocation.body == 'jwt expired' ||
+        responseClass.body == 'jwt expired' ||
+        responseOrder.body == 'jwt expired' ||
+        responseFamily.body == 'jwt expired' ||
+        responseGenus.body == 'jwt expired' ||
+        responseSpecies.body == 'jwt expired') {
+      return ('Token expired. Please login again!');
     } else if (responseTitle.statusCode != 200) {
       return ('Title Edit Error :(');
     } else if (responseDescription.statusCode != 200) {
@@ -497,6 +518,8 @@ class HttpHelpers {
     );
     if (response.body == 'Comments not found') {
       return Future.error('Comments Not Found');
+    } else if (response.body == 'jwt expired') {
+      return Future.error('Token expired. Please login again!');
     } else if (response.statusCode != 200) {
       return Future.error('Error');
     } else {
@@ -541,6 +564,8 @@ class HttpHelpers {
     );
     if (response.statusCode == 201) {
       return ('Comment Posted');
+    } else if (response.body == 'jwt expired') {
+      return ('Token expired. Please login again!');
     } else {
       return ('Comment Post Failed');
     }
@@ -560,6 +585,8 @@ class HttpHelpers {
     );
     if (response.statusCode == 201) {
       return ('ID suggestion posted successfully!');
+    } else if (response.body == 'jwt expired') {
+      return ('Token expired. Please login again!');
     } else {
       return ('ID suggestion failed to post :(');
     }
@@ -664,6 +691,13 @@ class HttpHelpers {
         responseGenus.body == 'Post not found' ||
         responseSpecies.body == 'Post not found') {
       return ('Post Not Found');
+    } else if (responseComment.body == 'jwt expired' ||
+        responseClass.body == 'jwt expired' ||
+        responseOrder.body == 'jwt expired' ||
+        responseFamily.body == 'jwt expired' ||
+        responseGenus.body == 'jwt expired' ||
+        responseSpecies.body == 'jwt expired') {
+      return ('Token expired. Please login again!');
     } else if (responseComment.statusCode != 200) {
       return ('SUggestion Edit Error :(');
     } else if (responseClass.statusCode != 200) {
@@ -693,6 +727,8 @@ class HttpHelpers {
     );
     if (response.body == 'Suggestion not found') {
       return ('ID Suggestion Not Found');
+    } else if (response.body == 'jwt expired') {
+      return ('Token expired. Please login again!');
     } else if (response.statusCode != 200) {
       return ('Error');
     } else {
@@ -968,6 +1004,8 @@ class HttpHelpers {
     print(response.statusCode);
     if (response.statusCode == 201) {
       return ('Dispute added successfully!');
+    } else if (response.body == 'jwt expired') {
+      return ('Token expired. Please login again!');
     } else {
       return ('Dispute failed to add :(');
     }
@@ -987,6 +1025,8 @@ class HttpHelpers {
     print(response.body);
     if (response.body == 'Dispute not found') {
       return ('Dispute Not Found');
+    } else if (response.body == 'jwt expired') {
+      return ('Token expired. Please login again!');
     } else if (response.statusCode != 200) {
       return ('Error, please try again');
     } else {
@@ -1007,6 +1047,8 @@ class HttpHelpers {
     );
     if (response.statusCode == 200) {
       return ('Dispute Deleted');
+    } else if (response.body == 'jwt expired') {
+      return ('Token expired. Please login again!');
     } else {
       return ('Dispute Deletion Failed :(');
     }
@@ -1028,6 +1070,8 @@ class HttpHelpers {
         response.body == 'ID suggestion not found' ||
         response.body == 'Post not found') {
       return response.body;
+    } else if (response.body == 'jwt expired') {
+      return ('Token expired. Please login again!');
     } else if (response.statusCode != 200) {
       return ('Error, please try again');
     } else {

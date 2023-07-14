@@ -2,6 +2,7 @@ import 'package:ichthyolog/main.dart';
 import 'http.dart';
 import 'package:flutter/material.dart';
 import '../Routes/login.dart';
+import 'standard_widgets.dart';
 
 final httpHelpers = HttpHelpers();
 
@@ -17,28 +18,18 @@ class Helpers {
 
   void logout(String jwt, BuildContext context) async {
     httpHelpers.logoutRequest(jwt).then((response) {
-      if (response == 'Logged out') {
+      if (response == 'Logged out' ||
+          response == 'Logged out with expired token') {
         storage.delete(key: 'jwt');
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       } else {
-        AlertDialog alert = AlertDialog(
-          title: const Text("Notice"),
-          content: const Text('Logout failed'),
-          actions: [
-            TextButton(
-                child: const Text("OK"),
-                onPressed: () {
-                  Navigator.pop(context);
-                })
-          ],
-        );
         showDialog(
             context: context,
             builder: (context) {
-              return alert;
+              return const NoticeDialog(content: 'Logout failed');
             });
       }
     });

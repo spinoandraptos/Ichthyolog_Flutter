@@ -16,6 +16,7 @@ class SignUpPageState extends State<SignUpPage> {
   String _confirmPassword = '';
   final _formKey = GlobalKey<FormState>();
   final httpHelpers = HttpHelpers();
+  bool singupRequestProcessing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -65,43 +66,55 @@ class SignUpPageState extends State<SignUpPage> {
     return true;
   }
 
-  void validateForm() {
+  signupProcessingCallback() {
+    setState(() {
+      singupRequestProcessing = !singupRequestProcessing;
+    });
+    print("CHNAGED");
+  }
+
+  void validateForm(Function signupProcessingCallback) {
     final bool? isValid = _formKey.currentState?.validate();
     if (isValid == true) {
-      httpHelpers
-          .signupRequest(_userName, _password, _userEmail)
-          .then((String response) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text("Notice"),
-              content: Text(response == 'Signup Successful'
-                  ? 'Signup Successful! Please login.'
-                  : response == 'Email Already Exists'
-                      ? 'Email already in use. Please try again.'
-                      : response == 'Username Already Exists'
-                          ? 'Username already in use. Please try again.'
-                          : 'Signup Failed. Please try again.'),
-              actions: [
-                TextButton(
-                    child: const Text("OK"),
-                    onPressed: () {
-                      if (response == 'Signup Successful') {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const LoginPage()),
-                        );
-                      } else {
-                        Navigator.pop(context);
-                      }
-                    })
-              ],
-            );
-          },
-        );
-      });
+      if (singupRequestProcessing) {
+      } else {
+        signupProcessingCallback();
+        httpHelpers
+            .signupRequest(_userName, _password, _userEmail)
+            .then((String response) {
+          signupProcessingCallback();
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("Notice"),
+                content: Text(response == 'Signup Successful'
+                    ? 'Signup Successful! Please login.'
+                    : response == 'Email Already Exists'
+                        ? 'Email already in use. Please try again.'
+                        : response == 'Username Already Exists'
+                            ? 'Username already in use. Please try again.'
+                            : 'Signup Failed. Please try again.'),
+                actions: [
+                  TextButton(
+                      child: const Text("OK"),
+                      onPressed: () {
+                        if (response == 'Signup Successful') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const LoginPage()),
+                          );
+                        } else {
+                          Navigator.pop(context);
+                        }
+                      })
+                ],
+              );
+            },
+          );
+        });
+      }
     }
   }
 
@@ -135,7 +148,7 @@ class SignUpPageState extends State<SignUpPage> {
       height: 36,
       child: ElevatedButton(
         onPressed: () {
-          validateForm();
+          validateForm(signupProcessingCallback);
         },
         style: ButtonStyle(
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(

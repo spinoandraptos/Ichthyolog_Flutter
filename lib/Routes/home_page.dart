@@ -37,6 +37,10 @@ class HomePageState extends State<HomePage> {
   final helpers = Helpers();
   final httpHelpers = HttpHelpers();
   final _formKey = GlobalKey<FormState>();
+  bool editProfileRequestProcessing = false;
+  bool editProfilePicRequestProcessing = false;
+  bool editPostRequestProcessing = false;
+  bool deletePostRequestProcessing = false;
 
   @override
   void initState() {
@@ -68,11 +72,13 @@ class HomePageState extends State<HomePage> {
             if (snapshotUser.hasData) {
               return Scaffold(
                   appBar: AppBar(
-                    leading: const Icon(Icons.menu),
+                    automaticallyImplyLeading: false,
+                    centerTitle: true,
                     title: const Text('Home Page'),
                     backgroundColor: const Color.fromARGB(255, 65, 90, 181),
                     actions: [
-                      settingsButton(snapshotUser.data!),
+                      settingsButton(
+                          snapshotUser.data!, editProfileProcessingCallback),
                       logoutButton()
                     ],
                   ),
@@ -102,7 +108,8 @@ class HomePageState extends State<HomePage> {
                                           MediaQuery.of(context).size.height *
                                               1 /
                                               18),
-                                  profilePicture(snapshotUser.data!),
+                                  profilePicture(snapshotUser.data!,
+                                      editProfilePicProcessingCallback),
                                   SizedBox(
                                       height:
                                           MediaQuery.of(context).size.height *
@@ -141,16 +148,23 @@ class HomePageState extends State<HomePage> {
                                     ? galleryScreen(context, snapshot.data!,
                                         snapshotUser.data!)
                                     : snapshot.hasError &&
-                                            snapshot.error == 'Posts not found'
-                                        ? const Center(
-                                            child: Text(
-                                              'No sightings yet, start posting!',
-                                              style: TextStyle(
-                                                  color: Color.fromARGB(
-                                                      255, 70, 88, 152),
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          )
+                                            snapshot.error == 'Posts Not Found'
+                                        ? const Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                                Text(
+                                                  'No sightings yet, start posting!',
+                                                  style: TextStyle(
+                                                      color: Color.fromARGB(
+                                                          255, 70, 88, 152),
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontSize: 20),
+                                                ),
+                                              ])
                                         : const LoadingScreen();
                               })),
                         ],
@@ -195,7 +209,8 @@ class HomePageState extends State<HomePage> {
             } else {
               return Scaffold(
                   appBar: AppBar(
-                    leading: const Icon(Icons.menu),
+                    automaticallyImplyLeading: false,
+                    centerTitle: true,
                     title: const Text('Home Page'),
                     backgroundColor: const Color.fromARGB(255, 65, 90, 181),
                   ),
@@ -205,7 +220,7 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  Widget profilePicture(User user) {
+  Widget profilePicture(User user, Function editProfilePicProcessingCallback) {
     return Stack(
       children: [
         CircleAvatar(
@@ -249,40 +264,45 @@ class HomePageState extends State<HomePage> {
                           ) async {
                             final key = const Uuid().v4();
                             final file = AWSFile.fromPath(image!.path);
-
-                            try {
-                              Amplify.Storage.uploadFile(
-                                key: key,
-                                localFile: file,
-                                options: const StorageUploadFileOptions(
-                                  accessLevel: StorageAccessLevel.guest,
-                                ),
-                              );
-                              httpHelpers
-                                  .editUserProfilePicRequest(
-                                      "https://ichthyolog175756-dev.s3.ap-southeast-1.amazonaws.com/public/$key",
-                                      jwt)
-                                  .then((String response) {
+                            if (editProfilePicRequestProcessing) {
+                              null;
+                            } else {
+                              try {
+                                Amplify.Storage.uploadFile(
+                                  key: key,
+                                  localFile: file,
+                                  options: const StorageUploadFileOptions(
+                                    accessLevel: StorageAccessLevel.guest,
+                                  ),
+                                );
+                                editProfilePicProcessingCallback();
+                                httpHelpers
+                                    .editUserProfilePicRequest(
+                                        "https://ichthyolog175756-dev.s3.ap-southeast-1.amazonaws.com/public/$key",
+                                        jwt)
+                                    .then((String response) {
+                                  editProfilePicProcessingCallback();
+                                  Fluttertoast.showToast(
+                                    msg: response,
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    timeInSecForIosWeb: 1,
+                                  );
+                                  if (response == 'User Edited') {
+                                    Navigator.pop(context);
+                                    setState(() {
+                                      image = null;
+                                    });
+                                  }
+                                });
+                              } catch (error) {
                                 Fluttertoast.showToast(
-                                  msg: response,
+                                  msg: error.toString(),
                                   toastLength: Toast.LENGTH_SHORT,
                                   gravity: ToastGravity.BOTTOM,
                                   timeInSecForIosWeb: 1,
                                 );
-                                if (response == 'User Edited') {
-                                  Navigator.pop(context);
-                                  setState(() {
-                                    image = null;
-                                  });
-                                }
-                              });
-                            } catch (error) {
-                              Fluttertoast.showToast(
-                                msg: error.toString(),
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                              );
+                              }
                             }
                           }
 
@@ -456,7 +476,7 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget settingsButton(User user) {
+  Widget settingsButton(User user, Function editProfileProcessingCallback) {
     return IconButton(
       icon: const Icon(Icons.manage_accounts),
       onPressed: () {
@@ -559,29 +579,36 @@ class HomePageState extends State<HomePage> {
                                           child: const Text("Confirm",
                                               style: TextStyle(fontSize: 12)),
                                           onPressed: () {
-                                            httpHelpers
-                                                .editUserProfileRequest(
-                                                    newEmail,
-                                                    newUsername,
-                                                    oldPassword,
-                                                    newPassword,
-                                                    jwt)
-                                                .then((response) {
-                                              Fluttertoast.showToast(
-                                                msg: response,
-                                                toastLength: Toast.LENGTH_SHORT,
-                                                gravity: ToastGravity.BOTTOM,
-                                                timeInSecForIosWeb: 1,
-                                              );
-                                              if (response == 'User Edited') {
-                                                Navigator.pop(context);
-                                                setState(() {
-                                                  newUsername = '';
-                                                  newEmail = '';
-                                                  newPassword = '';
-                                                });
-                                              }
-                                            });
+                                            if (editProfileRequestProcessing) {
+                                              null;
+                                            } else {
+                                              editProfileProcessingCallback();
+                                              httpHelpers
+                                                  .editUserProfileRequest(
+                                                      newEmail,
+                                                      newUsername,
+                                                      oldPassword,
+                                                      newPassword,
+                                                      jwt)
+                                                  .then((response) {
+                                                editProfileProcessingCallback();
+                                                Fluttertoast.showToast(
+                                                  msg: response,
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  timeInSecForIosWeb: 1,
+                                                );
+                                                if (response == 'User Edited') {
+                                                  Navigator.pop(context);
+                                                  setState(() {
+                                                    newUsername = '';
+                                                    newEmail = '';
+                                                    newPassword = '';
+                                                  });
+                                                }
+                                              });
+                                            }
                                           }),
                                       ElevatedButton(
                                           style: ElevatedButton.styleFrom(
@@ -840,7 +867,7 @@ class HomePageState extends State<HomePage> {
     return hasCapitalLetter && hasSpecialCharacter;
   }
 
-  Widget editPostButton(Post post) {
+  Widget editPostButton(Post post, Function editPostRequestProcessingCallback) {
     return IconButton(
       constraints: const BoxConstraints(),
       icon: CircleAvatar(
@@ -1103,35 +1130,41 @@ class HomePageState extends State<HomePage> {
                                 style: TextStyle(fontSize: 11),
                               ),
                               onPressed: () {
-                                httpHelpers
-                                    .editPostInfoRequest(
-                                        post.postid,
-                                        jwt,
-                                        newTitle,
-                                        newDescription,
-                                        newLocation,
-                                        newClass,
-                                        newOrder,
-                                        newFamily,
-                                        newGenus,
-                                        newSpecies)
-                                    .then((response) {
-                                  Fluttertoast.showToast(
-                                    msg: response,
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                  if (response == 'Post Edited') {
-                                    Navigator.pop(context);
-                                    setState(() {
-                                      newClass = '';
-                                      newOrder = '';
-                                      newFamily = '';
-                                      newGenus = '';
-                                    });
-                                  }
-                                });
+                                if (editPostRequestProcessing) {
+                                  null;
+                                } else {
+                                  editPostRequestProcessingCallback();
+                                  httpHelpers
+                                      .editPostInfoRequest(
+                                          post.postid,
+                                          jwt,
+                                          newTitle,
+                                          newDescription,
+                                          newLocation,
+                                          newClass,
+                                          newOrder,
+                                          newFamily,
+                                          newGenus,
+                                          newSpecies)
+                                      .then((response) {
+                                    editPostRequestProcessingCallback();
+                                    Fluttertoast.showToast(
+                                      msg: response,
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      timeInSecForIosWeb: 1,
+                                    );
+                                    if (response == 'Post Edited') {
+                                      Navigator.pop(context);
+                                      setState(() {
+                                        newClass = '';
+                                        newOrder = '';
+                                        newFamily = '';
+                                        newGenus = '';
+                                      });
+                                    }
+                                  });
+                                }
                               }),
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
@@ -1165,7 +1198,8 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget deletePostButton(Post post) {
+  Widget deletePostButton(
+      Post post, Function deletePostRequestProcessingCallback) {
     return IconButton(
       constraints: const BoxConstraints(),
       padding: EdgeInsets.zero,
@@ -1192,19 +1226,27 @@ class HomePageState extends State<HomePage> {
                                 const Color.fromARGB(255, 80, 170, 121)),
                         child: const Text("Yes"),
                         onPressed: () {
-                          httpHelpers.deletePostRequest(post.postid, jwt).then(
-                            (response) {
-                              Navigator.pop(context);
-                              Fluttertoast.showToast(
-                                msg: response,
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                              );
+                          if (deletePostRequestProcessing) {
+                            null;
+                          } else {
+                            deletePostRequestProcessingCallback();
+                            httpHelpers
+                                .deletePostRequest(post.postid, jwt)
+                                .then(
+                              (response) {
+                                deletePostRequestProcessingCallback();
+                                Navigator.pop(context);
+                                Fluttertoast.showToast(
+                                  msg: response,
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                );
 
-                              setState(() {});
-                            },
-                          );
+                                setState(() {});
+                              },
+                            );
+                          }
                         }),
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -1240,8 +1282,10 @@ class HomePageState extends State<HomePage> {
                   }),
               Positioned(
                   right: 8,
-                  child: Row(
-                      children: [editPostButton(post), deletePostButton(post)]))
+                  child: Row(children: [
+                    editPostButton(post, editPostRequestProcessingCallback),
+                    deletePostButton(post, deletePostRequestProcessingCallback)
+                  ]))
             ])));
   }
 
@@ -1407,5 +1451,29 @@ class HomePageState extends State<HomePage> {
 
   refreshCallback() {
     setState(() {});
+  }
+
+  editProfileProcessingCallback() {
+    setState(() {
+      editProfileRequestProcessing = !editProfileRequestProcessing;
+    });
+  }
+
+  editProfilePicProcessingCallback() {
+    setState(() {
+      editProfilePicRequestProcessing = !editProfilePicRequestProcessing;
+    });
+  }
+
+  editPostRequestProcessingCallback() {
+    setState(() {
+      editPostRequestProcessing = !editPostRequestProcessing;
+    });
+  }
+
+  deletePostRequestProcessingCallback() {
+    setState(() {
+      deletePostRequestProcessing = !deletePostRequestProcessing;
+    });
   }
 }

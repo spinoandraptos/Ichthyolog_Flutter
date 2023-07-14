@@ -30,6 +30,10 @@ class CommentDisputesState extends State<CommentDisputes> {
   bool expanded = false;
   String updatedContent = '';
   TextEditingController disputeController = TextEditingController();
+  bool addDisputeRequestProcessing = false;
+  bool editDisputeRequestProcessing = false;
+  bool deleteDisputeRequestProcessing = false;
+  bool approveDisputeRequestProcessing = false;
 
   updateCallback(String value) {
     setState(() {
@@ -40,6 +44,30 @@ class CommentDisputesState extends State<CommentDisputes> {
 
   retrieveCallback() {
     return updatedContent;
+  }
+
+  addDisputeRequestProcessingCallback() {
+    setState(() {
+      addDisputeRequestProcessing = !addDisputeRequestProcessing;
+    });
+  }
+
+  editDisputeRequestProcessingCallback() {
+    setState(() {
+      editDisputeRequestProcessing = !editDisputeRequestProcessing;
+    });
+  }
+
+  deleteDisputeRequestProcessingCallback() {
+    setState(() {
+      deleteDisputeRequestProcessing = !deleteDisputeRequestProcessing;
+    });
+  }
+
+  approveDisputeRequestProcessingCallback() {
+    setState(() {
+      approveDisputeRequestProcessing = !approveDisputeRequestProcessing;
+    });
   }
 
   @override
@@ -82,13 +110,20 @@ class CommentDisputesState extends State<CommentDisputes> {
                                 ? ownDispute(
                                     snapshot.data![index],
                                     widget.jwt,
+                                    updateCallback,
                                     widget.updateCallback,
                                     retrieveCallback,
-                                    updateCallback,
+                                    editDisputeRequestProcessingCallback,
+                                    deleteDisputeRequestProcessingCallback,
+                                    approveDisputeRequestProcessingCallback,
+                                    editDisputeRequestProcessing,
+                                    deleteDisputeRequestProcessing,
+                                    approveDisputeRequestProcessing,
                                     context,
                                     widget.currUser,
                                     widget.comment,
-                                    widget.postid)
+                                    widget.postid,
+                                  )
                                 : otherDispute(
                                     snapshot.data![index],
                                     updateCallback,
@@ -96,7 +131,9 @@ class CommentDisputesState extends State<CommentDisputes> {
                                     context,
                                     widget.currUser,
                                     widget.comment,
-                                    widget.postid);
+                                    widget.postid,
+                                    approveDisputeRequestProcessingCallback,
+                                    approveDisputeRequestProcessing);
                           }),
                       !expanded
                           ? const SizedBox.shrink()
@@ -145,27 +182,34 @@ class CommentDisputesState extends State<CommentDisputes> {
                                           )),
                                       ElevatedButton(
                                           onPressed: () {
-                                            httpHelpers
-                                                .addDisputeRequest(
-                                                    widget.comment.commentId,
-                                                    disputeController.text,
-                                                    widget.jwt)
-                                                .then(
-                                              (response) {
-                                                Fluttertoast.showToast(
-                                                  msg: response,
-                                                  toastLength:
-                                                      Toast.LENGTH_SHORT,
-                                                  gravity: ToastGravity.BOTTOM,
-                                                  timeInSecForIosWeb: 1,
-                                                );
-                                                if (response ==
-                                                    'Dispute added successfully!') {
-                                                  setState(() {});
-                                                  disputeController.clear();
-                                                }
-                                              },
-                                            );
+                                            if (addDisputeRequestProcessing) {
+                                              null;
+                                            } else {
+                                              addDisputeRequestProcessingCallback();
+                                              httpHelpers
+                                                  .addDisputeRequest(
+                                                      widget.comment.commentId,
+                                                      disputeController.text,
+                                                      widget.jwt)
+                                                  .then(
+                                                (response) {
+                                                  addDisputeRequestProcessingCallback();
+                                                  Fluttertoast.showToast(
+                                                    msg: response,
+                                                    toastLength:
+                                                        Toast.LENGTH_SHORT,
+                                                    gravity:
+                                                        ToastGravity.BOTTOM,
+                                                    timeInSecForIosWeb: 1,
+                                                  );
+                                                  if (response ==
+                                                      'Dispute added successfully!') {
+                                                    setState(() {});
+                                                    disputeController.clear();
+                                                  }
+                                                },
+                                              );
+                                            }
                                           },
                                           style: ElevatedButton.styleFrom(
                                               padding: const EdgeInsets.all(6),
@@ -202,6 +246,12 @@ Widget ownDispute(
     Function editCallback,
     Function updateCallback,
     Function retrieveCallback,
+    Function editDisputeRequestProcessingCallback,
+    Function deleteDisputeRequestProcessingCallback,
+    Function approveDisputeRequestProcessingCallback,
+    bool editDisputeRequestProcessing,
+    bool deleteDisputeRequestProcessing,
+    bool approveDisputeRequestProcessing,
     BuildContext context,
     User currUser,
     Comment comment,
@@ -283,21 +333,29 @@ Widget ownDispute(
                                             255, 80, 170, 121)),
                                     child: const Text("Confirm"),
                                     onPressed: () {
-                                      httpHelpers
-                                          .editDisputeRequest(dispute.disputeId,
-                                              retrieveCallback(), jwt)
-                                          .then((response) {
-                                        Fluttertoast.showToast(
-                                          msg: response,
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.BOTTOM,
-                                          timeInSecForIosWeb: 1,
-                                        );
-                                        if (response == 'Dispute Edited') {
-                                          updateCallback();
-                                          Navigator.pop(context);
-                                        }
-                                      });
+                                      if (editDisputeRequestProcessing) {
+                                        null;
+                                      } else {
+                                        editDisputeRequestProcessingCallback();
+                                        httpHelpers
+                                            .editDisputeRequest(
+                                                dispute.disputeId,
+                                                retrieveCallback(),
+                                                jwt)
+                                            .then((response) {
+                                          editDisputeRequestProcessingCallback();
+                                          Fluttertoast.showToast(
+                                            msg: response,
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.BOTTOM,
+                                            timeInSecForIosWeb: 1,
+                                          );
+                                          if (response == 'Dispute Edited') {
+                                            updateCallback();
+                                            Navigator.pop(context);
+                                          }
+                                        });
+                                      }
                                     }),
                                 ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -334,25 +392,31 @@ Widget ownDispute(
                                             255, 80, 170, 121)),
                                     child: const Text("Yes"),
                                     onPressed: () {
-                                      httpHelpers
-                                          .deleteDisputeRequest(
-                                              comment.commentId,
-                                              dispute.disputeId,
-                                              jwt)
-                                          .then(
-                                        (response) {
-                                          Fluttertoast.showToast(
-                                            msg: response,
-                                            toastLength: Toast.LENGTH_SHORT,
-                                            gravity: ToastGravity.BOTTOM,
-                                            timeInSecForIosWeb: 1,
-                                          );
-                                          Navigator.pop(context);
-                                          if (response == 'Dispute Deleted') {
-                                            updateCallback();
-                                          }
-                                        },
-                                      );
+                                      if (deleteDisputeRequestProcessing) {
+                                        null;
+                                      } else {
+                                        deleteDisputeRequestProcessingCallback();
+                                        httpHelpers
+                                            .deleteDisputeRequest(
+                                                comment.commentId,
+                                                dispute.disputeId,
+                                                jwt)
+                                            .then(
+                                          (response) {
+                                            deleteDisputeRequestProcessingCallback();
+                                            Fluttertoast.showToast(
+                                              msg: response,
+                                              toastLength: Toast.LENGTH_SHORT,
+                                              gravity: ToastGravity.BOTTOM,
+                                              timeInSecForIosWeb: 1,
+                                            );
+                                            Navigator.pop(context);
+                                            if (response == 'Dispute Deleted') {
+                                              updateCallback();
+                                            }
+                                          },
+                                        );
+                                      }
                                     }),
                                 ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -393,27 +457,34 @@ Widget ownDispute(
                                                     255, 80, 170, 121)),
                                         child: const Text("Yes"),
                                         onPressed: () {
-                                          httpHelpers
-                                              .approveDisputeRequest(
-                                                  comment.commentId,
-                                                  dispute.disputeId,
-                                                  postid,
-                                                  jwt)
-                                              .then(
-                                            (response) {
-                                              Fluttertoast.showToast(
-                                                msg: response,
-                                                toastLength: Toast.LENGTH_SHORT,
-                                                gravity: ToastGravity.BOTTOM,
-                                                timeInSecForIosWeb: 1,
-                                              );
-                                              Navigator.pop(context);
-                                              if (response ==
-                                                  'Dispute approved successfully') {
-                                                updateCallback();
-                                              }
-                                            },
-                                          );
+                                          if (approveDisputeRequestProcessing) {
+                                            null;
+                                          } else {
+                                            approveDisputeRequestProcessingCallback();
+                                            httpHelpers
+                                                .approveDisputeRequest(
+                                                    comment.commentId,
+                                                    dispute.disputeId,
+                                                    postid,
+                                                    jwt)
+                                                .then(
+                                              (response) {
+                                                approveDisputeRequestProcessingCallback();
+                                                Fluttertoast.showToast(
+                                                  msg: response,
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  timeInSecForIosWeb: 1,
+                                                );
+                                                Navigator.pop(context);
+                                                if (response ==
+                                                    'Dispute approved successfully') {
+                                                  updateCallback();
+                                                }
+                                              },
+                                            );
+                                          }
                                         }),
                                     ElevatedButton(
                                         style: ElevatedButton.styleFrom(
@@ -436,8 +507,16 @@ Widget ownDispute(
       ]));
 }
 
-Widget otherDispute(Dispute dispute, Function updateCallback, String jwt,
-    BuildContext context, User currUser, Comment comment, int postid) {
+Widget otherDispute(
+    Dispute dispute,
+    Function updateCallback,
+    String jwt,
+    BuildContext context,
+    User currUser,
+    Comment comment,
+    int postid,
+    Function approveDisputeRequestProcessingCallback,
+    bool approveDisputeRequestProcessing) {
   return ListTile(
       horizontalTitleGap: 0,
       leading: CircleAvatar(
@@ -512,27 +591,33 @@ Widget otherDispute(Dispute dispute, Function updateCallback, String jwt,
                                           255, 80, 170, 121)),
                                   child: const Text("Yes"),
                                   onPressed: () {
-                                    httpHelpers
-                                        .approveDisputeRequest(
-                                            comment.commentId,
-                                            dispute.disputeId,
-                                            postid,
-                                            jwt)
-                                        .then(
-                                      (response) {
-                                        Fluttertoast.showToast(
-                                          msg: response,
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.BOTTOM,
-                                          timeInSecForIosWeb: 1,
-                                        );
-                                        Navigator.pop(context);
-                                        if (response ==
-                                            'Dispute approved successfully') {
-                                          updateCallback();
-                                        }
-                                      },
-                                    );
+                                    if (approveDisputeRequestProcessing) {
+                                      null;
+                                    } else {
+                                      approveDisputeRequestProcessingCallback();
+                                      httpHelpers
+                                          .approveDisputeRequest(
+                                              comment.commentId,
+                                              dispute.disputeId,
+                                              postid,
+                                              jwt)
+                                          .then(
+                                        (response) {
+                                          approveDisputeRequestProcessingCallback();
+                                          Fluttertoast.showToast(
+                                            msg: response,
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.BOTTOM,
+                                            timeInSecForIosWeb: 1,
+                                          );
+                                          Navigator.pop(context);
+                                          if (response ==
+                                              'Dispute approved successfully') {
+                                            updateCallback();
+                                          }
+                                        },
+                                      );
+                                    }
                                   }),
                               ElevatedButton(
                                   style: ElevatedButton.styleFrom(

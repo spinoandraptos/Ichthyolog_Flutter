@@ -25,6 +25,12 @@ class WaitingListPageState extends State<WaitingListPage> {
   String newDescription = '';
   final httpHelpers = HttpHelpers();
   final helpers = Helpers();
+  bool flagPostRequestProcessing = false;
+  bool unflagPostRequestProcessing = false;
+  bool editPostRequestProcessing = false;
+  bool deletePostRequestProcessing = false;
+  bool verifyPostRequestProcessing = false;
+
   @override
   void initState() {
     super.initState();
@@ -39,6 +45,36 @@ class WaitingListPageState extends State<WaitingListPage> {
           decodedJWT = JwtDecoder.decode(token);
         });
       }
+    });
+  }
+
+  flagPostRequestProcessingCallback() {
+    setState(() {
+      flagPostRequestProcessing = !flagPostRequestProcessing;
+    });
+  }
+
+  unflagPostRequestProcessingCallback() {
+    setState(() {
+      unflagPostRequestProcessing = !unflagPostRequestProcessing;
+    });
+  }
+
+  editPostRequestProcessingCallback() {
+    setState(() {
+      editPostRequestProcessing = !editPostRequestProcessing;
+    });
+  }
+
+  deletePostRequestProcessingCallback() {
+    setState(() {
+      deletePostRequestProcessing = !deletePostRequestProcessing;
+    });
+  }
+
+  verifyPostRequestProcessingCallback() {
+    setState(() {
+      verifyPostRequestProcessing = !verifyPostRequestProcessing;
     });
   }
 
@@ -138,6 +174,7 @@ class WaitingListPageState extends State<WaitingListPage> {
           if (snapshot.hasData) {
             return Scaffold(
               appBar: AppBar(
+                centerTitle: true,
                 title: const Text('Pending ID Waiting List'),
                 backgroundColor: const Color.fromARGB(255, 65, 90, 181),
                 actions: [
@@ -152,9 +189,38 @@ class WaitingListPageState extends State<WaitingListPage> {
               body: galleryScreen(context, snapshot.data!),
             );
           } else if (snapshot.hasError) {
-            print(snapshot.error);
-            return const NoticeDialog(
-                content: 'Posts not found! Please try again');
+            if (snapshot.error == 'Posts Not Found') {
+              return Scaffold(
+                appBar: AppBar(
+                  centerTitle: true,
+                  title: const Text('Pending ID Waiting List'),
+                  backgroundColor: const Color.fromARGB(255, 65, 90, 181),
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.logout),
+                      onPressed: () {
+                        helpers.logout(jwt, context);
+                      },
+                    ),
+                  ],
+                ),
+                body: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(),
+                      const Text(
+                        'Waiting list is empty!',
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 70, 88, 152),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 20),
+                      ),
+                    ]),
+              );
+            } else {
+              return NoticeDialog(content: 'Error: ${snapshot.error}');
+            }
           } else {
             return const LoadingScreen();
           }
@@ -243,43 +309,57 @@ class WaitingListPageState extends State<WaitingListPage> {
   Widget flagPostButton(Post post) {
     return ElevatedButton(
       onPressed: () {
-        post.flagged
-            ? httpHelpers.unFlagPostRequest(post.postid, jwt).then((response) {
-                if (response == 'Post Unflagged') {
-                  setState(() {});
-                  Fluttertoast.showToast(
-                    msg: 'Post Unflagged',
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    timeInSecForIosWeb: 1,
-                  );
-                } else {
-                  Fluttertoast.showToast(
-                    msg: 'Post Unflagging Failed',
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    timeInSecForIosWeb: 1,
-                  );
-                }
-              })
-            : httpHelpers.flagPostRequest(post.postid, jwt).then((response) {
-                if (response == 'Post Flagged') {
-                  setState(() {});
-                  Fluttertoast.showToast(
-                    msg: 'Post Flagged',
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    timeInSecForIosWeb: 1,
-                  );
-                } else {
-                  Fluttertoast.showToast(
-                    msg: 'Post Flagging Failed',
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    timeInSecForIosWeb: 1,
-                  );
-                }
-              });
+        if (post.flagged) {
+          if (unflagPostRequestProcessing) {
+            null;
+          } else {
+            unflagPostRequestProcessingCallback();
+            httpHelpers.unFlagPostRequest(post.postid, jwt).then((response) {
+              unflagPostRequestProcessingCallback();
+              if (response == 'Post Unflagged') {
+                setState(() {});
+                Fluttertoast.showToast(
+                  msg: 'Post Unflagged',
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIosWeb: 1,
+                );
+              } else {
+                Fluttertoast.showToast(
+                  msg: 'Post Unflagging Failed',
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIosWeb: 1,
+                );
+              }
+            });
+          }
+        } else {
+          if (flagPostRequestProcessing) {
+            null;
+          } else {
+            flagPostRequestProcessingCallback();
+            httpHelpers.flagPostRequest(post.postid, jwt).then((response) {
+              flagPostRequestProcessingCallback();
+              if (response == 'Post Flagged') {
+                setState(() {});
+                Fluttertoast.showToast(
+                  msg: 'Post Flagged',
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIosWeb: 1,
+                );
+              } else {
+                Fluttertoast.showToast(
+                  msg: 'Post Flagging Failed',
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIosWeb: 1,
+                );
+              }
+            });
+          }
+        }
       },
       style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.only(left: 5, top: 3, bottom: 3, right: 5),
@@ -546,35 +626,41 @@ class WaitingListPageState extends State<WaitingListPage> {
                                 style: TextStyle(fontSize: 11),
                               ),
                               onPressed: () {
-                                httpHelpers
-                                    .editPostInfoRequest(
-                                        post.postid,
-                                        jwt,
-                                        newTitle,
-                                        newDescription,
-                                        newLocation,
-                                        newClass,
-                                        newOrder,
-                                        newFamily,
-                                        newGenus,
-                                        newSpecies)
-                                    .then((response) {
-                                  Fluttertoast.showToast(
-                                    msg: response,
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                  if (response == 'Post Edited') {
-                                    Navigator.pop(context);
-                                    setState(() {
-                                      newClass = '';
-                                      newOrder = '';
-                                      newFamily = '';
-                                      newGenus = '';
-                                    });
-                                  }
-                                });
+                                if (editPostRequestProcessing) {
+                                  null;
+                                } else {
+                                  editPostRequestProcessingCallback();
+                                  httpHelpers
+                                      .editPostInfoRequest(
+                                          post.postid,
+                                          jwt,
+                                          newTitle,
+                                          newDescription,
+                                          newLocation,
+                                          newClass,
+                                          newOrder,
+                                          newFamily,
+                                          newGenus,
+                                          newSpecies)
+                                      .then((response) {
+                                    editPostRequestProcessingCallback();
+                                    Fluttertoast.showToast(
+                                      msg: response,
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      timeInSecForIosWeb: 1,
+                                    );
+                                    if (response == 'Post Edited') {
+                                      Navigator.pop(context);
+                                      setState(() {
+                                        newClass = '';
+                                        newOrder = '';
+                                        newFamily = '';
+                                        newGenus = '';
+                                      });
+                                    }
+                                  });
+                                }
                               }),
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
@@ -617,24 +703,30 @@ class WaitingListPageState extends State<WaitingListPage> {
   Widget verifyPostButton(Post post) {
     return ElevatedButton(
       onPressed: () {
-        httpHelpers.verifyPostRequest(post.postid, jwt).then((response) {
-          if (response == 'Post Verified') {
-            setState(() {});
-            Fluttertoast.showToast(
-              msg: 'Post Verified',
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-            );
-          } else {
-            Fluttertoast.showToast(
-              msg: 'Post Verification Failed',
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-            );
-          }
-        });
+        if (verifyPostRequestProcessing) {
+          null;
+        } else {
+          verifyPostRequestProcessingCallback();
+          httpHelpers.verifyPostRequest(post.postid, jwt).then((response) {
+            verifyPostRequestProcessingCallback();
+            if (response == 'Post Verified') {
+              setState(() {});
+              Fluttertoast.showToast(
+                msg: 'Post Verified',
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIosWeb: 1,
+              );
+            } else {
+              Fluttertoast.showToast(
+                msg: 'Post Verification Failed',
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIosWeb: 1,
+              );
+            }
+          });
+        }
       },
       style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.only(left: 5, top: 3, bottom: 3, right: 5),
@@ -662,18 +754,26 @@ class WaitingListPageState extends State<WaitingListPage> {
                                 const Color.fromARGB(255, 80, 170, 121)),
                         child: const Text("Yes"),
                         onPressed: () {
-                          httpHelpers.deletePostRequest(post.postid, jwt).then(
-                            (response) {
-                              Navigator.pop(context);
-                              Fluttertoast.showToast(
-                                msg: response,
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                              );
-                              setState(() {});
-                            },
-                          );
+                          if (deletePostRequestProcessing) {
+                            null;
+                          } else {
+                            deletePostRequestProcessingCallback();
+                            httpHelpers
+                                .deletePostRequest(post.postid, jwt)
+                                .then(
+                              (response) {
+                                deletePostRequestProcessingCallback();
+                                Navigator.pop(context);
+                                Fluttertoast.showToast(
+                                  msg: response,
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                );
+                                setState(() {});
+                              },
+                            );
+                          }
                         }),
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(

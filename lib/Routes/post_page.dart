@@ -206,17 +206,19 @@ class PostPageState extends State<PostPage> {
                               } else if (snapshot.hasData &&
                                   snapshot.data!.length == 1) {
                                 return PostPageSingleComment(
-                                    comments: snapshot.data!,
-                                    jwt: jwt,
-                                    decodedJWT: decodedJWT,
-                                    postid: widget.postid,
-                                    updateCallBack: changeCommentCallback,
-                                    currUser: widget.currUser);
+                                  comments: snapshot.data!,
+                                  jwt: jwt,
+                                  decodedJWT: decodedJWT,
+                                  postid: widget.postid,
+                                  updateCallBack: changeCommentCallback,
+                                  currUser: widget.currUser,
+                                );
                               } else {
                                 return PostPageNoComment(
-                                    jwt: jwt,
-                                    postid: widget.postid,
-                                    addCallBack: changeCommentCallback);
+                                  jwt: jwt,
+                                  postid: widget.postid,
+                                  addCallBack: changeCommentCallback,
+                                );
                               }
                             },
                           )
