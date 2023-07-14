@@ -35,7 +35,7 @@ class CommentDisputesState extends State<CommentDisputes> {
   bool deleteDisputeRequestProcessing = false;
   bool approveDisputeRequestProcessing = false;
 
-  updateCallback(String value) {
+  updateContentCallback(String value) {
     setState(() {
       updatedContent = value;
     });
@@ -110,7 +110,7 @@ class CommentDisputesState extends State<CommentDisputes> {
                                 ? ownDispute(
                                     snapshot.data![index],
                                     widget.jwt,
-                                    updateCallback,
+                                    updateContentCallback,
                                     widget.updateCallback,
                                     retrieveCallback,
                                     editDisputeRequestProcessingCallback,
@@ -126,7 +126,7 @@ class CommentDisputesState extends State<CommentDisputes> {
                                   )
                                 : otherDispute(
                                     snapshot.data![index],
-                                    updateCallback,
+                                    widget.updateCallback,
                                     widget.jwt,
                                     context,
                                     widget.currUser,
@@ -138,12 +138,15 @@ class CommentDisputesState extends State<CommentDisputes> {
                       !expanded
                           ? const SizedBox.shrink()
                           : widget.comment.idReplaced
-                              ? const Text(
-                                  'A dispute has been accepted, this thread has been locked',
-                                  style: TextStyle(
-                                      color: Color.fromARGB(255, 51, 64, 113),
-                                      fontSize: 12),
-                                )
+                              ? const Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 18, top: 6, bottom: 8),
+                                  child: Text(
+                                    'A dispute is accepted, this thread has been locked',
+                                    style: TextStyle(
+                                        color: Color.fromARGB(255, 51, 64, 113),
+                                        fontSize: 12),
+                                  ))
                               : widget.currUser.expert
                                   ? Row(children: [
                                       Container(
@@ -204,7 +207,7 @@ class CommentDisputesState extends State<CommentDisputes> {
                                                   );
                                                   if (response ==
                                                       'Dispute added successfully!') {
-                                                    setState(() {});
+                                                    widget.updateCallback();
                                                     disputeController.clear();
                                                   }
                                                 },
@@ -300,176 +303,53 @@ Widget ownDispute(
                   ))
             ],
           )),
-      subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Container(
-            padding: const EdgeInsets.only(top: 4, bottom: 4),
-            child: Row(mainAxisSize: MainAxisSize.min, children: [
-              TextButton(
-                  style: TextButton.styleFrom(
-                      padding: const EdgeInsets.all(3),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                              title: const Text("Edit Dispute"),
-                              content: TextFormField(
-                                initialValue: dispute.content,
-                                minLines: 1,
-                                maxLines: 10,
-                                decoration: const InputDecoration(
-                                  hintText: "Edit Dispute",
-                                ),
-                                onChanged: (value) {
-                                  editCallback(value);
-                                },
-                              ),
-                              actions: [
-                                ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromARGB(
-                                            255, 80, 170, 121)),
-                                    child: const Text("Confirm"),
-                                    onPressed: () {
-                                      if (editDisputeRequestProcessing) {
-                                        null;
-                                      } else {
-                                        editDisputeRequestProcessingCallback();
-                                        httpHelpers
-                                            .editDisputeRequest(
-                                                dispute.disputeId,
-                                                retrieveCallback(),
-                                                jwt)
-                                            .then((response) {
-                                          editDisputeRequestProcessingCallback();
-                                          Fluttertoast.showToast(
-                                            msg: response,
-                                            toastLength: Toast.LENGTH_SHORT,
-                                            gravity: ToastGravity.BOTTOM,
-                                            timeInSecForIosWeb: 1,
-                                          );
-                                          if (response == 'Dispute Edited') {
-                                            updateCallback();
-                                            Navigator.pop(context);
-                                          }
-                                        });
-                                      }
-                                    }),
-                                ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromARGB(
-                                            255, 170, 80, 80)),
-                                    child: const Text("Cancel"),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    })
-                              ]);
-                        });
-                  },
-                  child: const Text('Edit',
-                      style: TextStyle(
-                          fontSize: 10,
-                          color: Color.fromARGB(255, 68, 95, 143)))),
-              TextButton(
-                  style: TextButton.styleFrom(
-                      padding: const EdgeInsets.all(3),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                              title: const Text("Warning"),
-                              content: const Text(
-                                  'Are you sure? This action is irreversible!'),
-                              actions: [
-                                ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromARGB(
-                                            255, 80, 170, 121)),
-                                    child: const Text("Yes"),
-                                    onPressed: () {
-                                      if (deleteDisputeRequestProcessing) {
-                                        null;
-                                      } else {
-                                        deleteDisputeRequestProcessingCallback();
-                                        httpHelpers
-                                            .deleteDisputeRequest(
-                                                comment.commentId,
-                                                dispute.disputeId,
-                                                jwt)
-                                            .then(
-                                          (response) {
-                                            deleteDisputeRequestProcessingCallback();
-                                            Fluttertoast.showToast(
-                                              msg: response,
-                                              toastLength: Toast.LENGTH_SHORT,
-                                              gravity: ToastGravity.BOTTOM,
-                                              timeInSecForIosWeb: 1,
-                                            );
-                                            Navigator.pop(context);
-                                            if (response == 'Dispute Deleted') {
-                                              updateCallback();
-                                            }
-                                          },
-                                        );
-                                      }
-                                    }),
-                                ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromARGB(
-                                            255, 170, 80, 80)),
-                                    child: const Text("Cancel"),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    })
-                              ]);
-                        });
-                  },
-                  child: const Text('Delete',
-                      style: TextStyle(
-                          fontSize: 10,
-                          color: Color.fromARGB(255, 68, 95, 143)))),
-              ((currUser.expert && currUser.userid != dispute.authorId) ||
-                          currUser.userid == comment.authorId) &&
-                      comment.disputed
-                  ? TextButton(
-                      style: TextButton.styleFrom(
-                          padding: const EdgeInsets.all(3),
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                  title: const Text("Warning"),
-                                  content: const Text(
-                                      'Are you sure? This action is irreversible!'),
-                                  actions: [
-                                    ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                const Color.fromARGB(
-                                                    255, 80, 170, 121)),
-                                        child: const Text("Yes"),
-                                        onPressed: () {
-                                          if (approveDisputeRequestProcessing) {
-                                            null;
-                                          } else {
-                                            approveDisputeRequestProcessingCallback();
-                                            httpHelpers
-                                                .approveDisputeRequest(
-                                                    comment.commentId,
-                                                    dispute.disputeId,
-                                                    postid,
-                                                    jwt)
-                                                .then(
-                                              (response) {
-                                                approveDisputeRequestProcessingCallback();
+      subtitle: comment.idReplaced
+          ? null
+          : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Container(
+                  padding: const EdgeInsets.only(top: 4, bottom: 4),
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    TextButton(
+                        style: TextButton.styleFrom(
+                            padding: const EdgeInsets.all(3),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                    title: const Text("Edit Dispute"),
+                                    content: TextFormField(
+                                      initialValue: dispute.content,
+                                      minLines: 1,
+                                      maxLines: 10,
+                                      decoration: const InputDecoration(
+                                        hintText: "Edit Dispute",
+                                      ),
+                                      onChanged: (value) {
+                                        editCallback(value);
+                                      },
+                                    ),
+                                    actions: [
+                                      ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  const Color.fromARGB(
+                                                      255, 80, 170, 121)),
+                                          child: const Text("Confirm"),
+                                          onPressed: () {
+                                            if (editDisputeRequestProcessing) {
+                                              null;
+                                            } else {
+                                              editDisputeRequestProcessingCallback();
+                                              httpHelpers
+                                                  .editDisputeRequest(
+                                                      dispute.disputeId,
+                                                      retrieveCallback(),
+                                                      jwt)
+                                                  .then((response) {
+                                                editDisputeRequestProcessingCallback();
                                                 Fluttertoast.showToast(
                                                   msg: response,
                                                   toastLength:
@@ -477,34 +357,171 @@ Widget ownDispute(
                                                   gravity: ToastGravity.BOTTOM,
                                                   timeInSecForIosWeb: 1,
                                                 );
-                                                Navigator.pop(context);
                                                 if (response ==
-                                                    'Dispute approved successfully') {
-                                                  updateCallback();
+                                                    'Dispute Edited') {
+                                                  Navigator.pop(context);
+                                                  updateCallback('Refreshed');
                                                 }
-                                              },
-                                            );
-                                          }
-                                        }),
-                                    ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                const Color.fromARGB(
-                                                    255, 170, 80, 80)),
-                                        child: const Text("Cancel"),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        })
-                                  ]);
-                            });
-                      },
-                      child: const Text('Accept Dispute',
-                          style: TextStyle(
-                              fontSize: 10,
-                              color: Color.fromARGB(255, 68, 95, 143))))
-                  : const SizedBox.shrink()
-            ]))
-      ]));
+                                              });
+                                            }
+                                          }),
+                                      ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  const Color.fromARGB(
+                                                      255, 170, 80, 80)),
+                                          child: const Text("Cancel"),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          })
+                                    ]);
+                              });
+                        },
+                        child: const Text('Edit',
+                            style: TextStyle(
+                                fontSize: 10,
+                                color: Color.fromARGB(255, 68, 95, 143)))),
+                    TextButton(
+                        style: TextButton.styleFrom(
+                            padding: const EdgeInsets.all(3),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                    title: const Text("Warning"),
+                                    content: const Text(
+                                        'Are you sure? This action is irreversible!'),
+                                    actions: [
+                                      ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  const Color.fromARGB(
+                                                      255, 80, 170, 121)),
+                                          child: const Text("Yes"),
+                                          onPressed: () {
+                                            if (deleteDisputeRequestProcessing) {
+                                              null;
+                                            } else {
+                                              deleteDisputeRequestProcessingCallback();
+                                              httpHelpers
+                                                  .deleteDisputeRequest(
+                                                      comment.commentId,
+                                                      dispute.disputeId,
+                                                      jwt)
+                                                  .then(
+                                                (response) {
+                                                  deleteDisputeRequestProcessingCallback();
+                                                  Fluttertoast.showToast(
+                                                    msg: response,
+                                                    toastLength:
+                                                        Toast.LENGTH_SHORT,
+                                                    gravity:
+                                                        ToastGravity.BOTTOM,
+                                                    timeInSecForIosWeb: 1,
+                                                  );
+                                                  Navigator.pop(context);
+                                                  if (response ==
+                                                      'Dispute Deleted') {
+                                                    updateCallback('Refreshed');
+                                                  }
+                                                },
+                                              );
+                                            }
+                                          }),
+                                      ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  const Color.fromARGB(
+                                                      255, 170, 80, 80)),
+                                          child: const Text("Cancel"),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          })
+                                    ]);
+                              });
+                        },
+                        child: const Text('Delete',
+                            style: TextStyle(
+                                fontSize: 10,
+                                color: Color.fromARGB(255, 68, 95, 143)))),
+                    ((currUser.expert && currUser.userid != dispute.authorId) ||
+                                currUser.userid == comment.authorId) &&
+                            comment.disputed
+                        ? TextButton(
+                            style: TextButton.styleFrom(
+                                padding: const EdgeInsets.all(3),
+                                minimumSize: Size.zero,
+                                tapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap),
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                        title: const Text("Warning"),
+                                        content: const Text(
+                                            'Are you sure? This action is irreversible!'),
+                                        actions: [
+                                          ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      const Color.fromARGB(
+                                                          255, 80, 170, 121)),
+                                              child: const Text("Yes"),
+                                              onPressed: () {
+                                                if (approveDisputeRequestProcessing) {
+                                                  null;
+                                                } else {
+                                                  approveDisputeRequestProcessingCallback();
+                                                  httpHelpers
+                                                      .approveDisputeRequest(
+                                                          comment.commentId,
+                                                          dispute.disputeId,
+                                                          postid,
+                                                          jwt)
+                                                      .then(
+                                                    (response) {
+                                                      approveDisputeRequestProcessingCallback();
+                                                      Fluttertoast.showToast(
+                                                        msg: response,
+                                                        toastLength:
+                                                            Toast.LENGTH_SHORT,
+                                                        gravity:
+                                                            ToastGravity.BOTTOM,
+                                                        timeInSecForIosWeb: 1,
+                                                      );
+                                                      Navigator.pop(context);
+                                                      if (response ==
+                                                          'Dispute approved successfully') {
+                                                        updateCallback(
+                                                            'Refreshed');
+                                                      }
+                                                    },
+                                                  );
+                                                }
+                                              }),
+                                          ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      const Color.fromARGB(
+                                                          255, 170, 80, 80)),
+                                              child: const Text("Cancel"),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              })
+                                        ]);
+                                  });
+                            },
+                            child: const Text('Accept Dispute',
+                                style: TextStyle(
+                                    fontSize: 10,
+                                    color: Color.fromARGB(255, 68, 95, 143))))
+                        : const SizedBox.shrink()
+                  ]))
+            ]));
 }
 
 Widget otherDispute(
@@ -613,7 +630,7 @@ Widget otherDispute(
                                           Navigator.pop(context);
                                           if (response ==
                                               'Dispute approved successfully') {
-                                            updateCallback();
+                                            updateCallback('Refreshed');
                                           }
                                         },
                                       );

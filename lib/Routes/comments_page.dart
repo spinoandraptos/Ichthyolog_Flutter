@@ -13,7 +13,12 @@ import 'comment_disputes.dart';
 class CommentPage extends StatefulWidget {
   final int postid;
   final User currUser;
-  const CommentPage({Key? key, required this.postid, required this.currUser})
+  final Function acceptIdCallback;
+  const CommentPage(
+      {Key? key,
+      required this.postid,
+      required this.currUser,
+      required this.acceptIdCallback})
       : super(key: key);
   @override
   CommentPageState createState() => CommentPageState();
@@ -24,11 +29,13 @@ class CommentPageState extends State<CommentPage> {
   Map<String, dynamic> decodedJWT = {};
   final contentText = TextEditingController();
   bool suggestingID = false;
+  bool textfieldclicked = false;
   final httpHelpers = HttpHelpers();
   final helpers = Helpers();
   List<String> allSpecies = <String>[];
   bool addIdRequestProcessing = false;
   bool addCommentRequestProcessing = false;
+  FocusNode focusNode = FocusNode();
 
   @override
   void initState() {
@@ -48,23 +55,29 @@ class CommentPageState extends State<CommentPage> {
         });
       }
     });
+    focusNode.addListener(onFocusChange);
   }
 
   @override
   void dispose() {
     // Clean up the controller when the widget is removed from the widget tree
     contentText.dispose();
+    focusNode.removeListener(onFocusChange);
+    focusNode.dispose();
     super.dispose();
+  }
+
+  onFocusChange() {
+    setState(() {
+      textfieldclicked = !textfieldclicked;
+    });
+    print(textfieldclicked);
   }
 
   clearCallback() {
     setState(() {
       contentText.clear();
     });
-  }
-
-  updateCallback() {
-    setState(() {});
   }
 
   addIdRequestProcessingCallback() {
@@ -137,7 +150,7 @@ class CommentPageState extends State<CommentPage> {
                                     comment: snapshot.data![index],
                                     postid: widget.postid,
                                     jwt: jwt,
-                                    updateCallback: updateCallback)
+                                    updateCallback: updateCommentCallback)
                                 : const SizedBox.shrink()
                           ]);
                         },
@@ -148,9 +161,14 @@ class CommentPageState extends State<CommentPage> {
                           Padding(
                             padding: const EdgeInsets.only(left: 20, right: 20),
                             child: suggestingID
-                                ? selectableTextForm(contentText,
-                                    'Suggest an ID', allSpecies, clearCallback)
+                                ? selectableTextForm(
+                                    contentText,
+                                    'Suggest an ID',
+                                    allSpecies,
+                                    clearCallback,
+                                    focusNode)
                                 : TextFormField(
+                                    focusNode: focusNode,
                                     controller: contentText,
                                     decoration: InputDecoration(
                                       hintText: 'Reply',
@@ -172,8 +190,11 @@ class CommentPageState extends State<CommentPage> {
                           ),
                           Container(
                               alignment: Alignment.centerRight,
-                              margin: const EdgeInsets.only(
-                                  top: 6, left: 20, right: 20, bottom: 10),
+                              margin: EdgeInsets.only(
+                                  top: 6,
+                                  left: 20,
+                                  right: 20,
+                                  bottom: textfieldclicked ? 80 : 10),
                               child: Wrap(spacing: 10, children: [
                                 ElevatedButton(
                                   onPressed: () {
@@ -282,18 +303,23 @@ class CommentPageState extends State<CommentPage> {
         response == 'Comment Un-upvoted' ||
         response == 'Comment Un-downvoted' ||
         response == 'Comment Edited' ||
-        response == 'ID SUggestion Accepted' ||
-        response == 'ID Suggestion Rejected') {
+        response == 'ID Suggestion Accepted' ||
+        response == 'ID Suggestion Rejected' ||
+        response == 'Refreshed') {
       setState(() {});
+    }
+    if (response == 'ID Suggestion Accepted') {
+      widget.acceptIdCallback(response);
     }
   }
 
   Widget selectableTextForm(TextEditingController controller, String hintText,
-      List<String> options, Function callback) {
+      List<String> options, Function callback, FocusNode focusNode) {
     return TypeAheadFormField(
       hideOnLoading: true,
       hideOnEmpty: true,
       textFieldConfiguration: TextFieldConfiguration(
+          focusNode: focusNode,
           onChanged: (value) => callback(value),
           controller: controller,
           decoration: InputDecoration(

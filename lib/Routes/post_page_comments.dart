@@ -4,6 +4,7 @@ import '../Helpers/http.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'comments_page.dart';
 import 'comments.dart';
+import 'comment_disputes.dart';
 import '../Models/species.dart';
 import '../Models/user.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -60,7 +61,10 @@ class PostPageMultiCommentState extends State<PostPageMultiComment> {
             context,
             MaterialPageRoute(
                 builder: (context) => CommentPage(
-                    postid: widget.postid, currUser: widget.currUser)),
+                      postid: widget.postid,
+                      currUser: widget.currUser,
+                      acceptIdCallback: widget.updateCallBack,
+                    )),
           ).then((value) => widget.updateCallBack('Refreshed'));
         },
         child: Text(
@@ -129,7 +133,6 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
     setState(() {
       textfieldclicked = !textfieldclicked;
     });
-    print(textfieldclicked);
   }
 
   clearCallback() {
@@ -188,6 +191,14 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
                     postid: widget.postid,
                     currUser: widget.currUser,
                   ),
+            widget.comments[widget.comments.length - 1].idSuggestion
+                ? CommentDisputes(
+                    currUser: widget.currUser,
+                    comment: widget.comments[widget.comments.length - 1],
+                    postid: widget.postid,
+                    jwt: widget.jwt,
+                    updateCallback: widget.updateCallBack)
+                : const SizedBox.shrink(),
             Padding(
               padding: const EdgeInsets.only(
                 left: 20,

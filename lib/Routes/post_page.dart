@@ -9,7 +9,12 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 class PostPage extends StatefulWidget {
   final int postid;
   final User currUser;
-  const PostPage({Key? key, required this.postid, required this.currUser})
+  final Function acceptIdCallback;
+  const PostPage(
+      {Key? key,
+      required this.postid,
+      required this.currUser,
+      required this.acceptIdCallback})
       : super(key: key);
   @override
   PostPageState createState() => PostPageState();
@@ -244,8 +249,12 @@ class PostPageState extends State<PostPage> {
         response == 'Comment Un-upvoted' ||
         response == 'Comment Un-downvoted' ||
         response == 'ID suggestion posted successfully!' ||
-        response == 'ID Accepted') {
+        response == 'ID Suggestion Accepted' ||
+        response == 'Refreshed') {
       setState(() {});
+    }
+    if (response == 'ID Suggestion Accepted') {
+      widget.acceptIdCallback();
     }
   }
 }

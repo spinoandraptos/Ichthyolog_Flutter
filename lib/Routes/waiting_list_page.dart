@@ -78,6 +78,11 @@ class WaitingListPageState extends State<WaitingListPage> {
     });
   }
 
+  refreshCallback() {
+    print("POPPPP");
+    setState(() {});
+  }
+
   Widget galleryScreen(BuildContext context, List<Post> posts) {
     return SingleChildScrollView(
         child: SizedBox(
@@ -288,6 +293,7 @@ class WaitingListPageState extends State<WaitingListPage> {
                     builder: (context) => PostPage(
                           postid: post.postid,
                           currUser: widget.currUser,
+                          acceptIdCallback: refreshCallback,
                         )),
               );
             }),

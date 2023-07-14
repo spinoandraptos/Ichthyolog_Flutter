@@ -592,6 +592,7 @@ class GalleryPageState extends State<GalleryPage> {
                                 builder: (context) => PostPage(
                                       postid: post.postid,
                                       currUser: widget.currUser,
+                                      acceptIdCallback: acceptIdCallback,
                                     )),
                           );
                         }),
@@ -614,6 +615,7 @@ class GalleryPageState extends State<GalleryPage> {
                             builder: (context) => PostPage(
                                   postid: post.postid,
                                   currUser: widget.currUser,
+                                  acceptIdCallback: acceptIdCallback,
                                 )),
                       ).then((value) => refreshCallback());
                     })));
@@ -858,5 +860,10 @@ class GalleryPageState extends State<GalleryPage> {
     setState(() {
       deletePostRequestProcessing = !deletePostRequestProcessing;
     });
+  }
+
+  acceptIdCallback() {
+    print("YOOOO");
+    setState(() {});
   }
 }

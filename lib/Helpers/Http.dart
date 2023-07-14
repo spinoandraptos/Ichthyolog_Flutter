@@ -1022,7 +1022,7 @@ class HttpHelpers {
       },
       body: json.encode(<String, dynamic>{'content': content}),
     );
-    print(response.body);
+
     if (response.body == 'Dispute not found') {
       return ('Dispute Not Found');
     } else if (response.body == 'jwt expired') {
@@ -1045,6 +1045,7 @@ class HttpHelpers {
         'Authorisation': jwt
       },
     );
+    print(response.body);
     if (response.statusCode == 200) {
       return ('Dispute Deleted');
     } else if (response.body == 'jwt expired') {
@@ -1057,7 +1058,7 @@ class HttpHelpers {
   Future<String> approveDisputeRequest(
       int commentid, int disputeid, int postid, String jwt) async {
     String url =
-        'https://ichthyolog-nodejs.onrender.com/$commentid/disputes/:$disputeid/approve';
+        'https://ichthyolog-nodejs.onrender.com/$commentid/disputes/$disputeid/approve';
     var response = await http.put(
       Uri.parse(url),
       headers: <String, String>{
@@ -1066,6 +1067,7 @@ class HttpHelpers {
       },
       body: json.encode(<String, dynamic>{'postid': postid}),
     );
+    print(response.body);
     if (response.body == 'Dispute not found' ||
         response.body == 'ID suggestion not found' ||
         response.body == 'Post not found') {

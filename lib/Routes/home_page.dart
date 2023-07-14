@@ -1277,6 +1277,7 @@ class HomePageState extends State<HomePage> {
                           builder: (context) => PostPage(
                                 postid: post.postid,
                                 currUser: user,
+                                acceptIdCallback: refreshCallback,
                               )),
                     );
                   }),

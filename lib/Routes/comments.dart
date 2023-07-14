@@ -177,7 +177,7 @@ class OwnCommentState extends State<OwnComment> {
                                             : widget.comment.suggestionApproved
                                                 ? widget.comment.idReplaced
                                                     ? const Color.fromARGB(
-                                                        255, 252, 247, 255)
+                                                        255, 249, 240, 254)
                                                     : const Color.fromARGB(
                                                         255, 231, 250, 237)
                                                 : const Color.fromARGB(
@@ -215,7 +215,8 @@ class OwnCommentState extends State<OwnComment> {
                                   widget.comment.disputed
                               ? const SizedBox.shrink()
                               : widget.comment.suggestionApproved
-                                  ? widget.currUser.expert
+                                  ? widget.currUser.expert &&
+                                          !widget.comment.idReplaced
                                       ? TextButton(
                                           style: TextButton.styleFrom(
                                               padding: const EdgeInsets.all(3),
@@ -321,7 +322,7 @@ class OwnCommentState extends State<OwnComment> {
                                                                             );
                                                                             if (response ==
                                                                                 'Dispute added successfully!') {
-                                                                              setState(() {});
+                                                                              widget.updateCallBack('Refreshed');
                                                                               Navigator.pop(context);
                                                                             }
                                                                           },
@@ -601,8 +602,9 @@ class OwnCommentState extends State<OwnComment> {
                                                     widget.comment.idSuggestion
                                                 ? TextButton(
                                                     style: TextButton.styleFrom(
-                                                        padding: const EdgeInsets.all(
-                                                            3),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(3),
                                                         minimumSize: Size.zero,
                                                         tapTargetSize:
                                                             MaterialTapTargetSize
@@ -662,18 +664,16 @@ class OwnCommentState extends State<OwnComment> {
                                                         }
                                                       }
                                                     },
-                                                    child: widget.comment
-                                                            .suggestionApproved
-                                                        ? const Text(
-                                                            'Dispute Approval',
-                                                            style: TextStyle(
-                                                                fontSize: 10,
-                                                                color: Color.fromARGB(
-                                                                    255, 68, 95, 143)))
-                                                        : const Text('Accept ID',
-                                                            style: TextStyle(
-                                                                fontSize: 10,
-                                                                color: Color.fromARGB(255, 68, 95, 143))))
+                                                    child: const Text(
+                                                        'Accept ID',
+                                                        style: TextStyle(
+                                                            fontSize: 10,
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    68,
+                                                                    95,
+                                                                    143))))
                                                 : const SizedBox.shrink(),
                                             widget.comment.idSuggestion
                                                 ? TextButton(
@@ -1109,7 +1109,7 @@ class OtherCommentState extends State<OtherComment> {
                                           : widget.comment.suggestionApproved
                                               ? widget.comment.idReplaced
                                                   ? const Color.fromARGB(
-                                                      255, 252, 247, 255)
+                                                      255, 249, 240, 254)
                                                   : const Color.fromARGB(
                                                       255, 231, 250, 237)
                                               : const Color.fromARGB(
@@ -1146,7 +1146,8 @@ class OtherCommentState extends State<OtherComment> {
                                 widget.comment.disputed
                             ? const SizedBox.shrink()
                             : widget.comment.suggestionApproved
-                                ? widget.currUser.expert
+                                ? widget.currUser.expert &&
+                                        !widget.comment.idReplaced
                                     ? TextButton(
                                         style: TextButton.styleFrom(
                                             padding: const EdgeInsets.all(3),
@@ -1251,7 +1252,7 @@ class OtherCommentState extends State<OtherComment> {
                                                                           );
                                                                           if (response ==
                                                                               'Dispute added successfully!') {
-                                                                            setState(() {});
+                                                                            widget.updateCallBack('Refreshed');
                                                                             Navigator.pop(context);
                                                                           }
                                                                         },
