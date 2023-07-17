@@ -12,6 +12,7 @@ import 'stepper.dart';
 import 'home_page.dart';
 import 'camera_page.dart';
 import 'statistics_page.dart';
+import 'expert_application_page.dart';
 import 'waiting_list_page.dart';
 import '../Models/species.dart';
 
@@ -86,6 +87,8 @@ class GalleryPageState extends State<GalleryPage> {
                               cameraPageButton(refreshCallback),
                               //Visit statistics page to access sighting data
                               statsPageButton(refreshCallback),
+                              //Visit expert application page to review/submit applications
+                              expertApplicationPageButton(refreshCallback),
                               //Visit waiting list page to verify/flag posts
                               waitingListPageButton(refreshCallback)
                             ],
@@ -99,6 +102,8 @@ class GalleryPageState extends State<GalleryPage> {
                               cameraPageButton(refreshCallback),
                               //Visit statistics page to access sighting data
                               statsPageButton(refreshCallback),
+                              //Visit expert application page to review/submit applications
+                              expertApplicationPageButton(refreshCallback),
                             ],
                           ),
               ),
@@ -157,6 +162,22 @@ class GalleryPageState extends State<GalleryPage> {
           context,
           MaterialPageRoute(builder: (context) => const StatisticsPage()),
         ).then((value) => refreshCallback());
+      },
+    );
+  }
+
+  Widget expertApplicationPageButton(Function refreshCallback) {
+    return IconButton(
+      icon:
+          const Icon(Icons.how_to_reg, color: Color.fromARGB(255, 52, 66, 117)),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  ExpertApplicationPage(currUser: widget.currUser)),
+        ).then((value) => refreshCallback());
+        ;
       },
     );
   }
@@ -592,7 +613,7 @@ class GalleryPageState extends State<GalleryPage> {
                                 builder: (context) => PostPage(
                                       postid: post.postid,
                                       currUser: widget.currUser,
-                                      acceptIdCallback: acceptIdCallback,
+                                      acceptIdCallback: changeIdCallback,
                                     )),
                           );
                         }),
@@ -615,7 +636,7 @@ class GalleryPageState extends State<GalleryPage> {
                             builder: (context) => PostPage(
                                   postid: post.postid,
                                   currUser: widget.currUser,
-                                  acceptIdCallback: acceptIdCallback,
+                                  acceptIdCallback: changeIdCallback,
                                 )),
                       ).then((value) => refreshCallback());
                     })));
@@ -862,8 +883,7 @@ class GalleryPageState extends State<GalleryPage> {
     });
   }
 
-  acceptIdCallback() {
-    print("YOOOO");
+  changeIdCallback() {
     setState(() {});
   }
 }

@@ -16,6 +16,7 @@ class Comment {
   final bool suggestionRejected;
   final bool idReplaced;
   final bool disputed;
+  final String? idRejectionReason;
 
   Comment(
       {required this.commentId,
@@ -32,7 +33,8 @@ class Comment {
       required this.suggestionApproved,
       required this.suggestionRejected,
       required this.idReplaced,
-      required this.disputed});
+      required this.disputed,
+      required this.idRejectionReason});
 
   factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
@@ -54,6 +56,7 @@ class Comment {
         suggestionApproved: json['suggestionapproved'],
         suggestionRejected: json['suggestionrejected'],
         idReplaced: json['idreplaced'],
-        disputed: json['disputed']);
+        disputed: json['disputed'],
+        idRejectionReason: json['idrejectionreason']);
   }
 }

@@ -308,7 +308,8 @@ class CommentPageState extends State<CommentPage> {
         response == 'Refreshed') {
       setState(() {});
     }
-    if (response == 'ID Suggestion Accepted') {
+    if (response == 'ID Suggestion Accepted' ||
+        response == 'ID Suggestion Rejected') {
       widget.acceptIdCallback(response);
     }
   }
