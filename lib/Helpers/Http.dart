@@ -1162,7 +1162,6 @@ class HttpHelpers {
         'credentials': credentials,
       }),
     );
-    print(response.body);
     if (response.statusCode == 201) {
       return ('Application added successfully!');
     } else if (response.body == 'jwt expired') {
@@ -1203,6 +1202,7 @@ class HttpHelpers {
         body: json.encode(<String, dynamic>{
           'rejectionreason': rejectionReason,
         }));
+    print(response.body);
     if (response.statusCode == 200) {
       return ('Application rejected successfully!');
     } else if (response.body == 'Application not found') {

@@ -93,26 +93,30 @@ class ExpertApplicationPageState extends State<ExpertApplicationPage> {
                                 ? Column(
                                     children: [
                                       ExpertApplication(
-                                        request: snapshot.data![index],
-                                        currUser: widget.currUser,
-                                        jwt: jwt,
-                                      ),
+                                          request: snapshot.data![index],
+                                          currUser: widget.currUser,
+                                          jwt: jwt,
+                                          refreshCallback: refreshCallback),
                                       Padding(
                                           padding: const EdgeInsets.only(
-                                              left: 18, top: 6, bottom: 8),
-                                          child: Text(
-                                              snapshot
-                                                  .data![index].rejectionReason,
-                                              style: const TextStyle(
-                                                  color: Color.fromARGB(
-                                                      255, 51, 64, 113),
-                                                  fontSize: 12)))
+                                              left: 76, bottom: 15),
+                                          child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                  'Reason for rejection: ${snapshot.data![index].rejectionReason}',
+                                                  style: const TextStyle(
+                                                      color: Color.fromARGB(
+                                                          255, 152, 72, 85),
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w500))))
                                     ],
                                   )
                                 : ExpertApplication(
                                     request: snapshot.data![index],
                                     currUser: widget.currUser,
                                     jwt: jwt,
+                                    refreshCallback: refreshCallback,
                                   );
                           })
                     ])));
@@ -491,25 +495,28 @@ class ExpertApplication extends StatefulWidget {
   final ExpertApplicationRequest request;
   final User currUser;
   final String jwt;
+  final Function refreshCallback;
 
-  const ExpertApplication({
-    Key? key,
-    required this.request,
-    required this.currUser,
-    required this.jwt,
-  }) : super(key: key);
+  const ExpertApplication(
+      {Key? key,
+      required this.request,
+      required this.currUser,
+      required this.jwt,
+      required this.refreshCallback})
+      : super(key: key);
   @override
   ExpertApplicationState createState() => ExpertApplicationState();
 }
 
 class ExpertApplicationState extends State<ExpertApplication> {
   bool expanded = false;
+  @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.only(
-            left: 5,
-            right: 5,
-            bottom: widget.request.approved == 'false' ? 10 : 0),
+        padding: const EdgeInsets.only(
+          left: 5,
+          right: 5,
+        ),
         child: ListTile(
           leading: CircleAvatar(
             radius: 12,
@@ -540,13 +547,15 @@ class ExpertApplicationState extends State<ExpertApplication> {
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: Color.fromARGB(255, 51, 64, 113))),
-                  const Text('Credentials:',
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: Color.fromARGB(255, 51, 64, 113))),
+                  const Padding(
+                      padding: EdgeInsets.only(top: 5, bottom: 2),
+                      child: Text('Credentials:',
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Color.fromARGB(255, 51, 64, 113)))),
                   Text(widget.request.credentials,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                       )),
                   TextButton(
@@ -573,22 +582,33 @@ class ExpertApplicationState extends State<ExpertApplication> {
                                 style: const TextStyle(
                                   fontSize: 12,
                                 )),
-                            Text('Gender: ${widget.request.gender}',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                )),
-                            Text('Occupation: ${widget.request.occupation}',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                )),
-                            Text('Email: ${widget.request.email}',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                )),
-                            Text('Contact: ${widget.request.contact}',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                )),
+                            Padding(
+                                padding: const EdgeInsets.only(top: 3),
+                                child: Text('Gender: ${widget.request.gender}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ))),
+                            Padding(
+                                padding: const EdgeInsets.only(top: 3),
+                                child: Text(
+                                    'Occupation: ${widget.request.occupation}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ))),
+                            Padding(
+                                padding: const EdgeInsets.only(top: 3),
+                                child: Text('Email: ${widget.request.email}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ))),
+                            Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 3, bottom: 10),
+                                child:
+                                    Text('Contact: ${widget.request.contact}',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                        ))),
                           ],
                         )
                       : const SizedBox.shrink()
@@ -620,8 +640,8 @@ class ExpertApplicationState extends State<ExpertApplication> {
                                                     onPressed: () {
                                                       httpHelpers
                                                           .approveExpertApplicationRequest(
-                                                              widget.currUser
-                                                                  .userid,
+                                                              widget.request
+                                                                  .authorId,
                                                               widget.request
                                                                   .applicationId,
                                                               widget.jwt)
@@ -640,7 +660,8 @@ class ExpertApplicationState extends State<ExpertApplication> {
                                                           );
                                                           if (response ==
                                                               'Application approved successfully!') {
-                                                            setState(() {});
+                                                            widget
+                                                                .refreshCallback();
                                                             Navigator.pop(
                                                                 context);
                                                           }
@@ -766,7 +787,8 @@ class ExpertApplicationState extends State<ExpertApplication> {
                                                         );
                                                         if (response ==
                                                             'Application rejected successfully!') {
-                                                          setState(() {});
+                                                          widget
+                                                              .refreshCallback();
                                                           Navigator.pop(
                                                               context);
                                                         }
@@ -857,7 +879,8 @@ class ExpertApplicationState extends State<ExpertApplication> {
                                                       );
                                                       if (response ==
                                                           'Application deleted successfully!') {
-                                                        setState(() {});
+                                                        widget
+                                                            .refreshCallback();
                                                         Navigator.pop(context);
                                                       }
                                                     },
