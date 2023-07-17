@@ -1328,4 +1328,88 @@ class HttpHelpers {
       throw Exception('Class not found! Error ${response.statusCode}');
     }
   }
+
+  Future<List<List<String>>> speciesCountByDay(String species) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/statistics/hour/$species';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<List<String>> dataList = [];
+      var responseData = json.decode(response.body);
+      for (var everydata in responseData) {
+        List<String> data = [];
+        data.add(everydata['hour_interval'].toString());
+        data.add(everydata['sightings_count'].toString());
+        dataList.add(data);
+      }
+      return dataList;
+    } else {
+      return Future.error('Error ${response.statusCode}');
+    }
+  }
+
+  Future<List<List<String>>> speciesCountByWeek(String species) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/statistics/week/$species';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<List<String>> dataList = [];
+      var responseData = json.decode(response.body);
+      for (var everydata in responseData) {
+        List<String> data = [];
+        data.add(everydata['day'].toString());
+        data.add(everydata['sightings_count'].toString());
+        dataList.add(data);
+      }
+      return dataList;
+    } else {
+      return Future.error('Error ${response.statusCode}');
+    }
+  }
+
+  Future<List<List<String>>> speciesCountByMonth(String species) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/statistics/month/$species';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<List<String>> dataList = [];
+      var responseData = json.decode(response.body);
+      for (var everydata in responseData) {
+        List<String> data = [];
+        data.add(everydata['day'].toString());
+        data.add(everydata['sightings_count'].toString());
+        dataList.add(data);
+      }
+      return dataList;
+    } else {
+      return Future.error('Error ${response.statusCode}');
+    }
+  }
+
+  Future<List<List<List<String>>>> speciesCountStats(String species) async {
+    List<List<List<String>>> res;
+    List<List<String>> data1 = await speciesCountByDay(species);
+    List<List<String>> data2 = await speciesCountByWeek(species);
+    List<List<String>> data3 = await speciesCountByMonth(species);
+    res = [data1, data2, data3];
+    return res;
+  }
 }
