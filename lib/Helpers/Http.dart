@@ -1505,7 +1505,7 @@ class HttpHelpers {
       }
       return dataList;
     } else {
-      return Future.error('Error ${response.statusCode}');
+      return Future.error('Error ${response.statusCode} Day');
     }
   }
 
@@ -1530,7 +1530,7 @@ class HttpHelpers {
       }
       return dataList;
     } else {
-      return Future.error('Error ${response.statusCode}');
+      return Future.error('Error ${response.statusCode} Week');
     }
   }
 
@@ -1555,16 +1555,16 @@ class HttpHelpers {
       }
       return dataList;
     } else {
-      return Future.error('Error ${response.statusCode}');
+      return Future.error('Error ${response.statusCode} Month');
     }
   }
 
   Future<List<List<List<String>>>> speciesCountStats(String species) async {
-    List<List<List<String>>> res;
-    List<List<String>> data1 = await speciesCountByDay(species);
-    List<List<String>> data2 = await speciesCountByWeek(species);
-    List<List<String>> data3 = await speciesCountByMonth(species);
-    res = [data1, data2, data3];
-    return res;
+    Future<List<List<List<String>>>> dataList = Future.wait([
+      speciesCountByDay(species),
+      speciesCountByWeek(species),
+      speciesCountByMonth(species)
+    ]);
+    return dataList;
   }
 }
