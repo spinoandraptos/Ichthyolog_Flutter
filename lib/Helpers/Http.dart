@@ -5,6 +5,7 @@ import '../Models/post.dart';
 import '../Models/user.dart';
 import '../Models/species.dart';
 import '../Models/dispute.dart';
+import '../Models/expert_application_request.dart';
 
 //class which stores the functions responsible for backend communication
 class HttpHelpers {
@@ -87,7 +88,7 @@ class HttpHelpers {
     if (response.body == 'User not found') {
       return Future.error('User Not Found');
     } else if (response.body == 'jwt expired') {
-      return Future.error('Token expired. Please login again!');
+      return Future.error('Session expired. Please login again!');
     } else if (response.statusCode != 200) {
       return Future.error('Error');
     } else {
@@ -167,7 +168,7 @@ class HttpHelpers {
     } else if (responseUsername.body == 'jwt expired' ||
         responseEmail.body == 'jwt expired' ||
         responsePassword.body == 'jwt expired') {
-      return ('Token expired. Please login again!');
+      return ('Session expired. Please login again!');
     } else {
       return ('User Edited');
     }
@@ -190,7 +191,7 @@ class HttpHelpers {
     if (response.body == 'User not found') {
       return ('User Not Found');
     } else if (response.body == 'jwt expired') {
-      return ('Token expired. Please login again!');
+      return ('Session expired. Please login again!');
     } else if (response.statusCode != 200) {
       return ('Error');
     } else {
@@ -279,7 +280,7 @@ class HttpHelpers {
     if (response.body == 'Posts not found') {
       return Future.error('Posts Not Found');
     } else if (response.body == 'jwt expired') {
-      return Future.error('Token expired. Please login again!');
+      return Future.error('Session expired. Please login again!');
     } else if (response.statusCode != 200) {
       return Future.error('Error');
     } else {
@@ -361,7 +362,7 @@ class HttpHelpers {
     if (response.statusCode == 201) {
       return ('Post Uploaded');
     } else if (response.body == 'jwt expired') {
-      return ('Token expired. Please login again!');
+      return ('Session expired. Please login again!');
     } else {
       return ('Post Upload Failed');
     }
@@ -462,7 +463,7 @@ class HttpHelpers {
         responseFamily.body == 'jwt expired' ||
         responseGenus.body == 'jwt expired' ||
         responseSpecies.body == 'jwt expired') {
-      return ('Token expired. Please login again!');
+      return ('Session expired. Please login again!');
     } else if (responseTitle.statusCode != 200) {
       return ('Title Edit Error :(');
     } else if (responseDescription.statusCode != 200) {
@@ -519,7 +520,7 @@ class HttpHelpers {
     if (response.body == 'Comments not found') {
       return Future.error('Comments Not Found');
     } else if (response.body == 'jwt expired') {
-      return Future.error('Token expired. Please login again!');
+      return Future.error('Session expired. Please login again!');
     } else if (response.statusCode != 200) {
       return Future.error('Error');
     } else {
@@ -565,7 +566,7 @@ class HttpHelpers {
     if (response.statusCode == 201) {
       return ('Comment Posted');
     } else if (response.body == 'jwt expired') {
-      return ('Token expired. Please login again!');
+      return ('Session expired. Please login again!');
     } else {
       return ('Comment Post Failed');
     }
@@ -586,7 +587,7 @@ class HttpHelpers {
     if (response.statusCode == 201) {
       return ('ID suggestion posted successfully!');
     } else if (response.body == 'jwt expired') {
-      return ('Token expired. Please login again!');
+      return ('Session expired. Please login again!');
     } else {
       return ('ID suggestion failed to post :(');
     }
@@ -697,7 +698,7 @@ class HttpHelpers {
         responseFamily.body == 'jwt expired' ||
         responseGenus.body == 'jwt expired' ||
         responseSpecies.body == 'jwt expired') {
-      return ('Token expired. Please login again!');
+      return ('Session expired. Please login again!');
     } else if (responseComment.statusCode != 200) {
       return ('SUggestion Edit Error :(');
     } else if (responseClass.statusCode != 200) {
@@ -728,7 +729,7 @@ class HttpHelpers {
     if (response.body == 'Suggestion not found') {
       return ('ID Suggestion Not Found');
     } else if (response.body == 'jwt expired') {
-      return ('Token expired. Please login again!');
+      return ('Session expired. Please login again!');
     } else if (response.statusCode != 200) {
       return ('Error');
     } else {
@@ -1000,12 +1001,11 @@ class HttpHelpers {
       body: json.encode(
           <String, dynamic>{'commentid': commentid, 'content': content}),
     );
-    print(response.body);
-    print(response.statusCode);
+
     if (response.statusCode == 201) {
       return ('Dispute added successfully!');
     } else if (response.body == 'jwt expired') {
-      return ('Token expired. Please login again!');
+      return ('Session expired. Please login again!');
     } else {
       return ('Dispute failed to add :(');
     }
@@ -1026,7 +1026,7 @@ class HttpHelpers {
     if (response.body == 'Dispute not found') {
       return ('Dispute Not Found');
     } else if (response.body == 'jwt expired') {
-      return ('Token expired. Please login again!');
+      return ('Session expired. Please login again!');
     } else if (response.statusCode != 200) {
       return ('Error, please try again');
     } else {
@@ -1045,11 +1045,10 @@ class HttpHelpers {
         'Authorisation': jwt
       },
     );
-    print(response.body);
     if (response.statusCode == 200) {
       return ('Dispute Deleted');
     } else if (response.body == 'jwt expired') {
-      return ('Token expired. Please login again!');
+      return ('Session expired. Please login again!');
     } else {
       return ('Dispute Deletion Failed :(');
     }
@@ -1067,17 +1066,173 @@ class HttpHelpers {
       },
       body: json.encode(<String, dynamic>{'postid': postid}),
     );
-    print(response.body);
     if (response.body == 'Dispute not found' ||
         response.body == 'ID suggestion not found' ||
         response.body == 'Post not found') {
       return response.body;
     } else if (response.body == 'jwt expired') {
-      return ('Token expired. Please login again!');
+      return ('Session expired. Please login again!');
     } else if (response.statusCode != 200) {
       return ('Error, please try again');
     } else {
       return ('Dispute approved successfully');
+    }
+  }
+
+  Future<List<ExpertApplicationRequest>> viewAllExpertApplicationsRequest(
+      String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/expertapplications';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+
+    if (response.body == 'Applications not found') {
+      return Future.error(response.body);
+    } else if (response.statusCode != 200) {
+      return Future.error('Error, pleae try again');
+    } else {
+      List<ExpertApplicationRequest> requests = [];
+      var responseData = json.decode(response.body);
+      for (var everyrequest in responseData) {
+        ExpertApplicationRequest request =
+            ExpertApplicationRequest.fromJson(everyrequest);
+        requests.add(request);
+      }
+      return requests;
+    }
+  }
+
+  Future<List<ExpertApplicationRequest>> viewOwnExpertApplicationsRequest(
+      int authorid, String jwt) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/$authorid/expertapplications';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+
+    if (response.body == 'Applications not found') {
+      return Future.error(response.body);
+    } else if (response.statusCode != 200) {
+      return Future.error('Error, pleae try again');
+    } else {
+      List<ExpertApplicationRequest> requests = [];
+      var responseData = json.decode(response.body);
+      for (var everyrequest in responseData) {
+        ExpertApplicationRequest request =
+            ExpertApplicationRequest.fromJson(everyrequest);
+        requests.add(request);
+      }
+      return requests;
+    }
+  }
+
+  Future<String> addExpertApplicationRequest(
+      int authorid,
+      String name,
+      int age,
+      String gender,
+      String occupation,
+      String email,
+      int contact,
+      String credentials,
+      String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/expertapplications';
+    var response = await http.post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+      body: json.encode(<String, dynamic>{
+        'authorid': authorid,
+        'name': name,
+        'age': age,
+        'gender': gender,
+        'occupation': occupation,
+        'email': email,
+        'contact': contact,
+        'credentials': credentials,
+      }),
+    );
+    print(response.body);
+    if (response.statusCode == 201) {
+      return ('Application added successfully!');
+    } else if (response.body == 'jwt expired') {
+      return ('Session expired. Please login again!');
+    } else {
+      return ('Application failed to add :(');
+    }
+  }
+
+  Future<String> approveExpertApplicationRequest(
+      int authorid, int applicationid, String jwt) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/$authorid/expertapplications/$applicationid';
+    var response = await http.put(Uri.parse(url), headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorisation': jwt
+    });
+    if (response.statusCode == 200) {
+      return ('Application approved successfully!');
+    } else if (response.body == 'Application not found') {
+      return response.body;
+    } else if (response.body == 'jwt expired') {
+      return ('Session expired. Please login again!');
+    } else {
+      return ('Application failed to approve :(');
+    }
+  }
+
+  Future<String> rejectExpertApplicationRequest(
+      int applicationid, String rejectionReason, String jwt) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/expertapplications/$applicationid';
+    var response = await http.put(Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorisation': jwt
+        },
+        body: json.encode(<String, dynamic>{
+          'rejectionreason': rejectionReason,
+        }));
+    if (response.statusCode == 200) {
+      return ('Application rejected successfully!');
+    } else if (response.body == 'Application not found') {
+      return response.body;
+    } else if (response.body == 'jwt expired') {
+      return ('Session expired. Please login again!');
+    } else {
+      return ('Application failed to rejecte :(');
+    }
+  }
+
+  Future<String> deleteExpertApplicationRequest(
+      int applicationid, String jwt) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/expertapplications/$applicationid';
+    var response = await http.delete(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      return ('Application deleted successfully!');
+    } else if (response.body == 'Application not found') {
+      return response.body;
+    } else if (response.body == 'jwt expired') {
+      return ('Session expired. Please login again!');
+    } else {
+      return ('Application Deletion Failed :(');
     }
   }
 

@@ -14,6 +14,7 @@ import 'gallery_page.dart';
 import 'post_page.dart';
 import 'waiting_list_page.dart';
 import 'statistics_page.dart';
+import 'expert_application_page.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'stepper.dart';
@@ -182,6 +183,9 @@ class HomePageState extends State<HomePage> {
                                   snapshotUser.data!, refreshCallback),
                               //Visit statistics page to access sighting data
                               statsPageButton(refreshCallback),
+                              //Visit expert application page to review/submit applications
+                              expertApplicationPageButton(
+                                  snapshotUser.data!, refreshCallback),
                               //Visit waiting list page to verify/flag posts
                               waitingListPageButton(
                                   snapshotUser.data!, refreshCallback)
@@ -200,6 +204,9 @@ class HomePageState extends State<HomePage> {
                                   snapshotUser.data!, refreshCallback),
                               //Visit statistics page to access sighting data
                               statsPageButton(refreshCallback),
+                              //Visit expert application page to review/submit applications
+                              expertApplicationPageButton(
+                                  snapshotUser.data!, refreshCallback),
                             ],
                           ),
                         ));
@@ -686,6 +693,21 @@ class HomePageState extends State<HomePage> {
           context,
           MaterialPageRoute(builder: (context) => GalleryPage(currUser: user)),
         ).then((value) => refreshCallback());
+      },
+    );
+  }
+
+  Widget expertApplicationPageButton(User user, Function refreshCallback) {
+    return IconButton(
+      icon:
+          const Icon(Icons.how_to_reg, color: Color.fromARGB(255, 52, 66, 117)),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ExpertApplicationPage(currUser: user)),
+        ).then((value) => refreshCallback());
+        ;
       },
     );
   }
