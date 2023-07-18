@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../Helpers/Http.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class StatsResultPage extends StatefulWidget {
   final List<String> dataList;
@@ -152,7 +153,7 @@ class StatsResultPageState extends State<StatsResultPage>
               },
             ),
             SizedBox(
-              height: 400,
+              height: 500,
               child: FutureBuilder<List<List<List<String>>>>(
                 future: httpHelpers.speciesCountStats(widget.species),
                 builder: (context, snapshot) {
@@ -227,17 +228,9 @@ class StatsResultPageState extends State<StatsResultPage>
               ),
             ),
             const SizedBox(height: 10),
-            Column(
-              children: data.map((count) {
-                return Text(
-                  '${count[0]}: ${count[1]}',
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                );
-              }).toList(),
+            SizedBox(
+              height: 300,
+              child: BarGraph(data: data),
             ),
           ],
         ),
@@ -291,5 +284,63 @@ class StatsContainer extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class IndividualBar {
+  final String time;
+  final int count;
+
+  IndividualBar({required this.time, required this.count});
+}
+
+class BarData {
+  final List<List<String>> data;
+  BarData({required this.data});
+
+  List<IndividualBar> barData = [];
+
+  void initializeBarData() {
+    for (int i = 0; i < data.length; i++) {
+      barData
+          .add(IndividualBar(time: data[i][0], count: int.parse(data[i][1])));
+    }
+  }
+}
+
+class BarGraph extends StatelessWidget {
+  final List<List<String>> data;
+  const BarGraph({Key? key, required this.data}) : super(key: key);
+
+  int getMaxY() {
+    int max = 0;
+    for (int i = 0; i < data.length; i++) {
+      if (int.parse(data[i][1]) > max) {
+        max = int.parse(data[i][1]);
+      }
+    }
+    return max + 10;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    BarData barData = BarData(data: data);
+    barData.initializeBarData();
+    return BarChart(BarChartData(
+      maxY: getMaxY().toDouble(),
+      minY: 0,
+      barGroups: barData.barData
+          .map(
+            (data) => BarChartGroupData(
+              x: barData.barData.indexOf(data),
+              barRods: [
+                BarChartRodData(
+                  toY: data.count.toDouble(),
+                )
+              ],
+            ),
+          )
+          .toList(),
+    ));
   }
 }

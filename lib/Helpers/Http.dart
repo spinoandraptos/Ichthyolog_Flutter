@@ -1499,7 +1499,10 @@ class HttpHelpers {
       var responseData = json.decode(response.body);
       for (var everydata in responseData) {
         List<String> data = [];
-        data.add(everydata['hour_interval'].toString());
+        data.add(everydata['hour_interval']
+            .toString()
+            .substring(0, 16)
+            .replaceAll("T", " "));
         data.add(everydata['sightings_count'].toString());
         dataList.add(data);
       }
@@ -1524,7 +1527,8 @@ class HttpHelpers {
       var responseData = json.decode(response.body);
       for (var everydata in responseData) {
         List<String> data = [];
-        data.add(everydata['day'].toString());
+        data.add(
+            everydata['day'].toString().substring(0, 10).replaceAll("T", " "));
         data.add(everydata['sightings_count'].toString());
         dataList.add(data);
       }
@@ -1549,8 +1553,9 @@ class HttpHelpers {
       var responseData = json.decode(response.body);
       for (var everydata in responseData) {
         List<String> data = [];
-        data.add(everydata['day'].toString());
-        data.add(everydata['sightings_count'].toString());
+        data.add(
+            everydata['date'].toString().substring(0, 10).replaceAll("T", " "));
+        data.add(everydata['species_count'].toString());
         dataList.add(data);
       }
       return dataList;
