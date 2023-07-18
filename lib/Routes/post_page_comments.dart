@@ -191,14 +191,28 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
                     postid: widget.postid,
                     currUser: widget.currUser,
                   ),
-            widget.comments[widget.comments.length - 1].idSuggestion
+            widget.comments[widget.comments.length - 1].idSuggestion &&
+                    widget.comments[widget.comments.length - 1].disputed
                 ? CommentDisputes(
                     currUser: widget.currUser,
                     comment: widget.comments[widget.comments.length - 1],
                     postid: widget.postid,
                     jwt: widget.jwt,
                     updateCallback: widget.updateCallBack)
-                : const SizedBox.shrink(),
+                : widget.comments[widget.comments.length - 1].idSuggestion &&
+                        widget.comments[widget.comments.length - 1]
+                            .suggestionRejected
+                    ? Padding(
+                        padding: const EdgeInsets.only(left: 76, bottom: 15),
+                        child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                                'Reason for rejection: ${widget.comments[widget.comments.length - 1].idRejectionReason}',
+                                style: const TextStyle(
+                                    color: Color.fromARGB(255, 152, 72, 85),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500))))
+                    : const SizedBox.shrink(),
             Padding(
               padding: const EdgeInsets.only(
                 left: 20,

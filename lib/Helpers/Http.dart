@@ -716,7 +716,8 @@ class HttpHelpers {
     }
   }
 
-  Future<String> rejectIdSuggestionRequest(int commentid, String jwt) async {
+  Future<String> rejectIdSuggestionRequest(
+      int commentid, String jwt, String rejectionReason) async {
     String url =
         'https://ichthyolog-nodejs.onrender.com/comment/$commentid/idsuggestion/reject';
     var response = await http.put(
@@ -725,6 +726,7 @@ class HttpHelpers {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorisation': jwt
       },
+      body: json.encode(<String, dynamic>{'rejectionreason': rejectionReason}),
     );
     if (response.body == 'Suggestion not found') {
       return ('ID Suggestion Not Found');
@@ -1166,6 +1168,8 @@ class HttpHelpers {
       return ('Application added successfully!');
     } else if (response.body == 'jwt expired') {
       return ('Session expired. Please login again!');
+    } else if (response.body == 'Existing requests need to be processed') {
+      return ('Please wait for exisiting application to be processed!');
     } else {
       return ('Application failed to add :(');
     }

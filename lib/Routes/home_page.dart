@@ -135,13 +135,15 @@ class HomePageState extends State<HomePage> {
                                   ),
                                 ]),
                           ),
-                          SizedBox(
-                              height:
-                                  MediaQuery.of(context).size.height * 1 / 30),
-                          userLevel(snapshotUser.data!),
-                          SizedBox(
-                              height:
-                                  MediaQuery.of(context).size.height * 1 / 45),
+                          Padding(
+                              padding: EdgeInsets.only(
+                                  top: MediaQuery.of(context).size.height *
+                                      1 /
+                                      30,
+                                  bottom: MediaQuery.of(context).size.height *
+                                      1 /
+                                      45),
+                              child: userLevel(snapshotUser.data!)),
                           FutureBuilder(
                               future: httpHelpers.viewOwnPostsRequest(jwt),
                               builder: ((context, snapshot) {
@@ -150,13 +152,18 @@ class HomePageState extends State<HomePage> {
                                         snapshotUser.data!)
                                     : snapshot.hasError &&
                                             snapshot.error == 'Posts Not Found'
-                                        ? const Column(
+                                        ? Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
                                             children: [
-                                                Text(
+                                                SizedBox(
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .height *
+                                                      1 /
+                                                      8,
+                                                ),
+                                                const Text(
                                                   'No sightings yet, start posting!',
                                                   style: TextStyle(
                                                       color: Color.fromARGB(
