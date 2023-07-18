@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../Helpers/Http.dart';
 
 class StatsResultPage extends StatefulWidget {
   final List<String> dataList;
@@ -18,6 +19,7 @@ class StatsResultPageState extends State<StatsResultPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
+  final httpHelpers = HttpHelpers();
 
   final PageController _pageController = PageController();
 
@@ -151,23 +153,42 @@ class StatsResultPageState extends State<StatsResultPage>
             ),
             SizedBox(
               height: 400,
-              child: AnimatedBuilder(
-                animation: _animation,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: _animation.value,
-                    child: Transform.translate(
-                      offset: Offset(0.0, (1 - _animation.value) * 20),
-                      child: PageView(
-                        controller: _pageController,
-                        children: [
-                          _buildStatsBox('Sightings last 24 hours'),
-                          _buildStatsBox('Sightings last 7 days'),
-                          _buildStatsBox('Sightings last month'),
-                        ],
-                      ),
-                    ),
-                  );
+              child: FutureBuilder<List<List<List<String>>>>(
+                future: httpHelpers.speciesCountStats(widget.species),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    );
+                  } else {
+                    final speciesCount = snapshot.data;
+                    return AnimatedBuilder(
+                      animation: _animation,
+                      builder: (context, child) {
+                        return Opacity(
+                          opacity: _animation.value,
+                          child: Transform.translate(
+                            offset: Offset(0.0, (1 - _animation.value) * 20),
+                            child: PageView(
+                              controller: _pageController,
+                              children: [
+                                _buildStatsBox('Sightings last 24 hours',
+                                    speciesCount![0]),
+                                _buildStatsBox(
+                                    'Sightings last 7 days', speciesCount[1]),
+                                _buildStatsBox(
+                                    'Sightings last month', speciesCount[2]),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
                 },
               ),
             ),
@@ -177,7 +198,7 @@ class StatsResultPageState extends State<StatsResultPage>
     );
   }
 
-  Widget _buildStatsBox(String title) {
+  Widget _buildStatsBox(String title, List<List<String>> data) {
     return Container(
       width: 200,
       margin: const EdgeInsets.all(10),
@@ -194,13 +215,31 @@ class StatsResultPageState extends State<StatsResultPage>
         ],
       ),
       child: Center(
-        child: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Column(
+              children: data.map((count) {
+                return Text(
+                  '${count[0]}: ${count[1]}',
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
         ),
       ),
     );
