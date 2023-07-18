@@ -689,34 +689,97 @@ class OwnCommentState extends State<OwnComment> {
                                                       if (rejectIdRequestProcessing) {
                                                         null;
                                                       } else {
-                                                        rejectIdRequestProcessingCallback();
-                                                        httpHelpers
-                                                            .rejectIdSuggestionRequest(
-                                                                widget.comment
-                                                                    .commentId,
-                                                                widget.jwt)
-                                                            .then(
-                                                          (response) {
-                                                            rejectIdRequestProcessingCallback();
-                                                            Fluttertoast
-                                                                .showToast(
-                                                              msg: response,
-                                                              toastLength: Toast
-                                                                  .LENGTH_SHORT,
-                                                              gravity:
-                                                                  ToastGravity
-                                                                      .BOTTOM,
-                                                              timeInSecForIosWeb:
-                                                                  1,
-                                                            );
-                                                            if (response ==
-                                                                'ID Suggestion Rejected') {
-                                                              widget
-                                                                  .updateCallBack(
-                                                                      response);
-                                                            }
-                                                          },
-                                                        );
+                                                        showDialog(
+                                                            context: context,
+                                                            builder:
+                                                                (BuildContext
+                                                                    context) {
+                                                              TextEditingController
+                                                                  rejectionReasonController =
+                                                                  TextEditingController();
+                                                              return AlertDialog(
+                                                                  title: const Padding(
+                                                                      padding: EdgeInsets.only(
+                                                                          left:
+                                                                              5),
+                                                                      child: Text(
+                                                                          'Submit Rejection Reason')),
+                                                                  content: Container(
+                                                                      margin: const EdgeInsets.only(top: 8, left: 5, right: 5),
+                                                                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                                                                      decoration: BoxDecoration(color: const Color.fromARGB(255, 225, 235, 248), borderRadius: BorderRadius.circular(16)),
+                                                                      child: TextField(
+                                                                        controller:
+                                                                            rejectionReasonController,
+                                                                        minLines:
+                                                                            1,
+                                                                        maxLines:
+                                                                            8,
+                                                                        decoration:
+                                                                            InputDecoration(
+                                                                          focusColor: const Color.fromARGB(
+                                                                              255,
+                                                                              51,
+                                                                              64,
+                                                                              113),
+                                                                          hintText:
+                                                                              'Reason for ID rejection',
+                                                                          border:
+                                                                              InputBorder.none,
+                                                                          suffixIcon:
+                                                                              IconButton(
+                                                                            onPressed:
+                                                                                () {
+                                                                              rejectionReasonController.clear();
+                                                                            },
+                                                                            icon:
+                                                                                const Icon(Icons.clear),
+                                                                          ),
+                                                                        ),
+                                                                      )),
+                                                                  actions: [
+                                                                    Padding(
+                                                                        padding: const EdgeInsets.only(
+                                                                            left:
+                                                                                10,
+                                                                            right:
+                                                                                10,
+                                                                            bottom:
+                                                                                7),
+                                                                        child: Wrap(
+                                                                            spacing:
+                                                                                5,
+                                                                            children: [
+                                                                              ElevatedButton(
+                                                                                  onPressed: () {
+                                                                                    rejectIdRequestProcessingCallback();
+                                                                                    httpHelpers.rejectIdSuggestionRequest(widget.comment.commentId, widget.jwt, rejectionReasonController.text).then(
+                                                                                      (response) {
+                                                                                        rejectIdRequestProcessingCallback();
+                                                                                        Fluttertoast.showToast(
+                                                                                          msg: response,
+                                                                                          toastLength: Toast.LENGTH_SHORT,
+                                                                                          gravity: ToastGravity.BOTTOM,
+                                                                                          timeInSecForIosWeb: 1,
+                                                                                        );
+                                                                                        if (response == 'ID Suggestion Rejected') {
+                                                                                          widget.updateCallBack(response);
+                                                                                          Navigator.pop(context);
+                                                                                        }
+                                                                                      },
+                                                                                    );
+                                                                                  },
+                                                                                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(8), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap, backgroundColor: const Color.fromARGB(255, 80, 170, 121)),
+                                                                                  child: const Text("Submit")),
+                                                                              ElevatedButton(
+                                                                                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(8), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap, backgroundColor: const Color.fromARGB(255, 170, 80, 80)),
+                                                                                  child: const Text("Cancel"),
+                                                                                  onPressed: () {
+                                                                                    Navigator.pop(context);
+                                                                                  })
+                                                                            ]))
+                                                                  ]);
+                                                            });
                                                       }
                                                     },
                                                     child: const Text(
@@ -1316,134 +1379,191 @@ class OtherCommentState extends State<OtherComment> {
                                         top: 4, bottom: 4),
                                     child: Row(
                                         mainAxisSize: MainAxisSize.min,
-                                        children: widget.currUser.expert &&
-                                                widget.comment.idSuggestion
-                                            ? [
-                                                TextButton(
-                                                    style: TextButton.styleFrom(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(3),
-                                                        minimumSize: Size.zero,
-                                                        tapTargetSize:
-                                                            MaterialTapTargetSize
-                                                                .shrinkWrap),
-                                                    onPressed: () {
-                                                      if (widget.comment
-                                                          .suggestionApproved) {
-                                                        null;
-                                                      } else {
-                                                        acceptIdRequestProcessingCallback();
-                                                        httpHelpers
-                                                            .acceptIdSuggestionRequest(
-                                                                widget.postid,
-                                                                widget.comment
-                                                                    .commentId,
-                                                                widget.comment
-                                                                    .content,
-                                                                widget.jwt)
-                                                            .then(
-                                                          (response) {
+                                        children:
+                                            widget.currUser.expert &&
+                                                    widget.comment.idSuggestion
+                                                ? [
+                                                    TextButton(
+                                                        style: TextButton.styleFrom(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(3),
+                                                            minimumSize:
+                                                                Size.zero,
+                                                            tapTargetSize:
+                                                                MaterialTapTargetSize
+                                                                    .shrinkWrap),
+                                                        onPressed: () {
+                                                          if (widget.comment
+                                                              .suggestionApproved) {
+                                                            null;
+                                                          } else {
                                                             acceptIdRequestProcessingCallback();
-                                                            if (response ==
-                                                                'Approved ID Already Exists') {
-                                                              showDialog(
-                                                                  context:
-                                                                      context,
-                                                                  builder:
-                                                                      (BuildContext
-                                                                          context) {
-                                                                    return const NoticeDialog(
-                                                                        content:
-                                                                            'Sighting ID already approved! To challenge existing ID, please submit a dispute.');
-                                                                  });
-                                                            } else {
-                                                              Fluttertoast
-                                                                  .showToast(
-                                                                msg: response,
-                                                                toastLength: Toast
-                                                                    .LENGTH_SHORT,
-                                                                gravity:
-                                                                    ToastGravity
-                                                                        .BOTTOM,
-                                                                timeInSecForIosWeb:
-                                                                    1,
-                                                              );
-                                                              if (response ==
-                                                                  'ID Suggestion Accepted') {
-                                                                widget.updateCallBack(
-                                                                    response);
-                                                              }
-                                                            }
-                                                          },
-                                                        );
-                                                      }
-                                                    },
-                                                    child: const Text(
-                                                        'Accept ID',
-                                                        style: TextStyle(
-                                                            fontSize: 10,
-                                                            color:
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    68,
-                                                                    95,
-                                                                    143)))),
-                                                TextButton(
-                                                    style: TextButton.styleFrom(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(3),
-                                                        minimumSize: Size.zero,
-                                                        tapTargetSize:
-                                                            MaterialTapTargetSize
-                                                                .shrinkWrap),
-                                                    onPressed: () {
-                                                      if (rejectIdRequestProcessing) {
-                                                        null;
-                                                      } else {
-                                                        rejectIdRequestProcessingCallback();
-                                                        httpHelpers
-                                                            .rejectIdSuggestionRequest(
-                                                                widget.comment
-                                                                    .commentId,
-                                                                widget.jwt)
-                                                            .then(
-                                                          (response) {
-                                                            rejectIdRequestProcessingCallback();
-                                                            Fluttertoast
-                                                                .showToast(
-                                                              msg: response,
-                                                              toastLength: Toast
-                                                                  .LENGTH_SHORT,
-                                                              gravity:
-                                                                  ToastGravity
-                                                                      .BOTTOM,
-                                                              timeInSecForIosWeb:
-                                                                  1,
+                                                            httpHelpers
+                                                                .acceptIdSuggestionRequest(
+                                                                    widget
+                                                                        .postid,
+                                                                    widget
+                                                                        .comment
+                                                                        .commentId,
+                                                                    widget
+                                                                        .comment
+                                                                        .content,
+                                                                    widget.jwt)
+                                                                .then(
+                                                              (response) {
+                                                                acceptIdRequestProcessingCallback();
+                                                                if (response ==
+                                                                    'Approved ID Already Exists') {
+                                                                  showDialog(
+                                                                      context:
+                                                                          context,
+                                                                      builder:
+                                                                          (BuildContext
+                                                                              context) {
+                                                                        return const NoticeDialog(
+                                                                            content:
+                                                                                'Sighting ID already approved! To challenge existing ID, please submit a dispute.');
+                                                                      });
+                                                                } else {
+                                                                  Fluttertoast
+                                                                      .showToast(
+                                                                    msg:
+                                                                        response,
+                                                                    toastLength:
+                                                                        Toast
+                                                                            .LENGTH_SHORT,
+                                                                    gravity:
+                                                                        ToastGravity
+                                                                            .BOTTOM,
+                                                                    timeInSecForIosWeb:
+                                                                        1,
+                                                                  );
+                                                                  if (response ==
+                                                                      'ID Suggestion Accepted') {
+                                                                    widget.updateCallBack(
+                                                                        response);
+                                                                  }
+                                                                }
+                                                              },
                                                             );
-                                                            if (response ==
-                                                                'ID Suggestion Rejected') {
-                                                              widget
-                                                                  .updateCallBack(
-                                                                      response);
-                                                            }
-                                                          },
-                                                        );
-                                                      }
-                                                    },
-                                                    child: const Text(
-                                                        'Reject ID',
-                                                        style: TextStyle(
-                                                            fontSize: 10,
-                                                            color:
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    68,
-                                                                    95,
-                                                                    143))))
-                                              ]
-                                            : [const SizedBox.shrink()])),
+                                                          }
+                                                        },
+                                                        child: const Text(
+                                                            'Accept ID',
+                                                            style: TextStyle(
+                                                                fontSize: 10,
+                                                                color: Color
+                                                                    .fromARGB(
+                                                                        255,
+                                                                        68,
+                                                                        95,
+                                                                        143)))),
+                                                    TextButton(
+                                                        style: TextButton.styleFrom(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(3),
+                                                            minimumSize:
+                                                                Size.zero,
+                                                            tapTargetSize:
+                                                                MaterialTapTargetSize
+                                                                    .shrinkWrap),
+                                                        onPressed: () {
+                                                          if (rejectIdRequestProcessing) {
+                                                            null;
+                                                          } else {
+                                                            showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (BuildContext
+                                                                        context) {
+                                                                  TextEditingController
+                                                                      rejectionReasonController =
+                                                                      TextEditingController();
+                                                                  return AlertDialog(
+                                                                      title: const Padding(
+                                                                          padding: EdgeInsets.only(
+                                                                              left:
+                                                                                  5),
+                                                                          child:
+                                                                              Text('Submit Rejection Reason')),
+                                                                      content: Container(
+                                                                          margin: const EdgeInsets.only(top: 8, left: 5, right: 5),
+                                                                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                                                                          decoration: BoxDecoration(color: const Color.fromARGB(255, 225, 235, 248), borderRadius: BorderRadius.circular(16)),
+                                                                          child: TextField(
+                                                                            controller:
+                                                                                rejectionReasonController,
+                                                                            minLines:
+                                                                                1,
+                                                                            maxLines:
+                                                                                8,
+                                                                            decoration:
+                                                                                InputDecoration(
+                                                                              focusColor: const Color.fromARGB(255, 51, 64, 113),
+                                                                              hintText: 'Reason for ID rejection',
+                                                                              border: InputBorder.none,
+                                                                              suffixIcon: IconButton(
+                                                                                onPressed: () {
+                                                                                  rejectionReasonController.clear();
+                                                                                },
+                                                                                icon: const Icon(Icons.clear),
+                                                                              ),
+                                                                            ),
+                                                                          )),
+                                                                      actions: [
+                                                                        Padding(
+                                                                            padding: const EdgeInsets.only(
+                                                                                left: 10,
+                                                                                right: 10,
+                                                                                bottom: 7),
+                                                                            child: Wrap(spacing: 5, children: [
+                                                                              ElevatedButton(
+                                                                                  onPressed: () {
+                                                                                    rejectIdRequestProcessingCallback();
+                                                                                    httpHelpers.rejectIdSuggestionRequest(widget.comment.commentId, widget.jwt, rejectionReasonController.text).then(
+                                                                                      (response) {
+                                                                                        rejectIdRequestProcessingCallback();
+                                                                                        Fluttertoast.showToast(
+                                                                                          msg: response,
+                                                                                          toastLength: Toast.LENGTH_SHORT,
+                                                                                          gravity: ToastGravity.BOTTOM,
+                                                                                          timeInSecForIosWeb: 1,
+                                                                                        );
+                                                                                        if (response == 'ID Suggestion Rejected') {
+                                                                                          widget.updateCallBack(response);
+                                                                                          Navigator.pop(context);
+                                                                                        }
+                                                                                      },
+                                                                                    );
+                                                                                  },
+                                                                                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(8), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap, backgroundColor: const Color.fromARGB(255, 80, 170, 121)),
+                                                                                  child: const Text("Submit")),
+                                                                              ElevatedButton(
+                                                                                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(8), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap, backgroundColor: const Color.fromARGB(255, 170, 80, 80)),
+                                                                                  child: const Text("Cancel"),
+                                                                                  onPressed: () {
+                                                                                    Navigator.pop(context);
+                                                                                  })
+                                                                            ]))
+                                                                      ]);
+                                                                });
+                                                          }
+                                                        },
+                                                        child: const Text(
+                                                            'Reject ID',
+                                                            style: TextStyle(
+                                                                fontSize: 10,
+                                                                color: Color
+                                                                    .fromARGB(
+                                                                        255,
+                                                                        68,
+                                                                        95,
+                                                                        143))))
+                                                  ]
+                                                : [const SizedBox.shrink()])),
                       ]),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,

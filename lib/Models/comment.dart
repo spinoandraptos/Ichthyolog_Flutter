@@ -16,7 +16,7 @@ class Comment {
   final bool suggestionRejected;
   final bool idReplaced;
   final bool disputed;
-  final String? idRejectionReason;
+  final String idRejectionReason;
 
   Comment(
       {required this.commentId,
@@ -57,6 +57,6 @@ class Comment {
         suggestionRejected: json['suggestionrejected'],
         idReplaced: json['idreplaced'],
         disputed: json['disputed'],
-        idRejectionReason: json['idrejectionreason']);
+        idRejectionReason: json['idrejectionreason'] ?? 'Null');
   }
 }

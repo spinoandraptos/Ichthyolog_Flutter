@@ -144,14 +144,30 @@ class CommentPageState extends State<CommentPage> {
                                         postid: widget.postid,
                                         currUser: widget.currUser,
                                       ),
-                            snapshot.data![index].idSuggestion
+                            snapshot.data![index].idSuggestion &&
+                                    snapshot.data![index].disputed
                                 ? CommentDisputes(
                                     currUser: widget.currUser,
                                     comment: snapshot.data![index],
                                     postid: widget.postid,
                                     jwt: jwt,
                                     updateCallback: updateCommentCallback)
-                                : const SizedBox.shrink()
+                                : snapshot.data![index].idSuggestion &&
+                                        snapshot.data![index].suggestionRejected
+                                    ? Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 76, bottom: 15),
+                                        child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                                'Reason for rejection: ${snapshot.data![index].idRejectionReason}',
+                                                style: const TextStyle(
+                                                    color: Color.fromARGB(
+                                                        255, 152, 72, 85),
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                        FontWeight.w500))))
+                                    : const SizedBox.shrink()
                           ]);
                         },
                       )),

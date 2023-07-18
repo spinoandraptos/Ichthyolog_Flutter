@@ -27,6 +27,7 @@ class ExpertApplicationPageState extends State<ExpertApplicationPage> {
   final helpers = Helpers();
   final httpHelpers = HttpHelpers();
   final _formKey = GlobalKey<FormState>();
+  bool addExpertApplicationRequestProcessing = false;
 
   @override
   void initState() {
@@ -48,9 +49,17 @@ class ExpertApplicationPageState extends State<ExpertApplicationPage> {
     setState(() {});
   }
 
+  addExpertApplicationRequestProcessingCallback() {
+    setState(() {
+      addExpertApplicationRequestProcessing =
+          !addExpertApplicationRequestProcessing;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
           centerTitle: true,
           title: widget.currUser.expert
@@ -75,18 +84,18 @@ class ExpertApplicationPageState extends State<ExpertApplicationPage> {
                     widget.currUser.userid, jwt),
             builder: ((context, snapshot) {
               if (snapshot.hasData) {
-                return Container(
-                    padding: const EdgeInsets.only(top: 6),
-                    constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height * 8 / 10,
-                    ),
-                    child: SingleChildScrollView(
-                        child: Column(children: [
-                      const SizedBox(
-                        height: 8,
+                return SingleChildScrollView(
+                    child: Column(children: [
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Container(
+                      padding: const EdgeInsets.only(top: 6),
+                      constraints: BoxConstraints(
+                        maxHeight:
+                            MediaQuery.of(context).size.height * 8.2 / 10,
                       ),
-                      ListView.builder(
-                          shrinkWrap: true,
+                      child: ListView.builder(
                           itemCount: snapshot.data!.length,
                           itemBuilder: (context, index) {
                             return snapshot.data![index].approved == 'false'
@@ -118,8 +127,8 @@ class ExpertApplicationPageState extends State<ExpertApplicationPage> {
                                     jwt: jwt,
                                     refreshCallback: refreshCallback,
                                   );
-                          })
-                    ])));
+                          }))
+                ]));
               } else if (snapshot.hasError &&
                   snapshot.error == 'Applications not found') {
                 return const Expanded(
@@ -239,32 +248,47 @@ class ExpertApplicationPageState extends State<ExpertApplicationPage> {
                             final bool? isValid =
                                 _formKey.currentState?.validate();
                             if (isValid == true) {
-                              httpHelpers
-                                  .addExpertApplicationRequest(
-                                      currUser.userid,
-                                      nameController.text,
-                                      int.parse(ageController.text),
-                                      genderController.text,
-                                      occupationController.text,
-                                      emailController.text,
-                                      int.parse(contactController.text),
-                                      credentialsController.text,
-                                      jwt)
-                                  .then(
-                                (response) {
-                                  Fluttertoast.showToast(
-                                    msg: response,
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    timeInSecForIosWeb: 1,
-                                  );
-                                  if (response ==
-                                      'Application added successfully!') {
-                                    setState(() {});
-                                    Navigator.pop(context);
-                                  }
-                                },
-                              );
+                              if (addExpertApplicationRequestProcessing) {
+                                null;
+                              } else {
+                                addExpertApplicationRequestProcessingCallback();
+                                httpHelpers
+                                    .addExpertApplicationRequest(
+                                        currUser.userid,
+                                        nameController.text,
+                                        int.parse(ageController.text),
+                                        genderController.text,
+                                        occupationController.text,
+                                        emailController.text,
+                                        int.parse(contactController.text),
+                                        credentialsController.text,
+                                        jwt)
+                                    .then(
+                                  (response) {
+                                    addExpertApplicationRequestProcessingCallback();
+                                    Fluttertoast.showToast(
+                                      msg: response,
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      timeInSecForIosWeb: 1,
+                                    );
+                                    if (response ==
+                                        'Application added successfully!') {
+                                      setState(() {});
+                                      Navigator.pop(context);
+                                    } else if (response ==
+                                        'Please wait for exisiting application to be processed!') {
+                                      Navigator.pop(context);
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return NoticeDialog(
+                                                content: response);
+                                          });
+                                    }
+                                  },
+                                );
+                              }
                             } else {
                               print('HEY');
                             }
@@ -510,6 +534,31 @@ class ExpertApplication extends StatefulWidget {
 
 class ExpertApplicationState extends State<ExpertApplication> {
   bool expanded = false;
+  bool approveExpertApplicationRequestProcessing = false;
+  bool rejectExpertApplicationRequestProcessing = false;
+  bool deleteExpertApplicationRequestProcessing = false;
+
+  approveExpertApplicationRequestProcessingCallback() {
+    setState(() {
+      approveExpertApplicationRequestProcessing =
+          !approveExpertApplicationRequestProcessing;
+    });
+  }
+
+  rejectExpertApplicationRequestProcessingCallback() {
+    setState(() {
+      rejectExpertApplicationRequestProcessing =
+          !rejectExpertApplicationRequestProcessing;
+    });
+  }
+
+  deleteExpertApplicationRequestProcessingCallback() {
+    setState(() {
+      deleteExpertApplicationRequestProcessing =
+          !deleteExpertApplicationRequestProcessing;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -638,35 +687,41 @@ class ExpertApplicationState extends State<ExpertApplication> {
                                               children: [
                                                 ElevatedButton(
                                                     onPressed: () {
-                                                      httpHelpers
-                                                          .approveExpertApplicationRequest(
-                                                              widget.request
-                                                                  .authorId,
-                                                              widget.request
-                                                                  .applicationId,
-                                                              widget.jwt)
-                                                          .then(
-                                                        (response) {
-                                                          Fluttertoast
-                                                              .showToast(
-                                                            msg: response,
-                                                            toastLength: Toast
-                                                                .LENGTH_SHORT,
-                                                            gravity:
-                                                                ToastGravity
-                                                                    .BOTTOM,
-                                                            timeInSecForIosWeb:
-                                                                1,
-                                                          );
-                                                          if (response ==
-                                                              'Application approved successfully!') {
-                                                            widget
-                                                                .refreshCallback();
-                                                            Navigator.pop(
-                                                                context);
-                                                          }
-                                                        },
-                                                      );
+                                                      if (approveExpertApplicationRequestProcessing) {
+                                                        null;
+                                                      } else {
+                                                        approveExpertApplicationRequestProcessingCallback();
+                                                        httpHelpers
+                                                            .approveExpertApplicationRequest(
+                                                                widget.request
+                                                                    .authorId,
+                                                                widget.request
+                                                                    .applicationId,
+                                                                widget.jwt)
+                                                            .then(
+                                                          (response) {
+                                                            approveExpertApplicationRequestProcessingCallback();
+                                                            Fluttertoast
+                                                                .showToast(
+                                                              msg: response,
+                                                              toastLength: Toast
+                                                                  .LENGTH_SHORT,
+                                                              gravity:
+                                                                  ToastGravity
+                                                                      .BOTTOM,
+                                                              timeInSecForIosWeb:
+                                                                  1,
+                                                            );
+                                                            if (response ==
+                                                                'Application approved successfully!') {
+                                                              widget
+                                                                  .refreshCallback();
+                                                              Navigator.pop(
+                                                                  context);
+                                                            }
+                                                          },
+                                                        );
+                                                      }
                                                     },
                                                     style: ElevatedButton.styleFrom(
                                                         padding:
@@ -749,8 +804,7 @@ class ExpertApplicationState extends State<ExpertApplication> {
                                             decoration: InputDecoration(
                                               focusColor: const Color.fromARGB(
                                                   255, 51, 64, 113),
-                                              hintText:
-                                                  'Reason for application rejection',
+                                              hintText: 'Reason for rejection',
                                               border: InputBorder.none,
                                               suffixIcon: IconButton(
                                                 onPressed: () {
@@ -768,32 +822,41 @@ class ExpertApplicationState extends State<ExpertApplication> {
                                             child: Wrap(spacing: 5, children: [
                                               ElevatedButton(
                                                   onPressed: () {
-                                                    httpHelpers
-                                                        .rejectExpertApplicationRequest(
-                                                            widget.request
-                                                                .applicationId,
-                                                            rejectionReasonController
-                                                                .text,
-                                                            widget.jwt)
-                                                        .then(
-                                                      (response) {
-                                                        Fluttertoast.showToast(
-                                                          msg: response,
-                                                          toastLength: Toast
-                                                              .LENGTH_SHORT,
-                                                          gravity: ToastGravity
-                                                              .BOTTOM,
-                                                          timeInSecForIosWeb: 1,
-                                                        );
-                                                        if (response ==
-                                                            'Application rejected successfully!') {
-                                                          widget
-                                                              .refreshCallback();
-                                                          Navigator.pop(
-                                                              context);
-                                                        }
-                                                      },
-                                                    );
+                                                    if (rejectExpertApplicationRequestProcessing) {
+                                                      null;
+                                                    } else {
+                                                      rejectExpertApplicationRequestProcessingCallback();
+                                                      httpHelpers
+                                                          .rejectExpertApplicationRequest(
+                                                              widget.request
+                                                                  .applicationId,
+                                                              rejectionReasonController
+                                                                  .text,
+                                                              widget.jwt)
+                                                          .then(
+                                                        (response) {
+                                                          rejectExpertApplicationRequestProcessingCallback();
+                                                          Fluttertoast
+                                                              .showToast(
+                                                            msg: response,
+                                                            toastLength: Toast
+                                                                .LENGTH_SHORT,
+                                                            gravity:
+                                                                ToastGravity
+                                                                    .BOTTOM,
+                                                            timeInSecForIosWeb:
+                                                                1,
+                                                          );
+                                                          if (response ==
+                                                              'Application rejected successfully!') {
+                                                            widget
+                                                                .refreshCallback();
+                                                            Navigator.pop(
+                                                                context);
+                                                          }
+                                                        },
+                                                      );
+                                                    }
                                                   },
                                                   style: ElevatedButton.styleFrom(
                                                       padding:
@@ -862,29 +925,36 @@ class ExpertApplicationState extends State<ExpertApplication> {
                                           children: [
                                             ElevatedButton(
                                                 onPressed: () {
-                                                  httpHelpers
-                                                      .deleteExpertApplicationRequest(
-                                                          widget.request
-                                                              .applicationId,
-                                                          widget.jwt)
-                                                      .then(
-                                                    (response) {
-                                                      Fluttertoast.showToast(
-                                                        msg: response,
-                                                        toastLength:
-                                                            Toast.LENGTH_SHORT,
-                                                        gravity:
-                                                            ToastGravity.BOTTOM,
-                                                        timeInSecForIosWeb: 1,
-                                                      );
-                                                      if (response ==
-                                                          'Application deleted successfully!') {
-                                                        widget
-                                                            .refreshCallback();
-                                                        Navigator.pop(context);
-                                                      }
-                                                    },
-                                                  );
+                                                  if (deleteExpertApplicationRequestProcessing) {
+                                                    null;
+                                                  } else {
+                                                    deleteExpertApplicationRequestProcessingCallback();
+                                                    httpHelpers
+                                                        .deleteExpertApplicationRequest(
+                                                            widget.request
+                                                                .applicationId,
+                                                            widget.jwt)
+                                                        .then(
+                                                      (response) {
+                                                        deleteExpertApplicationRequestProcessingCallback();
+                                                        Fluttertoast.showToast(
+                                                          msg: response,
+                                                          toastLength: Toast
+                                                              .LENGTH_SHORT,
+                                                          gravity: ToastGravity
+                                                              .BOTTOM,
+                                                          timeInSecForIosWeb: 1,
+                                                        );
+                                                        if (response ==
+                                                            'Application deleted successfully!') {
+                                                          widget
+                                                              .refreshCallback();
+                                                          Navigator.pop(
+                                                              context);
+                                                        }
+                                                      },
+                                                    );
+                                                  }
                                                 },
                                                 style: ElevatedButton.styleFrom(
                                                     padding:

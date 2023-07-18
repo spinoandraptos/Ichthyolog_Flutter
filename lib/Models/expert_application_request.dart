@@ -46,6 +46,6 @@ class ExpertApplicationRequest {
             : json['approved'] == true
                 ? 'true'
                 : 'false',
-        rejectionReason: json['rejectionreason'] ?? '');
+        rejectionReason: json['rejectionreason'] ?? 'Null');
   }
 }
