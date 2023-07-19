@@ -155,7 +155,7 @@ class StatsResultPageState extends State<StatsResultPage>
               },
             ),
             SizedBox(
-              height: 500,
+              height: 450,
               child: FutureBuilder<List<List<List<String>>>>(
                 future: httpHelpers.speciesCountStats(widget.species),
                 builder: (context, snapshot) {
@@ -206,7 +206,7 @@ class StatsResultPageState extends State<StatsResultPage>
       width: 200,
       margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.blue,
+        color: const Color.fromARGB(255, 134, 195, 246),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -226,7 +226,7 @@ class StatsResultPageState extends State<StatsResultPage>
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Colors.black,
               ),
             ),
             const SizedBox(height: 10),
@@ -305,32 +305,40 @@ class Linechart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LineChart(LineChartData(
-      maxY: getMaxY().toDouble(),
-      minY: 0,
-      gridData: FlGridData(show: false),
-      borderData: FlBorderData(show: false),
-      titlesData: FlTitlesData(
-        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-      ),
-      lineBarsData: [
-        LineChartBarData(
-          spots: data
-              .map(
-                (pt) => FlSpot(
-                  data.indexOf(pt).toDouble(),
-                  int.parse(pt[1]).toDouble(),
-                ),
-              )
-              .toList(),
-          isCurved: false,
-          barWidth: 1,
-          dotData: FlDotData(show: true),
+    return Container(
+      padding: const EdgeInsets.only(right: 30),
+      child: LineChart(LineChartData(
+        maxY: getMaxY().toDouble(),
+        minY: 0,
+        gridData: FlGridData(show: false),
+        borderData: FlBorderData(
+          border: const Border(
+            bottom: BorderSide(width: 2),
+            left: BorderSide(width: 2),
+          ),
         ),
-      ],
-    ));
+        titlesData: FlTitlesData(
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        ),
+        lineBarsData: [
+          LineChartBarData(
+            spots: data
+                .map(
+                  (pt) => FlSpot(
+                    data.indexOf(pt).toDouble(),
+                    int.parse(pt[1]).toDouble(),
+                  ),
+                )
+                .toList(),
+            isCurved: false,
+            barWidth: 1,
+            dotData: FlDotData(show: true),
+          ),
+        ],
+      )),
+    );
   }
 }
 
