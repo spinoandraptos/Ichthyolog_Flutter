@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import '../Models/user.dart';
 import '../Models/comment.dart';
 import '../Models/dispute.dart';
@@ -6,6 +7,9 @@ import '../Helpers/http.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/standard_widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:uuid/uuid.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 
 class CommentDisputes extends StatefulWidget {
   final User currUser;
@@ -29,11 +33,13 @@ class CommentDisputesState extends State<CommentDisputes> {
   final helpers = Helpers();
   bool expanded = false;
   String updatedContent = '';
+  File? image;
   TextEditingController disputeController = TextEditingController();
   bool addDisputeRequestProcessing = false;
   bool editDisputeRequestProcessing = false;
   bool deleteDisputeRequestProcessing = false;
   bool approveDisputeRequestProcessing = false;
+  bool uploadPicRequestProcessing = false;
 
   updateContentCallback(String value) {
     setState(() {
@@ -67,6 +73,12 @@ class CommentDisputesState extends State<CommentDisputes> {
   approveDisputeRequestProcessingCallback() {
     setState(() {
       approveDisputeRequestProcessing = !approveDisputeRequestProcessing;
+    });
+  }
+
+  uploadPicRequestProcessingCallback() {
+    setState(() {
+      uploadPicRequestProcessing = !uploadPicRequestProcessing;
     });
   }
 
@@ -162,9 +174,8 @@ class CommentDisputesState extends State<CommentDisputes> {
                                               25,
                                           padding:
                                               const EdgeInsets.only(left: 16),
-                                          margin: const EdgeInsets.only(
-                                            right: 10,
-                                          ),
+                                          margin:
+                                              const EdgeInsets.only(right: 10),
                                           child: TextField(
                                             style:
                                                 const TextStyle(fontSize: 13),
@@ -183,6 +194,18 @@ class CommentDisputesState extends State<CommentDisputes> {
                                               ),
                                             ),
                                           )),
+                                      // IconButton(
+                                      //     constraints: const BoxConstraints(),
+                                      //     icon: const CircleAvatar(
+                                      //         radius: 10,
+                                      //         backgroundColor: Colors.white,
+                                      //         child: Icon(
+                                      //           Icons.camera_alt_rounded,
+                                      //           size: 18,
+                                      //           color: Color.fromARGB(
+                                      //               255, 89, 98, 181),
+                                      //         )),
+                                      //     onPressed: () {}),
                                       ElevatedButton(
                                           onPressed: () {
                                             if (addDisputeRequestProcessing) {
@@ -241,6 +264,46 @@ class CommentDisputesState extends State<CommentDisputes> {
           }
         }));
   }
+
+  void uploadPic(String jwt) async {
+    final key = const Uuid().v4();
+    final file = AWSFile.fromPath(image!.path);
+    if (uploadPicRequestProcessing) {
+      null;
+    } else {
+      try {
+        Amplify.Storage.uploadFile(
+          key: key,
+          localFile: file,
+          options: const StorageUploadFileOptions(
+            accessLevel: StorageAccessLevel.guest,
+          ),
+        );
+      } catch (error) {
+        Fluttertoast.showToast(
+          msg: error.toString(),
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+        );
+      }
+    }
+  }
+
+  Future<void> _takePhoto(ImageSource source) async {
+    final imagePicker = ImagePicker();
+    final pickedImage = await imagePicker.pickImage(source: source);
+
+    if (pickedImage != null) {
+      setState(() {
+        image = File(pickedImage.path);
+      });
+    }
+  }
+
+  Future<void> _selectFromGallery() async {
+    _takePhoto(ImageSource.gallery);
+  }
 }
 
 Widget ownDispute(
@@ -292,6 +355,11 @@ Widget ownDispute(
                             )),
                 ],
               ),
+              dispute.explanatoryPic == null
+                  ? const SizedBox.shrink()
+                  : Image(
+                      image: NetworkImage(dispute.explanatoryPic!),
+                      fit: BoxFit.cover),
               Container(
                   padding: const EdgeInsets.all(2),
                   color: dispute.disputeApproved
@@ -567,6 +635,11 @@ Widget otherDispute(
                             )),
                 ],
               ),
+              dispute.explanatoryPic == null
+                  ? const SizedBox.shrink()
+                  : Image(
+                      image: NetworkImage(dispute.explanatoryPic!),
+                      fit: BoxFit.cover),
               Container(
                   padding: const EdgeInsets.all(2),
                   color: dispute.disputeApproved

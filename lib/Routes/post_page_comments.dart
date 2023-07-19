@@ -192,7 +192,8 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
                     currUser: widget.currUser,
                   ),
             widget.comments[widget.comments.length - 1].idSuggestion &&
-                    widget.comments[widget.comments.length - 1].disputed
+                    (widget.comments[widget.comments.length - 1].disputed ||
+                        widget.comments[widget.comments.length - 1].idReplaced)
                 ? CommentDisputes(
                     currUser: widget.currUser,
                     comment: widget.comments[widget.comments.length - 1],

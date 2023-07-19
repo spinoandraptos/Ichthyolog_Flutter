@@ -145,7 +145,8 @@ class CommentPageState extends State<CommentPage> {
                                         currUser: widget.currUser,
                                       ),
                             snapshot.data![index].idSuggestion &&
-                                    snapshot.data![index].disputed
+                                    (snapshot.data![index].disputed ||
+                                        snapshot.data![index].idReplaced)
                                 ? CommentDisputes(
                                     currUser: widget.currUser,
                                     comment: snapshot.data![index],

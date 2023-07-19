@@ -144,8 +144,10 @@ class ExpertApplicationPageState extends State<ExpertApplicationPage> {
                       )
                     ]));
               } else {
-                print(snapshot.error);
-                return const LoadingScreen();
+                return const Expanded(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [LoadingScreen()]));
               }
             }))
       ]),
