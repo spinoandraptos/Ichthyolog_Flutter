@@ -841,7 +841,8 @@ class OwnCommentState extends State<OwnComment> {
                                     });
                                   }
                                 } else {
-                                  if (widget.comment.upvotes == 19) {
+                                  if (widget.comment.upvotes == 19 &&
+                                      widget.comment.idSuggestion) {
                                     if (upvoteRequestProcessing) {
                                       null;
                                     } else {
@@ -1580,22 +1581,22 @@ class OtherCommentState extends State<OtherComment> {
                                 timeInSecForIosWeb: 1,
                               );
                             } else {
-                              if (snapshot.data![1]) {
-                                if (unDownvoteRequestProcessing) {
+                              if (snapshot.data![0]) {
+                                if (unUpvoteRequestProcessing) {
                                   null;
                                 } else {
-                                  unDownvoteRequestProcessingCallback();
+                                  unUpvoteRequestProcessingCallback();
                                   httpHelpers
-                                      .unDownVoteCommentRequest(
+                                      .unUpVoteCommentRequest(
                                           widget.comment.commentId,
                                           widget.userid,
                                           widget.jwt)
                                       .then((response) {
-                                    unDownvoteRequestProcessingCallback();
-                                    if (response == 'Comment Un-downvoted') {
+                                    unUpvoteRequestProcessingCallback();
+                                    if (response == 'Comment Un-upvoted') {
                                       widget.updateCallBack(response);
                                       Fluttertoast.showToast(
-                                        msg: 'Downvote Removed',
+                                        msg: 'Upvote Removed',
                                         toastLength: Toast.LENGTH_SHORT,
                                         gravity: ToastGravity.BOTTOM,
                                         timeInSecForIosWeb: 1,
@@ -1611,34 +1612,69 @@ class OtherCommentState extends State<OtherComment> {
                                   });
                                 }
                               } else {
-                                if (downvoteRequestProcessing) {
-                                  null;
+                                if (widget.comment.upvotes == 19 &&
+                                    widget.comment.idSuggestion) {
+                                  if (upvoteRequestProcessing) {
+                                    null;
+                                  } else {
+                                    upvoteRequestProcessingCallback();
+                                    httpHelpers
+                                        .upVoteCommentRequest(
+                                            widget.comment.commentId,
+                                            widget.userid,
+                                            widget.jwt)
+                                        .then((response) {
+                                      upvoteRequestProcessingCallback();
+                                      if (response == 'Comment Upvoted') {
+                                        widget.updateCallBack(response);
+                                        httpHelpers.verifyPostRequest(
+                                            widget.comment.postId, widget.jwt);
+                                        Fluttertoast.showToast(
+                                          msg: 'Comment upvoted',
+                                          toastLength: Toast.LENGTH_SHORT,
+                                          gravity: ToastGravity.BOTTOM,
+                                          timeInSecForIosWeb: 1,
+                                        );
+                                      } else {
+                                        Fluttertoast.showToast(
+                                          msg: 'Comment failed to upvote :(',
+                                          toastLength: Toast.LENGTH_SHORT,
+                                          gravity: ToastGravity.BOTTOM,
+                                          timeInSecForIosWeb: 1,
+                                        );
+                                      }
+                                    });
+                                  }
                                 } else {
-                                  downvoteRequestProcessingCallback();
-                                  httpHelpers
-                                      .downVoteCommentRequest(
-                                          widget.comment.commentId,
-                                          widget.userid,
-                                          widget.jwt)
-                                      .then((response) {
-                                    downvoteRequestProcessingCallback();
-                                    if (response == 'Comment Downvoted') {
-                                      widget.updateCallBack(response);
-                                      Fluttertoast.showToast(
-                                        msg: 'Comment Downvoted',
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.BOTTOM,
-                                        timeInSecForIosWeb: 1,
-                                      );
-                                    } else {
-                                      Fluttertoast.showToast(
-                                        msg: 'Comment failed to Downvote :(',
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.BOTTOM,
-                                        timeInSecForIosWeb: 1,
-                                      );
-                                    }
-                                  });
+                                  if (upvoteRequestProcessing) {
+                                    null;
+                                  } else {
+                                    upvoteRequestProcessingCallback();
+                                    httpHelpers
+                                        .upVoteCommentRequest(
+                                            widget.comment.commentId,
+                                            widget.userid,
+                                            widget.jwt)
+                                        .then((response) {
+                                      upvoteRequestProcessingCallback();
+                                      if (response == 'Comment Upvoted') {
+                                        widget.updateCallBack(response);
+                                        Fluttertoast.showToast(
+                                          msg: 'Comment upvoted',
+                                          toastLength: Toast.LENGTH_SHORT,
+                                          gravity: ToastGravity.BOTTOM,
+                                          timeInSecForIosWeb: 1,
+                                        );
+                                      } else {
+                                        Fluttertoast.showToast(
+                                          msg: 'Comment failed to upvote :(',
+                                          toastLength: Toast.LENGTH_SHORT,
+                                          gravity: ToastGravity.BOTTOM,
+                                          timeInSecForIosWeb: 1,
+                                        );
+                                      }
+                                    });
+                                  }
                                 }
                               }
                             }

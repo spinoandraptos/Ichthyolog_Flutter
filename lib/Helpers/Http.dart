@@ -616,7 +616,7 @@ class HttpHelpers {
           species: '',
           commonNames: '');
     });
-    content = content.split('(')[0].split(', ')[0];
+    content = (content.split('(')[0].split(', ')[0]).trim();
 
     if (speciesRecord.class_ != '' &&
         speciesRecord.order != '' &&
