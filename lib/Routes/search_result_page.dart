@@ -94,7 +94,7 @@ class SearchResultPageState extends State<SearchResultPage>
                 Text(
                   '${widget.dataList.length} results found',
                   style: const TextStyle(
-                    fontSize: 30,
+                    fontSize: 25,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

@@ -81,10 +81,7 @@ class StatsResultPageState extends State<StatsResultPage>
                       padding: const EdgeInsets.all(20),
                       margin: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        border: Border.all(
-                          color: const Color.fromARGB(255, 0, 0, 0),
-                          width: 3,
-                        ),
+                        borderRadius: BorderRadius.circular(10),
                         color: const Color.fromARGB(255, 134, 195, 246),
                         boxShadow: [
                           BoxShadow(
@@ -154,6 +151,7 @@ class StatsResultPageState extends State<StatsResultPage>
                 );
               },
             ),
+            const SizedBox(height: 10),
             SizedBox(
               height: 450,
               child: FutureBuilder<List<List<List<String>>>>(

@@ -258,12 +258,8 @@ class StatisticsPageState extends State<StatisticsPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
-              child: GridView.count(
-                crossAxisCount: 1,
-                childAspectRatio: 1.6,
-                padding: const EdgeInsets.all(16),
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   AnimatedBuilder(
                     animation: _animationController,
@@ -282,100 +278,161 @@ class StatisticsPageState extends State<StatisticsPage>
                         position: slideAnimation,
                         child: Opacity(
                           opacity: fadeAnimation.value,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                mux = 'species';
-                              });
-                            },
-                            style: ButtonStyle(
-                              shape: MaterialStateProperty.all<CircleBorder>(
-                                const CircleBorder(),
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            height: 100,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  mux = 'species';
+                                });
+                              },
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                    const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5)),
+                                )),
                               ),
-                            ),
-                            child: const Text(
-                              'Species',
-                              style: TextStyle(fontSize: 40),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  AnimatedBuilder(
-                    animation: _animationController,
-                    builder: (context, child) {
-                      final slideAnimation = Tween<Offset>(
-                        begin: const Offset(1, 0),
-                        end: const Offset(0, 0),
-                      ).animate(_animationController);
-
-                      final fadeAnimation = Tween<double>(
-                        begin: 0,
-                        end: 1,
-                      ).animate(_animationController);
-
-                      return SlideTransition(
-                        position: slideAnimation,
-                        child: Opacity(
-                          opacity: fadeAnimation.value,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                mux = 'classification';
-                              });
-                            },
-                            style: ButtonStyle(
-                              shape: MaterialStateProperty.all<CircleBorder>(
-                                  const CircleBorder()),
-                            ),
-                            child: const Text(
-                              'Classification',
-                              style: TextStyle(fontSize: 35),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  AnimatedBuilder(
-                    animation: _animationController,
-                    builder: (context, child) {
-                      final slideAnimation = Tween<Offset>(
-                        begin: const Offset(1, 0),
-                        end: const Offset(0, 0),
-                      ).animate(_animationController);
-
-                      final fadeAnimation = Tween<double>(
-                        begin: 0,
-                        end: 1,
-                      ).animate(_animationController);
-
-                      return SlideTransition(
-                        position: slideAnimation,
-                        child: Opacity(
-                          opacity: fadeAnimation.value,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const CatalogueMuxPage(),
+                              child: Row(children: [
+                                const SizedBox(width: 10),
+                                Image.asset(
+                                  'assets/images/species_logo.png',
+                                  height: 60,
+                                  width: 60,
                                 ),
-                              );
-                            },
-                            style: ButtonStyle(
-                              shape: MaterialStateProperty.all<CircleBorder>(
-                                const CircleBorder(),
-                              ),
-                              padding: MaterialStateProperty.all<EdgeInsets>(
-                                  const EdgeInsets.all(10)),
+                                const SizedBox(width: 21),
+                                const Text(
+                                  'Species',
+                                  style: TextStyle(
+                                      fontSize: 35,
+                                      fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ]),
                             ),
-                            child: const Text(
-                              'Species\nCatalogue',
-                              style: TextStyle(fontSize: 40),
-                              textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+                  AnimatedBuilder(
+                    animation: _animationController,
+                    builder: (context, child) {
+                      final slideAnimation = Tween<Offset>(
+                        begin: const Offset(1, 0),
+                        end: const Offset(0, 0),
+                      ).animate(_animationController);
+
+                      final fadeAnimation = Tween<double>(
+                        begin: 0,
+                        end: 1,
+                      ).animate(_animationController);
+
+                      return SlideTransition(
+                        position: slideAnimation,
+                        child: Opacity(
+                          opacity: fadeAnimation.value,
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            height: 100,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  mux = 'classification';
+                                });
+                              },
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                    const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5)),
+                                )),
+                              ),
+                              child: Row(children: [
+                                const SizedBox(width: 10),
+                                Image.asset(
+                                  'assets/images/classification_logo.png',
+                                  height: 60,
+                                  width: 60,
+                                ),
+                                const SizedBox(width: 20),
+                                const Text(
+                                  'Classification',
+                                  style: TextStyle(
+                                      fontSize: 35,
+                                      fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.right,
+                                ),
+                              ]),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+                  AnimatedBuilder(
+                    animation: _animationController,
+                    builder: (context, child) {
+                      final slideAnimation = Tween<Offset>(
+                        begin: const Offset(1, 0),
+                        end: const Offset(0, 0),
+                      ).animate(_animationController);
+
+                      final fadeAnimation = Tween<double>(
+                        begin: 0,
+                        end: 1,
+                      ).animate(_animationController);
+
+                      return SlideTransition(
+                        position: slideAnimation,
+                        child: Opacity(
+                          opacity: fadeAnimation.value,
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            height: 100,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const CatalogueMuxPage(),
+                                  ),
+                                );
+                              },
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                    const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5)),
+                                )),
+                                padding: MaterialStateProperty.all<EdgeInsets>(
+                                    const EdgeInsets.all(10)),
+                              ),
+                              child: Row(
+                                children: [
+                                  const SizedBox(width: 18),
+                                  Image.asset(
+                                    'assets/images/catalogue_logo.png',
+                                    height: 60,
+                                    width: 60,
+                                  ),
+                                  const SizedBox(width: 18),
+                                  const Text(
+                                    'Catalogue',
+                                    style: TextStyle(
+                                        fontSize: 35,
+                                        fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),

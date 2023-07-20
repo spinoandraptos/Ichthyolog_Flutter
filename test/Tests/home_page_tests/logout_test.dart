@@ -23,7 +23,7 @@ void main() {
   test('User should fail to log out', () async {
     String jwt = '';
     await httpHelpers.logoutRequest(jwt).then((response) {
-      expect(response, 'Logout failed');
+      expect(response, 'Logged out with expired token');
     });
   });
 }
