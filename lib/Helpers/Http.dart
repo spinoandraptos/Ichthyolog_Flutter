@@ -346,7 +346,7 @@ class HttpHelpers {
         'Authorisation': jwt
       },
       body: json.encode(<String, dynamic>{
-        'title': title,
+        'title': title.trim(),
         'description': description,
         'sightingLocation': sightingLocation,
         'sightingTime': sightingTime,
@@ -358,7 +358,6 @@ class HttpHelpers {
         'species': species
       }),
     );
-    print(response.body);
     if (response.statusCode == 201) {
       return ('Post Uploaded');
     } else if (response.body == 'jwt expired') {

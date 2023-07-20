@@ -116,13 +116,34 @@ class HomePageState extends State<HomePage> {
                                           MediaQuery.of(context).size.height *
                                               1 /
                                               36),
-                                  Text(
-                                    snapshotUser.data!.username,
-                                    style: const TextStyle(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white),
-                                  ),
+                                  Wrap(children: [
+                                    Text(
+                                      snapshotUser.data!.username,
+                                      style: const TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white),
+                                    ),
+                                    snapshotUser.data!.expert
+                                        ? Container(
+                                            decoration: const BoxDecoration(
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(
+                                                  60,
+                                                ),
+                                              ),
+                                            ),
+                                            margin:
+                                                const EdgeInsets.only(left: 5),
+                                            child: const Text(
+                                              'expert',
+                                              style: TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.white),
+                                            ),
+                                          )
+                                        : const SizedBox.shrink()
+                                  ]),
                                   SizedBox(
                                       height:
                                           MediaQuery.of(context).size.height *
@@ -1271,7 +1292,7 @@ class HomePageState extends State<HomePage> {
                                   gravity: ToastGravity.BOTTOM,
                                   timeInSecForIosWeb: 1,
                                 );
-
+                                Navigator.pop(context);
                                 setState(() {});
                               },
                             );

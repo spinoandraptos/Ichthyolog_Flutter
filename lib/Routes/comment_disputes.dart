@@ -333,6 +333,15 @@ Widget ownDispute(
             children: [
               Row(
                 children: [
+                  const Padding(
+                      padding: EdgeInsets.only(right: 4, bottom: 2),
+                      child: Text(
+                        'Expert',
+                        style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w500,
+                            color: Color.fromARGB(255, 51, 64, 113)),
+                      )),
                   Padding(
                       padding: const EdgeInsets.only(bottom: 2),
                       child: Text(
@@ -613,6 +622,15 @@ Widget otherDispute(
             children: [
               Row(
                 children: [
+                  const Padding(
+                      padding: EdgeInsets.only(right: 4, bottom: 2),
+                      child: Text(
+                        'Expert',
+                        style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w500,
+                            color: Color.fromARGB(255, 51, 64, 113)),
+                      )),
                   Padding(
                       padding: const EdgeInsets.only(bottom: 2),
                       child: Text(

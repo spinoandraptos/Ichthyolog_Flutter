@@ -11,6 +11,7 @@ class Comment {
   final int upvotes;
   final bool edited;
   final String editedTime;
+  final bool authorExpert;
   final bool idSuggestion;
   final bool suggestionApproved;
   final bool suggestionRejected;
@@ -29,6 +30,7 @@ class Comment {
       required this.upvotes,
       required this.edited,
       required this.editedTime,
+      required this.authorExpert,
       required this.idSuggestion,
       required this.suggestionApproved,
       required this.suggestionRejected,
@@ -52,6 +54,7 @@ class Comment {
             ? 'Null'
             : DateFormat("hh:mm a, dd/MM/yyyy")
                 .format(DateTime.parse(json['editedtime'])),
+        authorExpert: json['authorexpert'],
         idSuggestion: json['idsuggestion'],
         suggestionApproved: json['suggestionapproved'],
         suggestionRejected: json['suggestionrejected'],

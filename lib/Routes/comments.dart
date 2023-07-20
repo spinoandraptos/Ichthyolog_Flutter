@@ -167,6 +167,20 @@ class OwnCommentState extends State<OwnComment> {
                                                         style: TextStyle(
                                                             fontSize: 13),
                                                       )),
+                                        widget.comment.authorExpert
+                                            ? const Padding(
+                                                padding: EdgeInsets.only(
+                                                    left: 3, bottom: 2),
+                                                child: Text(
+                                                  'Expert',
+                                                  style: TextStyle(
+                                                      fontSize: 11,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: Color.fromARGB(
+                                                          255, 51, 64, 113)),
+                                                ))
+                                            : const SizedBox.shrink(),
                                       ],
                                     ),
                                     Container(
@@ -1126,6 +1140,19 @@ class OtherCommentState extends State<OtherComment> {
                               ? [
                                   Row(
                                     children: [
+                                      widget.comment.authorExpert
+                                          ? const Padding(
+                                              padding: EdgeInsets.only(
+                                                  right: 4, bottom: 2),
+                                              child: Text(
+                                                'Expert',
+                                                style: TextStyle(
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Color.fromARGB(
+                                                        255, 51, 64, 113)),
+                                              ))
+                                          : const SizedBox.shrink(),
                                       Padding(
                                           padding:
                                               const EdgeInsets.only(bottom: 2),
