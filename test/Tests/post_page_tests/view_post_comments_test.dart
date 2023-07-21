@@ -7,7 +7,8 @@ void main() {
 
   //user fetches post comments using correct postid
   test('User should fetch post comments successfully', () async {
-    int postid = Random().nextInt(6);
+    List<int> data = [22, 46, 59];
+    int postid = data[Random().nextInt(2)];
     await httpHelpers.viewPostCommentsRequest(postid).then((response) {
       expect(response.isNotEmpty, true);
     });

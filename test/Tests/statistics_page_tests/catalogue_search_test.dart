@@ -10,9 +10,7 @@ void main() {
     await httpHelpers.searchClassCatalogue().then(
       (response) {
         expect(response, [
-          ['Actinopterygii', '1'],
-          ['Chondrichthyes', '1'],
-          ['null', '10']
+          ['Actinopterygii', '5']
         ]);
       },
     );
@@ -24,9 +22,9 @@ void main() {
     await httpHelpers.searchOrderCatalogue().then(
       (response) {
         expect(response, [
-          ['Dummy 1', '1'],
-          ['Perciformes', '1'],
-          ['null', '10']
+          ['Carangiformes', '3'],
+          ['Cichliformes', '1'],
+          ['Kurtiformes', '1']
         ]);
       },
     );
@@ -38,9 +36,9 @@ void main() {
     await httpHelpers.searchFamilyCatalogue().then(
       (response) {
         expect(response, [
-          ['Channidae', '1'],
-          ['Cichlidae', '1'],
-          ['null', '10']
+          ['Apogonidae', '1'],
+          ['Carangidae', '3'],
+          ['Cichlidae', '1']
         ]);
       },
     );
@@ -52,10 +50,53 @@ void main() {
     await httpHelpers.searchGenusCatalogue().then(
       (response) {
         expect(response, [
-          ['Channidae', '1'],
+          ['Atule', '1'],
+          ['Carangoides', '1'],
           ['Cichla', '1'],
-          ['null', '10']
+          ['Fowleria', '1'],
+          ['Scomberoides', '1']
         ]);
+      },
+    );
+  });
+
+  test(
+      'Test whether past day species count returns correct list of species count',
+      () async {
+    await httpHelpers.speciesCountByDay('Variegated Cardinalfish').then(
+      (response) {
+        expect(response.length, 25);
+      },
+    );
+  });
+
+  test(
+      'Test whether past week species count returns correct list of species count',
+      () async {
+    await httpHelpers.speciesCountByWeek('Variegated Cardinalfish').then(
+      (response) {
+        expect(response.length, 7);
+      },
+    );
+  });
+
+  test(
+      'Test whether past month species count returns correct list of species count',
+      () async {
+    await httpHelpers.speciesCountByMonth('Variegated Cardinalfish').then(
+      (response) {
+        expect(response.length, 30);
+      },
+    );
+  });
+
+  test(
+      'Test whether species count stat returns correct lists of species counts',
+      () async {
+    await httpHelpers.speciesCountStats('Variegated Cardinalfish').then(
+      (response) {
+        expect([response[0].length, response[1].length, response[2].length],
+            [25, 7, 30]);
       },
     );
   });

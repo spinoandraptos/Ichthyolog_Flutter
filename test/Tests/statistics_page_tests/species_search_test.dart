@@ -6,7 +6,7 @@ void main() {
   final httpHelpers = HttpHelpers();
 
   test('Test whether search by species shows correct species stats', () async {
-    String testerSpecies = 'AAA';
+    String testerSpecies = 'Yellowtail Scad';
     String testerDate =
         DateFormat("yyyy-MM-dd hh:mm:ss").format(DateTime.now());
 
@@ -14,7 +14,7 @@ void main() {
         .searchSpecies(testerSpecies, "2000-01-01 00:00:00", testerDate, "")
         .then(
       (response) {
-        expect(response, ['1', '2023-06-15T04:49:00.000Z', 'AAAAAAAA']);
+        expect(response, ['1', '2018-07-04T21:45:00.000Z', 'Labrador Park']);
       },
     );
   });

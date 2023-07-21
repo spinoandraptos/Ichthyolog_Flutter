@@ -19,7 +19,7 @@ void main() {
             "2000-01-01 00:00:00", testerDate, "")
         .then(
       (response) {
-        expect(response, ['Temensis Bass']);
+        expect(response, ['Temensis Peacock Bass ']);
       },
     );
   });
@@ -33,13 +33,19 @@ void main() {
         .searchClass(testerClass, "2000-01-01 00:00:00", testerDate, "")
         .then(
       (response) {
-        expect(response, ['Temensis Bass']);
+        expect(response, [
+          'Brownback Trevally',
+          'Needlescale Queenfish',
+          'Temensis Peacock Bass ',
+          'Variegated Cardinalfish ',
+          'Yellowtail Scad'
+        ]);
       },
     );
   });
 
   test('Test whether search by order shows correct species list', () async {
-    String testOrder = 'Perciformes';
+    String testOrder = 'Carangiformes';
     String testerDate =
         DateFormat("yyyy-MM-dd hh:mm:ss").format(DateTime.now());
 
@@ -47,7 +53,8 @@ void main() {
         .searchOrder(testOrder, "2000-01-01 00:00:00", testerDate, "")
         .then(
       (response) {
-        expect(response, ['Temensis Bass']);
+        expect(response,
+            ['Brownback Trevally', 'Needlescale Queenfish', 'Yellowtail Scad']);
       },
     );
   });
@@ -61,7 +68,7 @@ void main() {
         .searchFamily(testFamily, "2000-01-01 00:00:00", testerDate, "")
         .then(
       (response) {
-        expect(response, ['Temensis Bass']);
+        expect(response, ['Temensis Peacock Bass ']);
       },
     );
   });
@@ -75,7 +82,7 @@ void main() {
         .searchGenus(testGenus, "2000-01-01 00:00:00", testerDate, "")
         .then(
       (response) {
-        expect(response, ['Temensis Bass']);
+        expect(response, ['Temensis Peacock Bass ']);
       },
     );
   });
