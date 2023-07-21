@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../Helpers/helper.dart';
-import '../Helpers/http.dart';
+import '../Helpers/Http.dart';
 import '../Helpers/standard_widgets.dart';
 import 'date_time_picker.dart';
 import 'Stepper.dart';
-import 'stats_result_page.dart';
 import 'search_result_page.dart';
 import 'catalogue_page.dart';
 import 'catalogue_mux_page.dart';
@@ -117,9 +116,12 @@ class StatisticsPageState extends State<StatisticsPage>
       String jwt) {
     // Insert HTTP search query here with given parameters
     // Return a result page with approriate contents
+    print(species);
+    print('$date1 $time1');
+    print('$date2 $time2');
     if (mux == 'species') {
       httpHelpers
-          .searchSpecies(
+          .searchSpeciesName(
         species,
         '$date1 $time1',
         '$date2 $time2',
@@ -130,9 +132,11 @@ class StatisticsPageState extends State<StatisticsPage>
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => StatsResultPage(
+              builder: (context) => SearchResultPage(
                 dataList: value,
-                species: species,
+                startTime: '$date1 $time1',
+                endTime: '$date2 $time2',
+                sightinglocation: location,
               ),
             ),
           );
@@ -682,7 +686,7 @@ class StatisticsPageState extends State<StatisticsPage>
         order = speciesRecord.order;
         family = speciesRecord.family;
         genus = speciesRecord.genus;
-        species = speciesRecord.species;
+        species = speciesRecord.commonNames;
       });
     }
   }

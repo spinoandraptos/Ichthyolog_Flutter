@@ -1240,6 +1240,28 @@ class HttpHelpers {
   }
 
 // statistics request
+  Future<List<String>> searchSpeciesName(String species, String startTime,
+      String endTime, String sightinglocation) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/statistics/speciesName/$species';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<String> speciesList = [];
+      var responseData = json.decode(response.body);
+      for (var everyspecies in responseData) {
+        speciesList.add(everyspecies['title']);
+      }
+      return speciesList;
+    } else {
+      return Future.error('Family not found! Error ${response.statusCode}');
+    }
+  }
+
   Future<List<String>> searchSpecies(String species, String startTime,
       String endTime, String sightinglocation) async {
     var uri = Uri.https(
@@ -1276,11 +1298,11 @@ class HttpHelpers {
       String sightinglocation) async {
     if (class_ != '' && order == '' && family == '' && genus == '') {
       return searchClass(class_, startTime, endTime, sightinglocation);
-    } else if (class_ != '' && order != '' && family == '' && genus == '') {
+    } else if (order != '' && family == '' && genus == '') {
       return searchOrder(order, startTime, endTime, sightinglocation);
-    } else if (class_ != '' && order != '' && family != '' && genus == '') {
+    } else if (family != '' && genus == '') {
       return searchFamily(family, startTime, endTime, sightinglocation);
-    } else if (class_ != '' && order != '' && family != '' && genus != '') {
+    } else if (genus != '') {
       return searchGenus(genus, startTime, endTime, sightinglocation);
     } else {
       return Future.error('Classification not found!');
