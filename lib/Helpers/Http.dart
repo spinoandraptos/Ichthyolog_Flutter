@@ -1205,7 +1205,6 @@ class HttpHelpers {
         body: json.encode(<String, dynamic>{
           'rejectionreason': rejectionReason,
         }));
-    print(response.body);
     if (response.statusCode == 200) {
       return ('Application rejected successfully!');
     } else if (response.body == 'Application not found') {
