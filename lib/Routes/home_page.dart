@@ -99,7 +99,7 @@ class HomePageState extends State<HomePage> {
                               ],
                             )),
                             height:
-                                MediaQuery.of(context).size.height * 1 / 2.5,
+                                MediaQuery.of(context).size.height * 1 / 2.7,
                             width: MediaQuery.of(context).size.width,
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -144,27 +144,8 @@ class HomePageState extends State<HomePage> {
                                           )
                                         : const SizedBox.shrink()
                                   ]),
-                                  SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              1 /
-                                              80),
-                                  Text(
-                                    '${snapshotUser.data!.totalposts} sightings  |  ${snapshotUser.data!.speciescount} species',
-                                    style: const TextStyle(
-                                        fontSize: 16, color: Colors.white),
-                                  ),
                                 ]),
                           ),
-                          Padding(
-                              padding: EdgeInsets.only(
-                                  top: MediaQuery.of(context).size.height *
-                                      1 /
-                                      30,
-                                  bottom: MediaQuery.of(context).size.height *
-                                      1 /
-                                      45),
-                              child: userLevel(snapshotUser.data!)),
                           FutureBuilder(
                               future: httpHelpers.viewOwnPostsRequest(jwt),
                               builder: ((context, snapshot) {
@@ -182,7 +163,7 @@ class HomePageState extends State<HomePage> {
                                                           .size
                                                           .height *
                                                       1 /
-                                                      8,
+                                                      5,
                                                 ),
                                                 const Text(
                                                   'No sightings yet, start posting!',
@@ -1292,7 +1273,6 @@ class HomePageState extends State<HomePage> {
                                   gravity: ToastGravity.BOTTOM,
                                   timeInSecForIosWeb: 1,
                                 );
-                                Navigator.pop(context);
                                 setState(() {});
                               },
                             );

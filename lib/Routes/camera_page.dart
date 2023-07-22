@@ -367,6 +367,7 @@ class CameraPageState extends State<CameraPage> {
     final key = const Uuid().v4();
     final file = AWSFile.fromPath(image!.path);
     if (picUploadRequestProcessing) {
+      null;
     } else {
       try {
         Amplify.Storage.uploadFile(
@@ -378,6 +379,7 @@ class CameraPageState extends State<CameraPage> {
         );
 
         //send description and other post information to database
+        picUploadRequestProcessingCallback();
         httpHelpers
             .uploadPostRequest(
                 title,
@@ -394,6 +396,7 @@ class CameraPageState extends State<CameraPage> {
                 genus,
                 species)
             .then((String response) {
+          picUploadRequestProcessingCallback();
           Fluttertoast.showToast(
             msg: response,
             toastLength: Toast.LENGTH_SHORT,

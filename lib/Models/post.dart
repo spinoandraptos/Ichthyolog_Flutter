@@ -48,11 +48,11 @@ class Post {
         userid: json['userid'],
         authorname: json['authorname'],
         title: json['title'],
-        description: json['description'],
+        description: json['description'] ?? 'Not specified',
         pic: json['imageurl'],
         uploadTime: DateFormat("hh:mm a, dd/MM/yyyy")
             .format(DateTime.parse(json['time'])),
-        sightingLocation: json['sightinglocation'],
+        sightingLocation: json['sightinglocation'] ?? 'Not specified',
         sightingTime: DateFormat("hh:mm a, dd/MM/yyyy")
             .format(DateTime.parse(json['sightingtime'])),
         authorpic: json['authorpicurl'],

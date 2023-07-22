@@ -338,6 +338,15 @@ class HttpHelpers {
       String family,
       String genus,
       String species) async {
+    checkBlank(title);
+    checkBlank(description);
+    checkBlank(sightingLocation);
+    checkBlank(sightingTime);
+    checkBlank(class_);
+    checkBlank(order);
+    checkBlank(family);
+    checkBlank(genus);
+    checkBlank(species);
     String url = 'https://ichthyolog-nodejs.onrender.com/post';
     var response = await http.post(
       Uri.parse(url),
@@ -358,6 +367,7 @@ class HttpHelpers {
         'species': species
       }),
     );
+    print(response.body);
     if (response.statusCode == 201) {
       return ('Post Uploaded');
     } else if (response.body == 'jwt expired') {
@@ -1596,5 +1606,13 @@ class HttpHelpers {
       speciesCountByMonth(species)
     ]);
     return dataList;
+  }
+}
+
+checkBlank(String value) {
+  if (value == '') {
+    print('$value: true');
+  } else {
+    return print('$value: false');
   }
 }
