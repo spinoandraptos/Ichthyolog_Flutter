@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 void main() {
   final httpHelpers = HttpHelpers();
 
-  test('User should edit comments successfully', () async {
+  test('User should perform ID suggestion successfully', () async {
     String jwt = '';
     await httpHelpers
         .loginRequest('tester8@gmail.com', 'tester8', 'Tester8!')

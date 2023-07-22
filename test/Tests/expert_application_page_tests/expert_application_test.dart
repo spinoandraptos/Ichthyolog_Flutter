@@ -6,7 +6,7 @@ import 'dart:math';
 void main() {
   final httpHelpers = HttpHelpers();
 
-  test('User should edit comments successfully', () async {
+  test('User should work with expert applications successfully', () async {
     String jwt = '';
     int userid = 0;
     int value = Random().nextInt(200) + 100;
