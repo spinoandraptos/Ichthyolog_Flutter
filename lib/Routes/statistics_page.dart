@@ -56,7 +56,9 @@ class StatisticsPageState extends State<StatisticsPage>
   final speciesController = TextEditingController();
   final locationController = TextEditingController();
   late AnimationController _animationController;
+  // ignore: unused_field
   late Animation<double> _fadeAnimation;
+  // ignore: unused_field
   late Animation<Offset> _slideAnimation;
   List<String> allSpecies = <String>[];
 
@@ -686,7 +688,7 @@ class StatisticsPageState extends State<StatisticsPage>
         order = speciesRecord.order;
         family = speciesRecord.family;
         genus = speciesRecord.genus;
-        species = speciesRecord.commonNames;
+        species = speciesRecord.commonNames.split(',')[0];
       });
     }
   }
