@@ -96,6 +96,7 @@ class ExpertApplicationPageState extends State<ExpertApplicationPage> {
                             MediaQuery.of(context).size.height * 8.2 / 10,
                       ),
                       child: ListView.builder(
+                          shrinkWrap: true,
                           itemCount: snapshot.data!.length,
                           itemBuilder: (context, index) {
                             return snapshot.data![index].approved == 'false'

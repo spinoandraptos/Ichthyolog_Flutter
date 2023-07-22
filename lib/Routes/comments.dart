@@ -196,11 +196,21 @@ class OwnCommentState extends State<OwnComment> {
                                                         255, 231, 250, 237)
                                                 : const Color.fromARGB(
                                                     255, 231, 237, 250),
-                                        child: Text(singaporeRecords
-                                            .singleWhere((record) =>
+                                        child: Text(singaporeRecords.singleWhere(
+                                            (record) =>
                                                 '${record.commonNames} (${record.species})' ==
-                                                widget.comment.content)
-                                            .species))
+                                                widget.comment.content,
+                                            orElse: () {
+                                          return SpeciesRecord(
+                                              class_: '',
+                                              order: '',
+                                              family: '',
+                                              genus: '',
+                                              species: widget.comment.content
+                                                  .split('(')[1]
+                                                  .split(')')[0],
+                                              commonNames: '');
+                                        }).species))
                                   ]
                                 : [
                                     Padding(
@@ -1205,11 +1215,21 @@ class OtherCommentState extends State<OtherComment> {
                                                       255, 231, 250, 237)
                                               : const Color.fromARGB(
                                                   255, 231, 237, 250),
-                                      child: Text(singaporeRecords
-                                          .singleWhere((record) =>
+                                      child: Text(singaporeRecords.singleWhere(
+                                          (record) =>
                                               '${record.commonNames} (${record.species})' ==
-                                              widget.comment.content)
-                                          .species))
+                                              widget.comment.content,
+                                          orElse: () {
+                                        return SpeciesRecord(
+                                            class_: '',
+                                            order: '',
+                                            family: '',
+                                            genus: '',
+                                            species: widget.comment.content
+                                                .split('(')[1]
+                                                .split(')')[0],
+                                            commonNames: '');
+                                      }).species))
                                 ]
                               : [
                                   Row(children: [
