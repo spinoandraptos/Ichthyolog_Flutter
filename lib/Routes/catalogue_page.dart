@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'search_result_page.dart';
 import '../Helpers/http.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class CataloguePage extends StatefulWidget {
   final List<List<dynamic>> itemList;
@@ -77,8 +78,7 @@ class CataloguePageState extends State<CataloguePage>
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor:
-            const Color.fromARGB(255, 51, 64, 113), // Choose a desired color
+        backgroundColor: const Color.fromARGB(255, 51, 64, 113),
       ),
       body: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -96,34 +96,42 @@ class CataloguePageState extends State<CataloguePage>
             child: FadeTransition(
               opacity: _opacityAnimation,
               child: Card(
-                child: ListTile(
-                  title: Text(
-                    '$string1 ($string2)',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  onTap: () {
-                    chooseSearch(widget.mux)
-                        .call(
-                          string1,
-                          "2000-01-01 00:00:00",
-                          DateFormat("yyyy-MM-dd hh:mm:ss")
-                              .format(DateTime.now()),
-                          '',
-                        )
-                        .then((value) => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SearchResultPage(
-                                  dataList: value,
-                                  startTime: "2000-01-01 00:00:00",
-                                  endTime: DateFormat("yyyy-MM-dd hh:mm:ss")
-                                      .format(DateTime.now()),
-                                  sightinglocation: '',
+                shadowColor: Colors.black,
+                child: Center(
+                  child: ListTile(
+                    titleAlignment: ListTileTitleAlignment.center,
+                    title: AutoSizeText(
+                      '$string1 ($string2)',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      maxLines: 1,
+                      minFontSize: 5,
+                      maxFontSize: double.infinity,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    onTap: () {
+                      chooseSearch(widget.mux)
+                          .call(
+                            string1,
+                            "2000-01-01 00:00:00",
+                            DateFormat("yyyy-MM-dd hh:mm:ss")
+                                .format(DateTime.now()),
+                            '',
+                          )
+                          .then((value) => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SearchResultPage(
+                                    dataList: value,
+                                    startTime: "2000-01-01 00:00:00",
+                                    endTime: DateFormat("yyyy-MM-dd hh:mm:ss")
+                                        .format(DateTime.now()),
+                                    sightinglocation: '',
+                                  ),
                                 ),
-                              ),
-                            ));
-                  },
+                              ));
+                    },
+                  ),
                 ),
               ),
             ),
