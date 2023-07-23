@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../main.dart';
 import 'package:flutter/material.dart';
 import '../Helpers/standard_widgets.dart';
 import 'package:image_picker/image_picker.dart';
@@ -617,6 +618,26 @@ class HomePageState extends State<HomePage> {
                                                 );
                                                 if (response == 'User Edited') {
                                                   Navigator.pop(context);
+                                                  if (newUsername != '') {
+                                                    httpHelpers
+                                                        .loginRequest(
+                                                            newUsername,
+                                                            newUsername,
+                                                            newPassword == ''
+                                                                ? oldPassword
+                                                                : newPassword)
+                                                        .then((String
+                                                            response) async {
+                                                      if (response != 'Password Incorrect' &&
+                                                          response !=
+                                                              'User Not Found' &&
+                                                          response != 'Error') {
+                                                        await storage.write(
+                                                            key: "jwt",
+                                                            value: response);
+                                                      }
+                                                    });
+                                                  }
                                                   setState(() {
                                                     newUsername = '';
                                                     newEmail = '';

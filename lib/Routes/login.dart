@@ -147,20 +147,20 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget forgotPasswordButton() {
-    return Container(
-      margin: const EdgeInsets.only(right: 40, left: 40),
-      child: Align(
-        alignment: Alignment.topRight,
-        child: TextButton(
-          onPressed: () {
-            // TODO: implement reset password functionality
-          },
-          child: const Text('Forgot Password?'),
-        ),
-      ),
-    );
-  }
+  // Widget forgotPasswordButton() {
+  //   return Container(
+  //     margin: const EdgeInsets.only(right: 40, left: 40),
+  //     child: Align(
+  //       alignment: Alignment.topRight,
+  //       child: TextButton(
+  //         onPressed: () {
+  //           // TODO: implement reset password functionality
+  //         },
+  //         child: const Text('Forgot Password?'),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget loginButton() {
     return SizedBox(
@@ -233,10 +233,7 @@ class LoginPageState extends State<LoginPage> {
 
                   //Password field
                   passwordField(),
-
-                  //Forgot password button
-                  forgotPasswordButton(),
-                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 40),
+                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 35),
 
                   //Login button
                   loginButton(),
@@ -245,7 +242,7 @@ class LoginPageState extends State<LoginPage> {
                   //Sign up button
                   signupButton(),
 
-                  //Visit gallery directly button\
+                  //Visit gallery directly button
                   galleryButton()
                 ],
               ),

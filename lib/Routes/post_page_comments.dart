@@ -37,24 +37,35 @@ class PostPageMultiCommentState extends State<PostPageMultiComment> {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      widget.comments[widget.comments.length - 1].authorId ==
-              widget.decodedJWT['userid']
-          ? OwnComment(
-              comment: widget.comments[0],
-              jwt: widget.jwt,
-              updateCallBack: widget.updateCallBack,
-              userid: widget.decodedJWT['userid'],
-              postid: widget.postid,
-              currUser: widget.currUser,
-            )
-          : OtherComment(
-              comment: widget.comments[0],
-              jwt: widget.jwt,
-              updateCallBack: widget.updateCallBack,
-              userid: widget.decodedJWT['userid'],
-              postid: widget.postid,
-              currUser: widget.currUser,
-            ),
+      widget.jwt == ''
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 25),
+              child: OtherComment(
+                comment: widget.comments[widget.comments.length - 1],
+                jwt: widget.jwt,
+                updateCallBack: widget.updateCallBack,
+                userid: widget.decodedJWT['userid'] ?? -1,
+                postid: widget.postid,
+                currUser: widget.currUser,
+              ))
+          : widget.comments[widget.comments.length - 1].authorId ==
+                  widget.decodedJWT['userid']
+              ? OwnComment(
+                  comment: widget.comments[0],
+                  jwt: widget.jwt,
+                  updateCallBack: widget.updateCallBack,
+                  userid: widget.decodedJWT['userid'],
+                  postid: widget.postid,
+                  currUser: widget.currUser,
+                )
+              : OtherComment(
+                  comment: widget.comments[0],
+                  jwt: widget.jwt,
+                  updateCallBack: widget.updateCallBack,
+                  userid: widget.decodedJWT['userid'],
+                  postid: widget.postid,
+                  currUser: widget.currUser,
+                ),
       TextButton(
         onPressed: () {
           Navigator.push(
