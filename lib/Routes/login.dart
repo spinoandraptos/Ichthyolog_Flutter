@@ -39,6 +39,7 @@ class LoginPageState extends State<LoginPage> {
     });
   }
 
+  // check if information filled in is valid, or if the log in request is successful
   void validateForm(Function loginProcessingCallback) {
     final bool? isValid = _formKey.currentState?.validate();
     if (isValid == true) {

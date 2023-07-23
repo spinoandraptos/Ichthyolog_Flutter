@@ -84,6 +84,8 @@ class SearchResultPageState extends State<SearchResultPage>
           },
         ),
       ),
+
+      // Display search results in a list form with animation
       body: ListView.builder(
         itemCount: widget.dataList.length,
         itemBuilder: (context, index) {
