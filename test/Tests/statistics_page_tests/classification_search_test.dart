@@ -36,7 +36,9 @@ void main() {
         expect(response, [
           'Brownback Trevally',
           'Needlescale Queenfish',
+          'Pink-eared Emperor',
           'Temensis Peacock Bass ',
+          'Variegated Cardinalfish',
           'Yellowtail Scad'
         ]);
       },
