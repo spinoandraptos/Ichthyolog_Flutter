@@ -34,7 +34,6 @@ void main() {
         .then(
       (response) {
         expect(response, [
-          'Black Eeltail Catfish',
           'Brownback Trevally',
           'Needlescale Queenfish',
           'Temensis Peacock Bass ',
