@@ -7,7 +7,7 @@ void main() {
 
   //user fetches post using correct postid
   test('User should fetch post info successfully', () async {
-    int postid = Random().nextInt(5) + 56;
+    int postid = Random().nextInt(3) + 57;
     await httpHelpers.viewPostRequest(postid).then((response) {
       expect(response.postid, postid);
     });
