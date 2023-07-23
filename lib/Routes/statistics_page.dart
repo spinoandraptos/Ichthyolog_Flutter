@@ -120,9 +120,6 @@ class StatisticsPageState extends State<StatisticsPage>
       String family,
       String genus,
       String jwt) {
-    print(species);
-    print('$date1 $time1');
-    print('$date2 $time2');
     if (mux == 'species') {
       httpHelpers
           .searchSpeciesName(

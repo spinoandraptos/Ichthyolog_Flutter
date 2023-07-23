@@ -1241,13 +1241,12 @@ class HttpHelpers {
 // statistics request
   Future<List<String>> searchAll(
       String startTime, String endTime, String sightinglocation) async {
-    String url = 'https://ichthyolog-nodejs.onrender.com/statistics/all';
-    var response = await http.get(
-      Uri.parse(url),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
+    var url = Uri.https('ichthyolog-nodejs.onrender.com', '/statistics/all', {
+      'sightingLocation': sightinglocation,
+    });
+    var response = await http.get(url, headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    });
     if (response.statusCode == 200) {
       List<String> speciesList = [];
       var responseData = json.decode(response.body);
@@ -1337,14 +1336,14 @@ class HttpHelpers {
 
   Future<List<String>> searchClass(String class_, String startTime,
       String endTime, String sightinglocation) async {
-    String url =
-        'https://ichthyolog-nodejs.onrender.com/statistics/class/$class_';
-    var response = await http.get(
-      Uri.parse(url),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
+    var url = Uri.https(
+        'ichthyolog-nodejs.onrender.com', '/statistics/class/$class_', {
+      'class_': class_,
+      'sightingLocation': sightinglocation,
+    });
+    var response = await http.get(url, headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    });
     if (response.statusCode == 200) {
       List<String> speciesList = [];
       var responseData = json.decode(response.body);
@@ -1359,14 +1358,14 @@ class HttpHelpers {
 
   Future<List<String>> searchOrder(String order, String startTime,
       String endTime, String sightinglocation) async {
-    String url =
-        'https://ichthyolog-nodejs.onrender.com/statistics/order/$order';
-    var response = await http.get(
-      Uri.parse(url),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
+    var url = Uri.https(
+        'ichthyolog-nodejs.onrender.com', '/statistics/order/$order', {
+      'order': order,
+      'sightingLocation': sightinglocation,
+    });
+    var response = await http.get(url, headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    });
     if (response.statusCode == 200) {
       List<String> speciesList = [];
       var responseData = json.decode(response.body);
@@ -1381,14 +1380,14 @@ class HttpHelpers {
 
   Future<List<String>> searchFamily(String family, String startTime,
       String endTime, String sightinglocation) async {
-    String url =
-        'https://ichthyolog-nodejs.onrender.com/statistics/family/$family';
-    var response = await http.get(
-      Uri.parse(url),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
+    var url = Uri.https(
+        'ichthyolog-nodejs.onrender.com', '/statistics/family/$family', {
+      'family': family,
+      'sightingLocation': sightinglocation,
+    });
+    var response = await http.get(url, headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    });
     if (response.statusCode == 200) {
       List<String> speciesList = [];
       var responseData = json.decode(response.body);
@@ -1403,14 +1402,14 @@ class HttpHelpers {
 
   Future<List<String>> searchGenus(String genus, String startTime,
       String endTime, String sightinglocation) async {
-    String url =
-        'https://ichthyolog-nodejs.onrender.com/statistics/genus/$genus';
-    var response = await http.get(
-      Uri.parse(url),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
+    var url = Uri.https(
+        'ichthyolog-nodejs.onrender.com', '/statistics/genus/$genus', {
+      'genus': genus,
+      'sightingLocation': sightinglocation,
+    });
+    var response = await http.get(url, headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    });
     if (response.statusCode == 200) {
       List<String> speciesList = [];
       var responseData = json.decode(response.body);
