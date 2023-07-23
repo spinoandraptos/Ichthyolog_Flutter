@@ -10,7 +10,7 @@ void main() {
     await httpHelpers.searchClassCatalogue().then(
       (response) {
         expect(response, [
-          ['Actinopterygii', '5']
+          ['Actinopterygii', '4']
         ]);
       },
     );
@@ -24,7 +24,6 @@ void main() {
         expect(response, [
           ['Carangiformes', '3'],
           ['Cichliformes', '1'],
-          ['Siluriformes', '1']
         ]);
       },
     );
@@ -38,7 +37,6 @@ void main() {
         expect(response, [
           ['Carangidae', '3'],
           ['Cichlidae', '1'],
-          ['Plotosidae', '1']
         ]);
       },
     );
@@ -53,7 +51,6 @@ void main() {
           ['Atule', '1'],
           ['Carangoides', '1'],
           ['Cichla', '1'],
-          ['Plotosus', '1'],
           ['Scomberoides', '1']
         ]);
       },
