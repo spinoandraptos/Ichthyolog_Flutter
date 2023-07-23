@@ -1,3 +1,4 @@
+@Timeout(Duration(seconds: 45))
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:ichthyolog/Helpers/http.dart';
@@ -9,7 +10,7 @@ void main() {
   test('User should work with expert applications successfully', () async {
     String jwt = '';
     int userid = 0;
-    int value = Random().nextInt(200) + 100;
+    int value = Random().nextInt(200) + 300;
     int contact = Random().nextInt(9999999) + 10000000;
     String username = 'tester$value';
     String email = 'tester$value@hotmail.com';

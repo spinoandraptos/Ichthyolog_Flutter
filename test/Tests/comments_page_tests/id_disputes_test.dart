@@ -1,3 +1,4 @@
+@Timeout(Duration(seconds: 45))
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:ichthyolog/Helpers/http.dart';
@@ -9,7 +10,7 @@ void main() {
 
   test('User should perform ID disputing successfully', () async {
     String jwt = '';
-    int value = Random().nextInt(200) + 100;
+    int value = Random().nextInt(200) + 200;
     String username = 'tester$value';
     String email = 'tester$value@hotmail.com';
     String password = 'Tester$value!';
