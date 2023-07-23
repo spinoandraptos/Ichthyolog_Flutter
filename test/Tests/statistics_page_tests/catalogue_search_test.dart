@@ -24,7 +24,7 @@ void main() {
         expect(response, [
           ['Carangiformes', '3'],
           ['Cichliformes', '1'],
-          ['Kurtiformes', '1']
+          ['Siluriformes', '1']
         ]);
       },
     );
@@ -36,9 +36,9 @@ void main() {
     await httpHelpers.searchFamilyCatalogue().then(
       (response) {
         expect(response, [
-          ['Apogonidae', '1'],
           ['Carangidae', '3'],
-          ['Cichlidae', '1']
+          ['Cichlidae', '1'],
+          ['Plotosidae', '1']
         ]);
       },
     );
@@ -53,7 +53,7 @@ void main() {
           ['Atule', '1'],
           ['Carangoides', '1'],
           ['Cichla', '1'],
-          ['Fowleria', '1'],
+          ['Plotosus', '1'],
           ['Scomberoides', '1']
         ]);
       },
