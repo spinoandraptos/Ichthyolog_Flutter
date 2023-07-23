@@ -77,6 +77,8 @@ class HomePageState extends State<HomePage> {
                     centerTitle: true,
                     title: const Text('Home Page'),
                     backgroundColor: const Color.fromARGB(255, 65, 90, 181),
+
+                    // Settings and logout buttons for changing profile picture, editing profile, and logging out
                     actions: [
                       settingsButton(
                           snapshotUser.data!, editProfileProcessingCallback),
@@ -109,13 +111,18 @@ class HomePageState extends State<HomePage> {
                                           MediaQuery.of(context).size.height *
                                               1 /
                                               18),
+
+                                  // Profile picture and edit profile picture button
                                   profilePicture(snapshotUser.data!,
                                       editProfilePicProcessingCallback),
+
                                   SizedBox(
                                       height:
                                           MediaQuery.of(context).size.height *
                                               1 /
                                               36),
+
+                                  // Username
                                   Wrap(children: [
                                     Text(
                                       snapshotUser.data!.username,
@@ -124,6 +131,8 @@ class HomePageState extends State<HomePage> {
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white),
                                     ),
+
+                                    // Expert tag if user is an expert
                                     snapshotUser.data!.expert
                                         ? Container(
                                             decoration: const BoxDecoration(
@@ -150,6 +159,7 @@ class HomePageState extends State<HomePage> {
                               future: httpHelpers.viewOwnPostsRequest(jwt),
                               builder: ((context, snapshot) {
                                 return snapshot.hasData
+                                    // Display posts if there are posts by the user
                                     ? galleryScreen(context, snapshot.data!,
                                         snapshotUser.data!)
                                     : snapshot.hasError &&
@@ -179,6 +189,8 @@ class HomePageState extends State<HomePage> {
                               })),
                         ],
                       )),
+
+                  // Bottom navigation bar for expert and non-expert users
                   bottomNavigationBar: snapshotUser.data!.expert
                       ? BottomAppBar(
                           child: Row(

@@ -94,6 +94,7 @@ class CommentDisputesState extends State<CommentDisputes> {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Toggles the 'expanded' state to show/hide the disputes.
                       Padding(
                           padding: EdgeInsets.only(left: expanded ? 8 : 14),
                           child: TextButton(
@@ -113,6 +114,8 @@ class CommentDisputesState extends State<CommentDisputes> {
                                   fontSize: 12),
                             ),
                           )),
+
+                      // Displays the disputes.
                       ListView.builder(
                           shrinkWrap: true,
                           itemCount: expanded ? snapshot.data!.length : 0,
@@ -147,8 +150,11 @@ class CommentDisputesState extends State<CommentDisputes> {
                                     approveDisputeRequestProcessingCallback,
                                     approveDisputeRequestProcessing);
                           }),
+
+                      // Displays the 'Add a dispute' section.
                       !expanded
                           ? const SizedBox.shrink()
+                          // If the comment is idReplaced, the 'Add a dispute' section is hidden, otherwise it is displayed.
                           : widget.comment.idReplaced
                               ? const Padding(
                                   padding: EdgeInsets.only(
@@ -333,6 +339,7 @@ Widget ownDispute(
             children: [
               Row(
                 children: [
+                  // Displays the 'Expert' tag if the author is an expert.
                   const Padding(
                       padding: EdgeInsets.only(right: 4, bottom: 2),
                       child: Text(
@@ -342,6 +349,8 @@ Widget ownDispute(
                             fontWeight: FontWeight.w500,
                             color: Color.fromARGB(255, 51, 64, 113)),
                       )),
+
+                  // Displays the author's name.
                   Padding(
                       padding: const EdgeInsets.only(bottom: 2),
                       child: Text(
@@ -351,6 +360,8 @@ Widget ownDispute(
                             fontWeight: FontWeight.w500,
                             color: Color.fromARGB(255, 51, 64, 113)),
                       )),
+
+                  // Displays the 'dispute approved' tag if the dispute is approved.
                   Padding(
                       padding: const EdgeInsets.only(bottom: 2),
                       child: dispute.disputeApproved
@@ -364,6 +375,8 @@ Widget ownDispute(
                             )),
                 ],
               ),
+
+              // Displays the explanatory picture if there is one.
               dispute.explanatoryPic == null
                   ? const SizedBox.shrink()
                   : Image(
@@ -380,6 +393,8 @@ Widget ownDispute(
                   ))
             ],
           )),
+
+      // Displays the 'Edit', 'Delete' and 'Accept Dispute' buttons if the current user is an expert or the author of the comment.
       subtitle: comment.idReplaced
           ? null
           : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -622,6 +637,7 @@ Widget otherDispute(
             children: [
               Row(
                 children: [
+                  // Displays the 'Expert' tag if the author is an expert.
                   const Padding(
                       padding: EdgeInsets.only(right: 4, bottom: 2),
                       child: Text(
@@ -631,6 +647,8 @@ Widget otherDispute(
                             fontWeight: FontWeight.w500,
                             color: Color.fromARGB(255, 51, 64, 113)),
                       )),
+
+                  // Displays the author's name.
                   Padding(
                       padding: const EdgeInsets.only(bottom: 2),
                       child: Text(
@@ -640,6 +658,8 @@ Widget otherDispute(
                             fontWeight: FontWeight.w500,
                             color: Color.fromARGB(255, 51, 64, 113)),
                       )),
+
+                  // Displays the 'dispute approved' tag if the dispute is approved.
                   Padding(
                       padding: const EdgeInsets.only(bottom: 2),
                       child: dispute.disputeApproved
@@ -653,6 +673,8 @@ Widget otherDispute(
                             )),
                 ],
               ),
+
+              // Displays the explanatory picture if there is one.
               dispute.explanatoryPic == null
                   ? const SizedBox.shrink()
                   : Image(
@@ -669,6 +691,8 @@ Widget otherDispute(
                   ))
             ],
           )),
+
+      // Displays the 'Accept Dispute' button if the current user is an expert or the author of the comment.
       subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(
           dispute.edited

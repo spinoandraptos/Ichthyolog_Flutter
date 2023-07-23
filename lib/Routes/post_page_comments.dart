@@ -37,6 +37,8 @@ class PostPageMultiCommentState extends State<PostPageMultiComment> {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
+      // if the first comment is by the current user, show the comment as an OwnComment
+      // else, show the comment as an OtherComment
       widget.comments[widget.comments.length - 1].authorId ==
               widget.decodedJWT['userid']
           ? OwnComment(
@@ -55,6 +57,8 @@ class PostPageMultiCommentState extends State<PostPageMultiComment> {
               postid: widget.postid,
               currUser: widget.currUser,
             ),
+
+      // if there are more than 2 comments, click to expand and show the rest of the comments
       TextButton(
         onPressed: () {
           Navigator.push(

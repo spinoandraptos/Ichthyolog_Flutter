@@ -22,6 +22,7 @@ class CataloguePageState extends State<CataloguePage>
   late Animation<double> _opacityAnimation;
   final httpHelpers = HttpHelpers();
 
+  // choose search function based on mux
   Function chooseSearch(String mux) {
     switch (mux) {
       case 'Family':
@@ -38,6 +39,7 @@ class CataloguePageState extends State<CataloguePage>
   }
 
   @override
+  // initialize animation controllers
   void initState() {
     super.initState();
     _controller = AnimationController(

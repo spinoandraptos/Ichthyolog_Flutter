@@ -6,11 +6,11 @@ import '../Helpers/standard_widgets.dart';
 import 'date_time_picker.dart';
 import 'Stepper.dart';
 import 'search_result_page.dart';
-import 'catalogue_page.dart';
 import 'catalogue_mux_page.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import '../Models/species.dart';
 
+// default error page for erroneous search results
 class ErrorPage extends StatelessWidget {
   const ErrorPage({super.key});
 
@@ -63,6 +63,8 @@ class StatisticsPageState extends State<StatisticsPage>
   List<String> allSpecies = <String>[];
 
   @override
+
+  // intialized animation controller and animation
   void initState() {
     super.initState();
     _animationController = AnimationController(
@@ -104,6 +106,8 @@ class StatisticsPageState extends State<StatisticsPage>
     });
   }
 
+  // Search function to be called when search button is pressed
+  // Sends HTTP request to backend and returns a result page according to mux value
   void _search(
       String date1,
       String time1,
@@ -116,8 +120,6 @@ class StatisticsPageState extends State<StatisticsPage>
       String family,
       String genus,
       String jwt) {
-    // Insert HTTP search query here with given parameters
-    // Return a result page with approriate contents
     print(species);
     print('$date1 $time1');
     print('$date2 $time2');
@@ -201,24 +203,6 @@ class StatisticsPageState extends State<StatisticsPage>
     }
   }
 
-  void showCatalogue(String mux) {
-    try {
-      httpHelpers.searchFamilyCatalogue().then((value) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CataloguePage(
-              itemList: value,
-              mux: mux,
-            ),
-          ),
-        );
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
-
   Widget blueBox(String text, Widget widget) {
     return Container(
       margin: const EdgeInsets.all(10),
@@ -251,6 +235,7 @@ class StatisticsPageState extends State<StatisticsPage>
 
   @override
   Widget build(BuildContext context) {
+    // when mux is empty on page initializarion, display the selection page for search type
     if (mux == '') {
       return Scaffold(
         backgroundColor: const Color.fromARGB(255, 190, 222, 248),
@@ -267,6 +252,7 @@ class StatisticsPageState extends State<StatisticsPage>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Search by species name button, which sets mux to 'species' and rebuilds the page accordingly
                   AnimatedBuilder(
                     animation: _animationController,
                     builder: (context, child) {
@@ -324,6 +310,8 @@ class StatisticsPageState extends State<StatisticsPage>
                     },
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+
+                  // Search by classification button, which sets mux to 'classification' and rebuilds the page accordingly
                   AnimatedBuilder(
                     animation: _animationController,
                     builder: (context, child) {
@@ -381,6 +369,8 @@ class StatisticsPageState extends State<StatisticsPage>
                     },
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+
+                  // Search by catalogue button, which navigates to the catalogue selection page
                   AnimatedBuilder(
                     animation: _animationController,
                     builder: (context, child) {
@@ -461,6 +451,7 @@ class StatisticsPageState extends State<StatisticsPage>
           ),
           body: SingleChildScrollView(
             child: Column(children: [
+              // when mux is 'species', display the species name search box with autocomplete
               (mux == 'species')
                   ? blueBox(
                       "1. Choose species",
@@ -474,6 +465,8 @@ class StatisticsPageState extends State<StatisticsPage>
                             titleCallback,
                             titleClearCallback),
                       ))
+
+                  // when mux is 'classification', display the classification search box with stepper
                   : blueBox(
                       "1. Choose classification",
                       Column(
@@ -529,6 +522,8 @@ class StatisticsPageState extends State<StatisticsPage>
                           )
                         ],
                       )),
+
+              // location search box with autocomplete
               blueBox(
                   "2. Choose sighting location",
                   Padding(
@@ -540,6 +535,8 @@ class StatisticsPageState extends State<StatisticsPage>
                           locations,
                           locationCallback,
                           locationClearCallback))),
+
+              // date and time picker
               blueBox(
                   "3. Choose range of sighting time",
                   Column(
@@ -586,6 +583,8 @@ class StatisticsPageState extends State<StatisticsPage>
                       ),
                     ],
                   )),
+
+              // search and clear buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

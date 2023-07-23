@@ -71,6 +71,7 @@ class CameraPageState extends State<CameraPage> {
 
   @override
   Widget build(BuildContext context) {
+    // when image is selected from gallery or taken from camera
     if (image != null) {
       return Scaffold(
         appBar: AppBar(
@@ -86,6 +87,7 @@ class CameraPageState extends State<CameraPage> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // Species name text field with autocomplete
                     selectableTextForm(
                         titleController,
                         'Enter species name',
@@ -96,6 +98,8 @@ class CameraPageState extends State<CameraPage> {
                         allSpecies,
                         titleCallback,
                         titleClearCallback),
+
+                    // Description text field
                     Container(
                         margin:
                             const EdgeInsets.only(top: 10, left: 12, right: 12),
@@ -130,6 +134,8 @@ class CameraPageState extends State<CameraPage> {
                             });
                           },
                         )),
+
+                    // Location text field with autocomplete
                     selectableTextForm(
                         locationController,
                         'Enter the location of sighting',
@@ -140,6 +146,8 @@ class CameraPageState extends State<CameraPage> {
                         locations,
                         locationCallback,
                         locationClearCallback),
+
+                    // Date and time picker
                     Container(
                         alignment: Alignment.center,
                         width: double.infinity,
@@ -170,7 +178,11 @@ class CameraPageState extends State<CameraPage> {
                       dateCallback: dateCallback,
                       timeCallback: timeCallback,
                     ),
+
+                    // Image preview
                     Image.file(image!),
+
+                    // Classification selection
                     Container(
                         margin: const EdgeInsets.only(bottom: 7, top: 15),
                         padding: const EdgeInsets.only(left: 12, right: 12),
@@ -263,6 +275,8 @@ class CameraPageState extends State<CameraPage> {
                               child: const Text('Add classification',
                                   style: TextStyle(fontSize: 16)),
                             )),
+
+                        // Upload and clear buttons
                         Container(
                             margin: const EdgeInsets.only(
                                 top: 6, right: 12, bottom: 10),
@@ -314,6 +328,7 @@ class CameraPageState extends State<CameraPage> {
         ),
       );
     } else {
+      // when no image is selected from gallery or taken from camera
       return Scaffold(
           appBar: AppBar(
             centerTitle: true,
@@ -432,6 +447,7 @@ class CameraPageState extends State<CameraPage> {
     }
   }
 
+  // take photo from device camera
   Future<void> _takePhoto(ImageSource source) async {
     final imagePicker = ImagePicker();
     final pickedImage = await imagePicker.pickImage(source: source);
@@ -443,6 +459,7 @@ class CameraPageState extends State<CameraPage> {
     }
   }
 
+  // select photo from device gallery
   Future<void> _selectFromGallery() async {
     _takePhoto(ImageSource.gallery);
   }

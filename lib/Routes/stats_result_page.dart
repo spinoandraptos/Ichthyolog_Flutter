@@ -106,6 +106,8 @@ class StatsResultPageState extends State<StatsResultPage>
                 );
               },
             ),
+
+            // Species total sightings
             AnimatedBuilder(
               animation: _animation,
               builder: (context, child) {
@@ -121,6 +123,8 @@ class StatsResultPageState extends State<StatsResultPage>
                 );
               },
             ),
+
+            // Species last seen date and time
             AnimatedBuilder(
               animation: _animation,
               builder: (context, child) {
@@ -136,6 +140,8 @@ class StatsResultPageState extends State<StatsResultPage>
                 );
               },
             ),
+
+            // Species last seen location
             AnimatedBuilder(
               animation: _animation,
               builder: (context, child) {
@@ -152,6 +158,8 @@ class StatsResultPageState extends State<StatsResultPage>
               },
             ),
             const SizedBox(height: 10),
+
+            // Species count stats in last 24 hours, 7 days and 30 days in graph form
             SizedBox(
               height: 450,
               child: FutureBuilder<List<List<List<String>>>>(
@@ -339,70 +347,3 @@ class Linechart extends StatelessWidget {
     );
   }
 }
-
-// class IndividualBar {
-//   final String time;
-//   final int count;
-
-//   IndividualBar({required this.time, required this.count});
-// }
-
-// class BarData {
-//   final List<List<String>> data;
-//   BarData({required this.data});
-
-//   List<IndividualBar> barData = [];
-
-//   void initializeBarData() {
-//     for (int i = 0; i < data.length; i++) {
-//       barData
-//           .add(IndividualBar(time: data[i][0], count: int.parse(data[i][1])));
-//     }
-//   }
-// }
-
-// class BarGraph extends StatelessWidget {
-//   final List<List<String>> data;
-//   const BarGraph({Key? key, required this.data}) : super(key: key);
-
-//   int getMaxY() {
-//     int max = 0;
-//     for (int i = 0; i < data.length; i++) {
-//       if (int.parse(data[i][1]) > max) {
-//         max = int.parse(data[i][1]);
-//       }
-//     }
-//     return pow(10, max.toString().length).toInt();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     BarData barData = BarData(data: data);
-//     barData.initializeBarData();
-//     return BarChart(BarChartData(
-//       maxY: getMaxY().toDouble(),
-//       minY: 0,
-//       gridData: FlGridData(show: false),
-//       borderData: FlBorderData(show: false),
-//       titlesData: FlTitlesData(
-//         rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-//         topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-//         bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-//       ),
-//       barGroups: barData.barData
-//           .map(
-//             (data) => BarChartGroupData(
-//               x: barData.barData.indexOf(data),
-//               barRods: [
-//                 BarChartRodData(
-//                   toY: data.count.toDouble(),
-//                   color: const Color.fromARGB(255, 51, 64, 113),
-//                   borderRadius: BorderRadius.circular(0),
-//                 ),
-//               ],
-//             ),
-//           )
-//           .toList(),
-//     ));
-//   }
-// }
