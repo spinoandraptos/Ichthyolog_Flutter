@@ -1239,8 +1239,33 @@ class HttpHelpers {
   }
 
 // statistics request
+  Future<List<String>> searchAll(
+      String startTime, String endTime, String sightinglocation) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/statistics/all';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<String> speciesList = [];
+      var responseData = json.decode(response.body);
+      for (var everyspecies in responseData) {
+        speciesList.add(everyspecies['title']);
+      }
+      return speciesList;
+    } else {
+      print('Error ${response.statusCode}');
+      return Future.error('Error ${response.statusCode}');
+    }
+  }
+
   Future<List<String>> searchSpeciesName(String species, String startTime,
       String endTime, String sightinglocation) async {
+    if (species == '') {
+      return searchAll(startTime, endTime, sightinglocation);
+    }
     String url =
         'https://ichthyolog-nodejs.onrender.com/statistics/speciesName/$species';
     var response = await http.get(
@@ -1295,7 +1320,9 @@ class HttpHelpers {
       String startTime,
       String endTime,
       String sightinglocation) async {
-    if (class_ != '' && order == '' && family == '' && genus == '') {
+    if (class_ == '' && order == '' && family == '' && genus == '') {
+      return searchAll(startTime, endTime, sightinglocation);
+    } else if (class_ != '' && order == '' && family == '' && genus == '') {
       return searchClass(class_, startTime, endTime, sightinglocation);
     } else if (order != '' && family == '' && genus == '') {
       return searchOrder(order, startTime, endTime, sightinglocation);
