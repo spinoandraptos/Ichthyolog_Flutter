@@ -234,7 +234,7 @@ class LoginPageState extends State<LoginPage> {
 
                   //Password field
                   passwordField(),
-                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 35),
+                  SizedBox(height: MediaQuery.of(context).size.height * 1 / 20),
 
                   //Login button
                   loginButton(),
