@@ -264,33 +264,43 @@ class CommentPageState extends State<CommentPage> {
                                       if (addCommentRequestProcessing) {
                                         null;
                                       } else {
-                                        addCommentRequestProcessingCallback();
-                                        httpHelpers
-                                            .addCommentRequest(widget.postid,
-                                                contentText.text, jwt)
-                                            .then((response) {
+                                        if (contentText.text == '') {
+                                          Fluttertoast.showToast(
+                                            msg: 'Cannot post empty comment!',
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.BOTTOM,
+                                            timeInSecForIosWeb: 1,
+                                          );
+                                        } else {
                                           addCommentRequestProcessingCallback();
-                                          if (response == 'Comment Posted') {
-                                            updateCommentCallback(response);
-                                            Fluttertoast.showToast(
-                                              msg:
-                                                  'Comment posted successfully!',
-                                              toastLength: Toast.LENGTH_SHORT,
-                                              gravity: ToastGravity.BOTTOM,
-                                              timeInSecForIosWeb: 1,
-                                            );
-                                            setState(() {
-                                              contentText.clear();
-                                            });
-                                          } else {
-                                            Fluttertoast.showToast(
-                                              msg: 'Comment failed to post :(',
-                                              toastLength: Toast.LENGTH_SHORT,
-                                              gravity: ToastGravity.BOTTOM,
-                                              timeInSecForIosWeb: 1,
-                                            );
-                                          }
-                                        });
+                                          httpHelpers
+                                              .addCommentRequest(widget.postid,
+                                                  contentText.text, jwt)
+                                              .then((response) {
+                                            addCommentRequestProcessingCallback();
+                                            if (response == 'Comment Posted') {
+                                              updateCommentCallback(response);
+                                              Fluttertoast.showToast(
+                                                msg:
+                                                    'Comment posted successfully!',
+                                                toastLength: Toast.LENGTH_SHORT,
+                                                gravity: ToastGravity.BOTTOM,
+                                                timeInSecForIosWeb: 1,
+                                              );
+                                              setState(() {
+                                                contentText.clear();
+                                              });
+                                            } else {
+                                              Fluttertoast.showToast(
+                                                msg:
+                                                    'Comment failed to post :(',
+                                                toastLength: Toast.LENGTH_SHORT,
+                                                gravity: ToastGravity.BOTTOM,
+                                                timeInSecForIosWeb: 1,
+                                              );
+                                            }
+                                          });
+                                        }
                                       }
                                     }
                                   },

@@ -201,7 +201,7 @@ class SignUpPageState extends State<SignUpPage> {
           } else if (value.length < 6 || value.length > 20) {
             return 'Password must be 6-20 characters';
           } else if (!isValidPassword(value)) {
-            return 'Password must contain at least one capital letter and one special character';
+            return 'Require at least 1 capital letter and 1 special character';
           }
           return null;
         },
