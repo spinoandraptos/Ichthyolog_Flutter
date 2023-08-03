@@ -66,20 +66,39 @@ class PostPageState extends State<PostPage> {
                       Container(
                           margin: const EdgeInsets.only(top: 6, bottom: 8),
                           child: ListTile(
-                            visualDensity: const VisualDensity(
-                                horizontal: 0, vertical: -4),
-                            leading: CircleAvatar(
-                                backgroundImage:
-                                    NetworkImage(snapshot.data!.authorpic)),
-                            title: Text(
-                              snapshot.data!.authorname,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Color.fromARGB(255, 51, 64, 113)),
-                            ),
-                            subtitle: Text(
-                                'Sighted at ${snapshot.data!.sightingLocation} at ${snapshot.data!.sightingTime} '),
-                          )),
+                              visualDensity: const VisualDensity(
+                                  horizontal: 0, vertical: -4),
+                              leading: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(snapshot.data!.authorpic)),
+                              title: Text(
+                                snapshot.data!.authorname,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 51, 64, 113)),
+                              ),
+                              subtitle: Column(
+                                children: [
+                                  Padding(
+                                      padding: const EdgeInsets.only(bottom: 4),
+                                      child: Text(
+                                          'Sighted at ${snapshot.data!.sightingLocation} at ${snapshot.data!.sightingTime} ')),
+                                  snapshot.data!.verified
+                                      ? Row(
+                                          children: [
+                                            const Text('Verified by: '),
+                                            Text(
+                                              snapshot.data!.verifiedBy!,
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Color.fromARGB(
+                                                      255, 89, 108, 175)),
+                                            )
+                                          ],
+                                        )
+                                      : const SizedBox.shrink()
+                                ],
+                              ))),
                       ConstrainedBox(
                           constraints: BoxConstraints(
                             maxHeight:

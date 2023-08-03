@@ -21,6 +21,7 @@ class Post {
   final String? species;
   final bool verified;
   final bool flagged;
+  final String? verifiedBy;
 
 //use of required keyword as none of these fields can be null
   Post(
@@ -40,28 +41,31 @@ class Post {
       this.genus,
       this.species,
       required this.verified,
-      required this.flagged});
+      required this.flagged,
+      this.verifiedBy});
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
-        postid: json['postid'],
-        userid: json['userid'],
-        authorname: json['authorname'],
-        title: json['title'],
-        description: json['description'] ?? 'Not specified',
-        pic: json['imageurl'],
-        uploadTime: DateFormat("hh:mm a, dd/MM/yyyy")
-            .format(DateTime.parse(json['time'])),
-        sightingLocation: json['sightinglocation'] ?? 'Not specified',
-        sightingTime: DateFormat("hh:mm a, dd/MM/yyyy")
-            .format(DateTime.parse(json['sightingtime'])),
-        authorpic: json['authorpicurl'],
-        class_: json['class'],
-        order: json['_order'],
-        family: json['family'],
-        genus: json['genus'],
-        species: json['species'],
-        verified: json['verified'],
-        flagged: json['flagged']);
+      postid: json['postid'],
+      userid: json['userid'],
+      authorname: json['authorname'],
+      title: json['title'],
+      description: json['description'] ?? 'Not specified',
+      pic: json['imageurl'],
+      uploadTime: DateFormat("hh:mm a, dd/MM/yyyy")
+          .format(DateTime.parse(json['time'])),
+      sightingLocation: json['sightinglocation'] ?? 'Not specified',
+      sightingTime: DateFormat("hh:mm a, dd/MM/yyyy")
+          .format(DateTime.parse(json['sightingtime'])),
+      authorpic: json['authorpicurl'],
+      class_: json['class'],
+      order: json['_order'],
+      family: json['family'],
+      genus: json['genus'],
+      species: json['species'],
+      verified: json['verified'],
+      flagged: json['flagged'],
+      verifiedBy: json['verifiedby'],
+    );
   }
 }
