@@ -10,6 +10,7 @@ import 'home_page.dart';
 import 'gallery_page.dart';
 import 'statistics_page.dart';
 import 'waiting_list_page.dart';
+import '../Helpers/custom_icons.dart';
 
 class ExpertApplicationPage extends StatefulWidget {
   final User currUser;
@@ -292,8 +293,6 @@ class ExpertApplicationPageState extends State<ExpertApplicationPage> {
                                   },
                                 );
                               }
-                            } else {
-                              print('HEY');
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -369,7 +368,7 @@ class ExpertApplicationPageState extends State<ExpertApplicationPage> {
 
   Widget galleryPageButton(User user, Function refreshCallback) {
     return IconButton(
-      icon: const Icon(Icons.photo_library,
+      icon: const Icon(CustomIcons.sightingsIcon,
           color: Color.fromARGB(255, 52, 66, 117)),
       onPressed: () {
         Navigator.push(

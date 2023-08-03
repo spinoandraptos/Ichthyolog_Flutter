@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../Helpers/custom_icons.dart';
 import '../main.dart';
 import 'package:flutter/material.dart';
 import '../Helpers/standard_widgets.dart';
@@ -76,6 +77,7 @@ class HomePageState extends State<HomePage> {
                   appBar: AppBar(
                     automaticallyImplyLeading: false,
                     centerTitle: true,
+                    leading: userManualButton(snapshotUser.data!),
                     title: const Text('Home Page'),
                     backgroundColor: const Color.fromARGB(255, 65, 90, 181),
 
@@ -186,7 +188,7 @@ class HomePageState extends State<HomePage> {
                                                       fontSize: 20),
                                                 ),
                                               ])
-                                        : const LoadingScreen();
+                                        : loadingComment();
                               })),
                         ],
                       )),
@@ -728,8 +730,8 @@ class HomePageState extends State<HomePage> {
 
   Widget galleryPageButton(User user, Function refreshCallback) {
     return IconButton(
-      icon: const Icon(Icons.photo_library,
-          color: Color.fromARGB(255, 52, 66, 117)),
+      icon: const Icon(CustomIcons.sightingsIcon),
+      color: const Color.fromARGB(255, 52, 66, 117),
       onPressed: () {
         Navigator.push(
           context,
@@ -749,7 +751,6 @@ class HomePageState extends State<HomePage> {
           MaterialPageRoute(
               builder: (context) => ExpertApplicationPage(currUser: user)),
         ).then((value) => refreshCallback());
-        ;
       },
     );
   }
@@ -768,6 +769,102 @@ class HomePageState extends State<HomePage> {
                     currUser: user,
                   )),
         ).then((value) => refreshCallback());
+      },
+    );
+  }
+
+  Widget userManualButton(User user) {
+    return IconButton(
+      icon: const Icon(
+        Icons.question_mark,
+        color: Colors.white,
+      ),
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text(
+                  'App Guide',
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
+                content: Scrollbar(
+                    //always show scrollbar
+                    thickness: 5, //width of scrollbar
+                    radius:
+                        const Radius.circular(20), //corner radius of scrollbar
+                    scrollbarOrientation: ScrollbarOrientation
+                        .right, //which side to show scrollbar
+                    child: SingleChildScrollView(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                          const Padding(
+                              padding: EdgeInsets.only(bottom: 10),
+                              child: Text(
+                                'Introduction',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 51, 64, 113)),
+                              )),
+                          const Text(
+                              'Welcome to Ichthyolog! We are dedicated to the documentation of fish species sightings in Singapore. You may upload fish sightings to be verified by experts and add them to our scientific database. You may then access statistics on verified fsh records through the species search page. You may also discuss with experts on any submitted sighting and suggest species identifications for unverified posts.'),
+                          const Padding(
+                              padding: EdgeInsets.only(top: 15, bottom: 10),
+                              child: Text(
+                                'Rationale',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 51, 64, 113)),
+                              )),
+                          const Text(
+                              'The app aims to provide a more complete picture of aquatic biodiversity in Singapore through the collective effort of the public. It is designed to complement existing biodiversity records by capturing the fish records missed on purely professional field trips.'),
+                          const Padding(
+                              padding: EdgeInsets.only(top: 15),
+                              child: Text(
+                                'Navigation Icons',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 51, 64, 113)),
+                              )),
+                          iconDescription(const Icon(Icons.add_a_photo_rounded),
+                              'Upload a sighting'),
+                          iconDescription(const Icon(CustomIcons.sightingsIcon),
+                              'View all sightings'),
+                          iconDescription(const Icon(Icons.search),
+                              'Look up species statistics'),
+                          iconDescription(
+                              const Icon(Icons.how_to_reg),
+                              user.expert
+                                  ? 'Review expert applications'
+                                  : 'Submit expert application'),
+                          user.expert
+                              ? iconDescription(const Icon(Icons.feedback),
+                                  'Review unverified posts')
+                              : const SizedBox.shrink(),
+                          iconDescription(const Icon(Icons.manage_accounts),
+                              'Edit your profile information'),
+                          iconDescription(const Icon(Icons.logout),
+                              'Logout of your account'),
+                        ]))),
+                actions: [
+                  TextButton(
+                      child: const Text(
+                        "Ok",
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 52, 66, 117),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      })
+                ],
+              );
+            });
       },
     );
   }
@@ -1511,6 +1608,15 @@ class HomePageState extends State<HomePage> {
             controller.text = suggestion;
           },
         ));
+  }
+
+  Widget iconDescription(Widget icon, String description) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      horizontalTitleGap: 10,
+      leading: icon,
+      title: Text(description),
+    );
   }
 
   refreshCallback() {

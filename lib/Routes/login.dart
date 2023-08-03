@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../Helpers/standard_widgets.dart';
-import '../main.dart';
 import 'login_background.dart';
 import 'signup.dart';
 import '../Helpers/helper.dart';
@@ -8,6 +7,7 @@ import '../Helpers/http.dart';
 import '../Models/user.dart';
 import 'gallery_page.dart';
 import 'home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -55,7 +55,8 @@ class LoginPageState extends State<LoginPage> {
           if (response != 'Password Incorrect' &&
               response != 'User Not Found' &&
               response != 'Error') {
-            await storage.write(key: "jwt", value: response);
+            SharedPreferences pref = await SharedPreferences.getInstance();
+            pref.setString("jwt", response);
             if (context.mounted) {
               Navigator.push(
                 context,

@@ -59,6 +59,7 @@ dependencies:
   flutter_typeahead: ^4.6.2
   fl_chart: ^0.60.0
   auto_size_text: ^3.0.0
+  shared_preferences: ^2.2.0
 
 dev_dependencies:
   test: ^1.22.0
@@ -87,6 +88,11 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets: 
     - assets/images/
+
+  fonts:
+    - family: CustomIcons
+      fonts:
+        - asset: fonts/CustomIcons.ttf
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

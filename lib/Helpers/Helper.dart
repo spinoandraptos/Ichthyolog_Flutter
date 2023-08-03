@@ -3,12 +3,14 @@ import 'http.dart';
 import 'package:flutter/material.dart';
 import '../Routes/login.dart';
 import 'standard_widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final httpHelpers = HttpHelpers();
 
 class Helpers {
   Future<String> checkJwt() async {
-    var jwt = await storage.read(key: "jwt");
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var jwt = pref.getString('jwt');
     if (jwt != null) {
       return jwt;
     } else {
@@ -17,14 +19,18 @@ class Helpers {
   }
 
   void logout(String jwt, BuildContext context) async {
-    httpHelpers.logoutRequest(jwt).then((response) {
+    httpHelpers.logoutRequest(jwt).then((response) async {
       if (response == 'Logged out' ||
           response == 'Logged out with expired token') {
         storage.delete(key: 'jwt');
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginPage()),
-        );
+        SharedPreferences pref = await SharedPreferences.getInstance();
+        pref.remove("jwt");
+        if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginPage()),
+          );
+        }
       } else {
         showDialog(
             context: context,

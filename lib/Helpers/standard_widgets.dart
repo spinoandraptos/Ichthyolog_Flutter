@@ -36,7 +36,10 @@ class NoticeDialog extends StatelessWidget {
       content: Text(content),
       actions: [
         TextButton(
-            child: const Text("OK"),
+            child: const Text(
+              "OK",
+              style: TextStyle(color: Color.fromARGB(255, 52, 66, 117)),
+            ),
             onPressed: () {
               Navigator.pop(context);
             })
