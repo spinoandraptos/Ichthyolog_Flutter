@@ -14,7 +14,7 @@ void main() {
       jwt = response;
     });
     await httpHelpers
-        .addCommentRequest(58, 'test comment', jwt)
+        .addCommentRequest(58, 'test comment', false, jwt)
         .then((response) {
       expect(response, 'Comment Posted');
     });

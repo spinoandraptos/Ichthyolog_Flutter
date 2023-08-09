@@ -47,14 +47,14 @@ class PostPageState extends State<PostPage> {
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: httpHelpers.viewPostRequest(widget.postid),
-        builder: ((context, snapshot) {
-          if (snapshot.hasData) {
+        builder: ((context, snapshotPost) {
+          if (snapshotPost.hasData) {
             return Scaffold(
               appBar: AppBar(
-                title: snapshot.data!.species == null
-                    ? Text(snapshot.data!.title)
+                title: snapshotPost.data!.species == null
+                    ? Text(snapshotPost.data!.title)
                     : Text(
-                        '${snapshot.data!.title} (${snapshot.data!.species})'),
+                        '${snapshotPost.data!.title} (${snapshotPost.data!.species})'),
                 backgroundColor: const Color.fromARGB(255, 65, 90, 181),
               ),
               body: SizedBox(
@@ -69,10 +69,10 @@ class PostPageState extends State<PostPage> {
                               visualDensity: const VisualDensity(
                                   horizontal: 0, vertical: -4),
                               leading: CircleAvatar(
-                                  backgroundImage:
-                                      NetworkImage(snapshot.data!.authorpic)),
+                                  backgroundImage: NetworkImage(
+                                      snapshotPost.data!.authorpic)),
                               title: Text(
-                                snapshot.data!.authorname,
+                                snapshotPost.data!.authorname,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w500,
                                     color: Color.fromARGB(255, 51, 64, 113)),
@@ -82,13 +82,13 @@ class PostPageState extends State<PostPage> {
                                   Padding(
                                       padding: const EdgeInsets.only(bottom: 4),
                                       child: Text(
-                                          'Sighted at ${snapshot.data!.sightingLocation} at ${snapshot.data!.sightingTime} ')),
-                                  snapshot.data!.verified
+                                          'Sighted at ${snapshotPost.data!.sightingLocation} at ${snapshotPost.data!.sightingTime} ')),
+                                  snapshotPost.data!.verified
                                       ? Row(
                                           children: [
                                             const Text('Verified by: '),
                                             Text(
-                                              snapshot.data!.verifiedBy!,
+                                              snapshotPost.data!.verifiedBy!,
                                               style: const TextStyle(
                                                   fontWeight: FontWeight.w600,
                                                   color: Color.fromARGB(
@@ -110,7 +110,7 @@ class PostPageState extends State<PostPage> {
                               clipBehavior: Clip.hardEdge,
                               fit: BoxFit.cover,
                               child: Image(
-                                image: NetworkImage(snapshot.data!.pic),
+                                image: NetworkImage(snapshotPost.data!.pic),
                               ))),
                       Container(
                           padding: const EdgeInsets.only(
@@ -128,7 +128,7 @@ class PostPageState extends State<PostPage> {
                               left: 20, top: 5, right: 20, bottom: 5),
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            snapshot.data!.description,
+                            snapshotPost.data!.description,
                           )),
                       Container(
                           margin: const EdgeInsets.only(bottom: 5, top: 18),
@@ -146,9 +146,9 @@ class PostPageState extends State<PostPage> {
                                       fontSize: 14),
                                 ),
                                 Text(
-                                  snapshot.data!.class_ == null
+                                  snapshotPost.data!.class_ == null
                                       ? '[Not recorded]    '
-                                      : '${snapshot.data!.class_}    ',
+                                      : '${snapshotPost.data!.class_}    ',
                                   style: const TextStyle(fontSize: 13),
                                 ),
                                 const Text(
@@ -159,9 +159,9 @@ class PostPageState extends State<PostPage> {
                                       fontSize: 14),
                                 ),
                                 Text(
-                                  snapshot.data!.order == null
+                                  snapshotPost.data!.order == null
                                       ? '[Not recorded]'
-                                      : '${snapshot.data!.order}',
+                                      : '${snapshotPost.data!.order}',
                                   style: const TextStyle(fontSize: 13),
                                 ),
                               ],
@@ -179,9 +179,9 @@ class PostPageState extends State<PostPage> {
                                       fontSize: 14),
                                 ),
                                 Text(
-                                  snapshot.data!.family == null
+                                  snapshotPost.data!.family == null
                                       ? '[Not recorded]    '
-                                      : '${snapshot.data!.family}    ',
+                                      : '${snapshotPost.data!.family}    ',
                                   style: const TextStyle(fontSize: 13),
                                 ),
                                 const Text(
@@ -192,9 +192,9 @@ class PostPageState extends State<PostPage> {
                                       fontSize: 14),
                                 ),
                                 Text(
-                                  snapshot.data!.genus == null
+                                  snapshotPost.data!.genus == null
                                       ? '[Not recorded]'
-                                      : '${snapshot.data!.genus}',
+                                      : '${snapshotPost.data!.genus}',
                                   style: const TextStyle(fontSize: 13),
                                 ),
                               ],
@@ -224,6 +224,7 @@ class PostPageState extends State<PostPage> {
                                     comments: snapshot.data!,
                                     jwt: jwt,
                                     postid: widget.postid,
+                                    postPicture: snapshotPost.data!.pic,
                                     currUser: widget.currUser,
                                     decodedJWT: decodedJWT,
                                     updateCallBack: changeCommentCallback);
@@ -234,6 +235,7 @@ class PostPageState extends State<PostPage> {
                                   jwt: jwt,
                                   decodedJWT: decodedJWT,
                                   postid: widget.postid,
+                                  postPic: snapshotPost.data!.pic,
                                   updateCallBack: changeCommentCallback,
                                   currUser: widget.currUser,
                                 );
@@ -241,6 +243,8 @@ class PostPageState extends State<PostPage> {
                                 return PostPageNoComment(
                                   jwt: jwt,
                                   postid: widget.postid,
+                                  postPic: snapshotPost.data!.pic,
+                                  currUser: widget.currUser,
                                   addCallBack: changeCommentCallback,
                                 );
                               }
@@ -251,7 +255,7 @@ class PostPageState extends State<PostPage> {
                     ],
                   ))),
             );
-          } else if (snapshot.hasError) {
+          } else if (snapshotPost.hasError) {
             return const NoticeDialog(
                 content: 'Post not found! Please try again');
           } else {

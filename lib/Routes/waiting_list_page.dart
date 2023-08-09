@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../Helpers/helper.dart';
 import '../Helpers/http.dart';
+import '../Helpers/custom_icons.dart';
 import '../Models/post.dart';
 import '../Models/user.dart';
 import '../Models/species.dart';
@@ -8,6 +9,12 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'post_page.dart';
+import 'home_page.dart';
+import 'gallery_page.dart';
+import 'statistics_page.dart';
+import 'expert_application_page.dart';
+import 'camera_page.dart';
+import 'notifications_page.dart';
 import '../Helpers/standard_widgets.dart';
 import 'stepper.dart';
 
@@ -222,6 +229,19 @@ class WaitingListPageState extends State<WaitingListPage> {
                             fontSize: 20),
                       ),
                     ]),
+                bottomNavigationBar: BottomAppBar(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        homePageButton(refreshCallback),
+                        cameraPageButton(refreshCallback),
+                        galleryPageButton(widget.currUser, refreshCallback),
+                        statsPageButton(refreshCallback),
+                        expertApplicationPageButton(
+                            widget.currUser, refreshCallback),
+                        notificationsPageButton(widget.currUser)
+                      ]),
+                ),
               );
             } else {
               return NoticeDialog(content: 'Error: ${snapshot.error}');
@@ -799,6 +819,144 @@ class WaitingListPageState extends State<WaitingListPage> {
           tapTargetSize: MaterialTapTargetSize.shrinkWrap),
       child: const Text('Delete', style: TextStyle(fontSize: 9)),
     );
+  }
+
+  Widget homePageButton(Function refreshCallback) {
+    return IconButton(
+      icon: const Icon(Icons.home, color: Color.fromARGB(255, 52, 66, 117)),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        ).then((value) => refreshCallback());
+      },
+    );
+  }
+
+  Widget cameraPageButton(Function refreshCallback) {
+    return IconButton(
+      icon: const Icon(Icons.add_a_photo_rounded,
+          color: Color.fromARGB(255, 52, 66, 117)),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => CameraPage(
+                    currUser: widget.currUser,
+                  )),
+        ).then((value) => refreshCallback());
+      },
+    );
+  }
+
+  Widget galleryPageButton(User user, Function refreshCallback) {
+    return IconButton(
+      icon: const Icon(CustomIcons.sightingsIcon,
+          color: Color.fromARGB(255, 52, 66, 117)),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => GalleryPage(currUser: user)),
+        ).then((value) => refreshCallback());
+      },
+    );
+  }
+
+  Widget statsPageButton(Function refreshCallback) {
+    return IconButton(
+      icon: const Icon(Icons.search, color: Color.fromARGB(255, 52, 66, 117)),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const StatisticsPage()),
+        ).then((value) => refreshCallback());
+      },
+    );
+  }
+
+  Widget waitingListPageButton(Function refreshCallback) {
+    return IconButton(
+      icon: const Icon(
+        Icons.feedback,
+        color: Color.fromARGB(255, 52, 66, 117),
+      ),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => WaitingListPage(
+                    currUser: widget.currUser,
+                  )),
+        ).then((value) => refreshCallback());
+      },
+    );
+  }
+
+  Widget expertApplicationPageButton(User user, Function refreshCallback) {
+    return IconButton(
+      icon:
+          const Icon(Icons.how_to_reg, color: Color.fromARGB(255, 52, 66, 117)),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ExpertApplicationPage(currUser: user)),
+        ).then((value) => refreshCallback());
+      },
+    );
+  }
+
+  Widget notificationsPageButton(User user) {
+    return FutureBuilder(
+        future: httpHelpers.countUnviewedNotificationsRequest(jwt),
+        builder: ((context, snapshotNotif) {
+          return Stack(children: [
+            IconButton(
+              icon: const Icon(Icons.notification_important,
+                  color: Color.fromARGB(255, 52, 66, 117)),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NotificationsPage(currUser: user)),
+                ).then((value) => refreshCallback());
+              },
+            ),
+            snapshotNotif.hasData && snapshotNotif.data! > 0 ||
+                    snapshotNotif.hasError
+                ? Positioned(
+                    top: 3,
+                    right: 6,
+                    child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 0.5,
+                              color: Colors.white,
+                            ),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(
+                                60,
+                              ),
+                            ),
+                            color: const Color.fromARGB(255, 167, 71, 71),
+                            boxShadow: [
+                              BoxShadow(
+                                offset: const Offset(2, 4),
+                                color: Colors.black.withOpacity(
+                                  0.1,
+                                ),
+                                blurRadius: 3,
+                              ),
+                            ]),
+                        child: snapshotNotif.hasData
+                            ? Text('${snapshotNotif.data!}',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white))
+                            : const Icon(Icons.error)))
+                : const SizedBox.shrink()
+          ]);
+        }));
   }
 
   Widget selectableTextForm(TextEditingController controller, String hintText,

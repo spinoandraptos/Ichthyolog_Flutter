@@ -51,15 +51,14 @@ class NoticeDialog extends StatelessWidget {
 Widget loadingComment() {
   return Container(
     padding: const EdgeInsets.only(top: 10, bottom: 10),
-    color: const Color.fromARGB(255, 236, 249, 255),
     child: const Center(
       child: SizedBox(
         height: 10.0,
         width: 10.0,
         child: CircularProgressIndicator(
-            backgroundColor: Color.fromARGB(255, 91, 170, 255),
+            backgroundColor: Color.fromARGB(255, 187, 187, 187),
             valueColor: AlwaysStoppedAnimation<Color>(
-                Color.fromARGB(255, 184, 218, 255)),
+                Color.fromARGB(255, 236, 236, 236)),
             strokeWidth: 3),
       ),
     ),

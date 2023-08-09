@@ -15,6 +15,7 @@ class PostPageMultiComment extends StatefulWidget {
   final httpHelpers = HttpHelpers();
   final String jwt;
   final int postid;
+  final String postPicture;
   final User currUser;
   final Map<String, dynamic> decodedJWT;
   final Function updateCallBack;
@@ -24,6 +25,7 @@ class PostPageMultiComment extends StatefulWidget {
       required this.comments,
       required this.jwt,
       required this.postid,
+      required this.postPicture,
       required this.currUser,
       required this.decodedJWT,
       required this.updateCallBack})
@@ -77,6 +79,7 @@ class PostPageMultiCommentState extends State<PostPageMultiComment> {
             MaterialPageRoute(
                 builder: (context) => CommentPage(
                       postid: widget.postid,
+                      postPic: widget.postPicture,
                       currUser: widget.currUser,
                       acceptIdCallback: widget.updateCallBack,
                     )),
@@ -95,6 +98,7 @@ class PostPageSingleComment extends StatefulWidget {
   final List<Comment> comments;
   final String jwt;
   final int postid;
+  final String postPic;
   final User currUser;
   final Map<String, dynamic> decodedJWT;
   final Function updateCallBack;
@@ -104,6 +108,7 @@ class PostPageSingleComment extends StatefulWidget {
       required this.comments,
       required this.jwt,
       required this.postid,
+      required this.postPic,
       required this.decodedJWT,
       required this.updateCallBack,
       required this.currUser})
@@ -123,6 +128,14 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
   FocusNode focusNode = FocusNode();
   bool addIdRequestProcessing = false;
   bool addCommentRequestProcessing = false;
+  bool addNotificationRequestProcessing = false;
+  bool showUsernames = false;
+  List<String> usernames = [];
+  String taggedUser = '';
+  int currIndex = 0;
+  final RegExp terminatingExpressions =
+      RegExp(r'\B[@\<\>\(\)\{\}+=-_\[\]\s,:;?!]');
+  final RegExp taggedUserExpression = RegExp(r'\B@\w+');
 
   @override
   void dispose() {
@@ -141,6 +154,9 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
         allSpecies.add('${record.commonNames} (${record.species})');
       }
     }
+    httpHelpers.viewAllUsernamesRequest(widget.jwt).then((response) {
+      usernames = response;
+    });
     focusNode.addListener(onFocusChange);
   }
 
@@ -171,6 +187,12 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
   addCommentRequestProcessingCallback() {
     setState(() {
       addCommentRequestProcessing = !addCommentRequestProcessing;
+    });
+  }
+
+  addNotificationRequestProcessingCallback() {
+    setState(() {
+      addNotificationRequestProcessing = !addNotificationRequestProcessing;
     });
   }
 
@@ -256,8 +278,68 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
                           contentText.text = value;
                         });
                       },
+                      onChanged: (value) {
+                        if (contentText.text.characters
+                                .elementAt(contentText.selection.end - 1) ==
+                            '@') {
+                          setState(() {
+                            showUsernames = true;
+                            currIndex = contentText.selection.end - 1;
+                          });
+                        }
+                        if (showUsernames) {
+                          String userSubstring = value.substring(currIndex);
+                          setState(() {
+                            taggedUser = userSubstring
+                                        .split('@')[1]
+                                        .split(terminatingExpressions) ==
+                                    []
+                                ? userSubstring.split('@')[1].trim()
+                                : userSubstring
+                                    .split('@')[1]
+                                    .split(terminatingExpressions)[0]
+                                    .trim();
+                          });
+                        }
+                      },
                     ),
             ),
+            showUsernames
+                ? ListView(
+                    shrinkWrap: true,
+                    physics: const ScrollPhysics(),
+                    children: usernames.map((user) {
+                      if (user.contains(taggedUser) && taggedUser != '') {
+                        return ListTile(
+                          title: Text(
+                            user,
+                          ),
+                          onTap: () {
+                            setState(() {
+                              showUsernames = false;
+                              String beforeTag = contentText.text
+                                  .substring(0, currIndex)
+                                  .trim();
+                              String afterTag = contentText.text
+                                  .substring(currIndex + taggedUser.length + 1)
+                                  .trim();
+                              contentText.text = beforeTag == ''
+                                  ? '@$user $afterTag'
+                                  : afterTag == ''
+                                      ? '$beforeTag @$user'
+                                      : '$beforeTag @$user $afterTag';
+                              contentText.selection =
+                                  TextSelection.fromPosition(TextPosition(
+                                      offset: contentText.text.length));
+                              taggedUser = '';
+                            });
+                          },
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    }).toList())
+                : const SizedBox.shrink(),
             Container(
               alignment: Alignment.centerRight,
               margin: EdgeInsets.only(
@@ -324,10 +406,41 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
                           addCommentRequestProcessingCallback();
                           httpHelpers
                               .addCommentRequest(
-                                  widget.postid, contentText.text, widget.jwt)
+                                  widget.postid,
+                                  contentText.text,
+                                  widget.currUser.expert,
+                                  widget.jwt)
                               .then((response) {
                             addCommentRequestProcessingCallback();
                             if (response == 'Comment Posted') {
+                              if (addNotificationRequestProcessing) {
+                                null;
+                              } else {
+                                List<String> taggedUsers = taggedUserExpression
+                                    .allMatches(contentText.text)
+                                    .map((match) => match.group(0)!)
+                                    .toList();
+
+                                for (var everyUser in taggedUsers) {
+                                  addNotificationRequestProcessingCallback();
+                                  httpHelpers
+                                      .createNotificationRequest(
+                                          everyUser.substring(1),
+                                          contentText.text,
+                                          widget.currUser.profilepic,
+                                          widget.postPic,
+                                          widget.postid,
+                                          widget.jwt)
+                                      .then((response) {
+                                    addNotificationRequestProcessingCallback();
+                                    setState(() {
+                                      taggedUsers.clear();
+                                      taggedUser = '';
+                                      showUsernames = false;
+                                    });
+                                  });
+                                }
+                              }
                               widget.updateCallBack(response);
                               Fluttertoast.showToast(
                                 msg: 'Comment posted successfully!',
@@ -364,12 +477,16 @@ class PostPageSingleCommentState extends State<PostPageSingleComment> {
 class PostPageNoComment extends StatefulWidget {
   final String jwt;
   final int postid;
+  final String postPic;
+  final User currUser;
   final Function addCallBack;
 
   const PostPageNoComment(
       {Key? key,
       required this.jwt,
       required this.postid,
+      required this.postPic,
+      required this.currUser,
       required this.addCallBack})
       : super(key: key);
 
@@ -387,6 +504,14 @@ class PostPageNoCommentState extends State<PostPageNoComment> {
   FocusNode focusNode = FocusNode();
   bool addIdRequestProcessing = false;
   bool addCommentRequestProcessing = false;
+  bool addNotificationRequestProcessing = false;
+  bool showUsernames = false;
+  List<String> usernames = [];
+  String taggedUser = '';
+  int currIndex = 0;
+  final RegExp terminatingExpressions =
+      RegExp(r'\B[@\<\>\(\)\{\}+=-_\[\]\s,:;?!]');
+  final RegExp taggedUserExpression = RegExp(r'\B@\w+');
 
   @override
   void dispose() {
@@ -407,6 +532,9 @@ class PostPageNoCommentState extends State<PostPageNoComment> {
         }
       });
     }
+    httpHelpers.viewAllUsernamesRequest(widget.jwt).then((response) {
+      usernames = response;
+    });
     focusNode.addListener(onFocusChange);
   }
 
@@ -437,6 +565,12 @@ class PostPageNoCommentState extends State<PostPageNoComment> {
   addCommentRequestProcessingCallback() {
     setState(() {
       addCommentRequestProcessing = !addCommentRequestProcessing;
+    });
+  }
+
+  addNotificationRequestProcessingCallback() {
+    setState(() {
+      addNotificationRequestProcessing = !addNotificationRequestProcessing;
     });
   }
 
@@ -479,8 +613,68 @@ class PostPageNoCommentState extends State<PostPageNoComment> {
                           contentText.text = value;
                         });
                       },
+                      onChanged: (value) {
+                        if (contentText.text.characters
+                                .elementAt(contentText.selection.end - 1) ==
+                            '@') {
+                          setState(() {
+                            showUsernames = true;
+                            currIndex = contentText.selection.end - 1;
+                          });
+                        }
+                        if (showUsernames) {
+                          String userSubstring = value.substring(currIndex);
+                          setState(() {
+                            taggedUser = userSubstring
+                                        .split('@')[1]
+                                        .split(terminatingExpressions) ==
+                                    []
+                                ? userSubstring.split('@')[1].trim()
+                                : userSubstring
+                                    .split('@')[1]
+                                    .split(terminatingExpressions)[0]
+                                    .trim();
+                          });
+                        }
+                      },
                     ),
             ),
+            showUsernames
+                ? ListView(
+                    shrinkWrap: true,
+                    physics: const ScrollPhysics(),
+                    children: usernames.map((user) {
+                      if (user.contains(taggedUser) && taggedUser != '') {
+                        return ListTile(
+                          title: Text(
+                            user,
+                          ),
+                          onTap: () {
+                            setState(() {
+                              showUsernames = false;
+                              String beforeTag = contentText.text
+                                  .substring(0, currIndex)
+                                  .trim();
+                              String afterTag = contentText.text
+                                  .substring(currIndex + taggedUser.length + 1)
+                                  .trim();
+                              contentText.text = beforeTag == ''
+                                  ? '@$user $afterTag'
+                                  : afterTag == ''
+                                      ? '$beforeTag @$user'
+                                      : '$beforeTag @$user $afterTag';
+                              contentText.selection =
+                                  TextSelection.fromPosition(TextPosition(
+                                      offset: contentText.text.length));
+                              taggedUser = '';
+                            });
+                          },
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    }).toList())
+                : const SizedBox.shrink(),
             Container(
               alignment: Alignment.centerRight,
               margin: EdgeInsets.only(
@@ -547,10 +741,41 @@ class PostPageNoCommentState extends State<PostPageNoComment> {
                           addCommentRequestProcessingCallback();
                           httpHelpers
                               .addCommentRequest(
-                                  widget.postid, contentText.text, widget.jwt)
+                                  widget.postid,
+                                  contentText.text,
+                                  widget.currUser.expert,
+                                  widget.jwt)
                               .then((response) {
                             addCommentRequestProcessingCallback();
                             if (response == 'Comment Posted') {
+                              if (addNotificationRequestProcessing) {
+                                null;
+                              } else {
+                                List<String> taggedUsers = taggedUserExpression
+                                    .allMatches(contentText.text)
+                                    .map((match) => match.group(0)!)
+                                    .toList();
+
+                                for (var everyUser in taggedUsers) {
+                                  addNotificationRequestProcessingCallback();
+                                  httpHelpers
+                                      .createNotificationRequest(
+                                          everyUser.substring(1),
+                                          contentText.text,
+                                          widget.currUser.profilepic,
+                                          widget.postPic,
+                                          widget.postid,
+                                          widget.jwt)
+                                      .then((response) {
+                                    addNotificationRequestProcessingCallback();
+                                    setState(() {
+                                      taggedUsers.clear();
+                                      taggedUser = '';
+                                      showUsernames = false;
+                                    });
+                                  });
+                                }
+                              }
                               widget.addCallBack(response);
                               Fluttertoast.showToast(
                                 msg: 'Comment posted successfully!',

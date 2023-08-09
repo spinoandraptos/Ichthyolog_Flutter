@@ -6,6 +6,7 @@ import '../Models/user.dart';
 import '../Models/species.dart';
 import '../Models/dispute.dart';
 import '../Models/expert_application_request.dart';
+import '../Models/notifications.dart';
 
 //class which stores the functions responsible for backend communication
 class HttpHelpers {
@@ -93,6 +94,31 @@ class HttpHelpers {
       return Future.error('Error');
     } else {
       return User.fromJson(json.decode(response.body)[0]);
+    }
+  }
+
+  Future<List<String>> viewAllUsernamesRequest(String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/usernames';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.body == 'Users not found') {
+      return Future.error(response.body);
+    } else if (response.body == 'jwt expired') {
+      return Future.error('Session expired. Please login again!');
+    } else if (response.statusCode != 200) {
+      return Future.error('Error');
+    } else {
+      List<String> usernames = [];
+      var responseData = json.decode(response.body);
+      for (var everyUsername in responseData) {
+        usernames.add(everyUsername['username']);
+      }
+      return usernames;
     }
   }
 
@@ -186,8 +212,6 @@ class HttpHelpers {
         'profilepic': imageurl,
       }),
     );
-
-    print(response.body);
     if (response.body == 'User not found') {
       return ('User Not Found');
     } else if (response.body == 'jwt expired') {
@@ -321,7 +345,6 @@ class HttpHelpers {
     } else if (response.statusCode != 200) {
       return Future.error('Error');
     } else {
-      print(json.decode(response.body)[0]['postid']);
       return json.decode(response.body)[0]['postid'];
     }
   }
@@ -551,7 +574,7 @@ class HttpHelpers {
   }
 
   Future<String> addCommentRequest(
-      int postid, String content, String jwt) async {
+      int postid, String content, bool authorexpert, String jwt) async {
     String url = 'https://ichthyolog-nodejs.onrender.com/comment';
     var response = await http.post(
       Uri.parse(url),
@@ -559,8 +582,11 @@ class HttpHelpers {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorisation': jwt
       },
-      body:
-          json.encode(<String, dynamic>{'postid': postid, 'content': content}),
+      body: json.encode(<String, dynamic>{
+        'postid': postid,
+        'content': content,
+        'authorexpert': authorexpert
+      }),
     );
     if (response.statusCode == 201) {
       return ('Comment Posted');
@@ -1621,6 +1647,105 @@ class HttpHelpers {
       speciesCountByMonth(species)
     ]);
     return dataList;
+  }
+
+  Future<List<CommentNotification>> viewNotificationsRequest(String jwt) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/notifications';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+
+    if (response.body == 'Notifications not found') {
+      return Future.error(response.body);
+    } else if (response.statusCode != 200) {
+      return Future.error('Error, pleae try again');
+    } else {
+      List<CommentNotification> notifications = [];
+      var responseData = json.decode(response.body);
+      for (var everyNotification in responseData) {
+        CommentNotification notification =
+            CommentNotification.fromJson(everyNotification);
+        notifications.add(notification);
+      }
+      return notifications;
+    }
+  }
+
+  Future<int> countUnviewedNotificationsRequest(String jwt) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/notifications/unviewed';
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.body == 'Notifications not found') {
+      return 0;
+    } else if (response.statusCode != 200) {
+      return Future.error('Error, pleae try again');
+    } else {
+      return json.decode(response.body);
+    }
+  }
+
+  Future<String> createNotificationRequest(
+    String receiverUsername,
+    String notificationContent,
+    String senderProfilePic,
+    String postPic,
+    int postid,
+    String jwt,
+  ) async {
+    String url = 'https://ichthyolog-nodejs.onrender.com/notifications';
+    var response = await http.post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+      body: json.encode(<String, dynamic>{
+        'receiverusername': receiverUsername,
+        'notificationcontent': notificationContent,
+        'senderprofilepic': senderProfilePic,
+        'postid': postid,
+        'postpicture': postPic
+      }),
+    );
+    print('NANI!: ${response.body}');
+    if (response.statusCode == 201) {
+      return ('Notification Created');
+    } else if (response.body == 'jwt expired') {
+      return ('Session expired. Please login again!');
+    } else {
+      return ('Notification Creation Failed');
+    }
+  }
+
+  Future<String> openNotificationRequest(int notificationid, String jwt) async {
+    String url =
+        'https://ichthyolog-nodejs.onrender.com/notifications/$notificationid';
+    var response = await http.put(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorisation': jwt
+      },
+    );
+    if (response.statusCode == 200) {
+      return ('Notification opened successfully!');
+    } else if (response.body == 'Notifications not found') {
+      return response.body;
+    } else if (response.body == 'jwt expired') {
+      return ('Session expired. Please login again!');
+    } else {
+      return ('Notifications failed to open :(');
+    }
   }
 }
 

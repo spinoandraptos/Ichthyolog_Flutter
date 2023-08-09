@@ -16,6 +16,7 @@ import 'gallery_page.dart';
 import 'post_page.dart';
 import 'waiting_list_page.dart';
 import 'statistics_page.dart';
+import 'notifications_page.dart';
 import 'expert_application_page.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -212,7 +213,9 @@ class HomePageState extends State<HomePage> {
                                   snapshotUser.data!, refreshCallback),
                               //Visit waiting list page to verify/flag posts
                               waitingListPageButton(
-                                  snapshotUser.data!, refreshCallback)
+                                  snapshotUser.data!, refreshCallback),
+                              //visit notifications to read notifications
+                              notificationsPageButton(snapshotUser.data!)
                             ],
                           ),
                         )
@@ -231,6 +234,8 @@ class HomePageState extends State<HomePage> {
                               //Visit expert application page to review/submit applications
                               expertApplicationPageButton(
                                   snapshotUser.data!, refreshCallback),
+                              //visit notifications to read notifications
+                              notificationsPageButton(snapshotUser.data!)
                             ],
                           ),
                         ));
@@ -755,6 +760,59 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+  Widget notificationsPageButton(User user) {
+    return FutureBuilder(
+        future: httpHelpers.countUnviewedNotificationsRequest(jwt),
+        builder: ((context, snapshotNotif) {
+          return Stack(children: [
+            IconButton(
+              icon: const Icon(Icons.notification_important,
+                  color: Color.fromARGB(255, 52, 66, 117)),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NotificationsPage(currUser: user)),
+                ).then((value) => refreshCallback());
+              },
+            ),
+            snapshotNotif.hasData && snapshotNotif.data! > 0 ||
+                    snapshotNotif.hasError
+                ? Positioned(
+                    top: 3,
+                    right: 6,
+                    child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 0.5,
+                              color: Colors.white,
+                            ),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(
+                                60,
+                              ),
+                            ),
+                            color: const Color.fromARGB(255, 167, 71, 71),
+                            boxShadow: [
+                              BoxShadow(
+                                offset: const Offset(2, 4),
+                                color: Colors.black.withOpacity(
+                                  0.1,
+                                ),
+                                blurRadius: 3,
+                              ),
+                            ]),
+                        child: snapshotNotif.hasData
+                            ? Text('${snapshotNotif.data!}',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white))
+                            : const Icon(Icons.error)))
+                : const SizedBox.shrink()
+          ]);
+        }));
+  }
+
   Widget waitingListPageButton(User user, Function refreshCallback) {
     return IconButton(
       icon: const Icon(
@@ -845,6 +903,9 @@ class HomePageState extends State<HomePage> {
                               ? iconDescription(const Icon(Icons.feedback),
                                   'Review unverified posts')
                               : const SizedBox.shrink(),
+                          iconDescription(
+                              const Icon(Icons.notification_important),
+                              'View notifications'),
                           iconDescription(const Icon(Icons.manage_accounts),
                               'Edit your profile information'),
                           iconDescription(const Icon(Icons.logout),
