@@ -285,7 +285,6 @@ class NotificationsPageState extends State<NotificationsPage> {
               builder: (context) =>
                   ExpertApplicationPage(currUser: widget.currUser)),
         ).then((value) => refreshCallback());
-        ;
       },
     );
   }

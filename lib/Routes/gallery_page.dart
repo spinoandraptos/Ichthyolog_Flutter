@@ -182,7 +182,6 @@ class GalleryPageState extends State<GalleryPage> {
               builder: (context) =>
                   ExpertApplicationPage(currUser: widget.currUser)),
         ).then((value) => refreshCallback());
-        ;
       },
     );
   }

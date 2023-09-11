@@ -60,6 +60,7 @@ dependencies:
   fl_chart: ^0.60.0
   auto_size_text: ^3.0.0
   shared_preferences: ^2.2.0
+  flutter_local_notifications: ^15.1.0+1
 
 dev_dependencies:
   test: ^1.22.0
